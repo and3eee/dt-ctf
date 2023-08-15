@@ -201,7 +201,7 @@ export default function EventCard(props: EventCardProps) {
             )}
           </div>
         </CardBody>
-        {((now > event.start && !event.active) || props.admin) && (
+        {((now < event.start && !event.active) || props.admin) && (
           <>
             <Divider />
             <CardFooter className="flex flex-row-reverse gap-5">

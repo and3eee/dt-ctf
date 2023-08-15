@@ -33,7 +33,9 @@ export default async function EventLayout({
   return (
     <div className="flex max-w-full min-h-fit max-h-fit gap-10">
       <div className="basis-1/6">
-        <EventSideCard event={event!} riddles={event!.riddles} />
+     
+      <EventSideCard event={event!} riddles={event?.riddles ?? []} />
+
       </div>
       <div className="basis-2/3 ">{children}</div>
     </div>
