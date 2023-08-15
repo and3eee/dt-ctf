@@ -1,9 +1,11 @@
 import AuthCheck from "@/components/AuthCheck";
 import TeamEventSignUp from "@/components/Event/TeamEventSignUp";
-import SmallTeamList from "@/components/Team/SmallTeamList";
+
 import { prisma } from "@/lib/prisma";
-import { Card } from "@nextui-org/react";
-import { M_PLUS_1 } from "next/font/google";
+
+
+export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export default async function EventSignUp({
   params,
@@ -13,10 +15,12 @@ export default async function EventSignUp({
   const event = await prisma.event.findFirst({ where: { id: params.eventID } ,include:{teams:{include:{members:true}}}});
 
 
-  if (event) {
+  
+  
+  if(event)
     return (
       <AuthCheck>
-        
+
         <TeamEventSignUp
           id={event.id}
           name={event.name}
@@ -32,8 +36,8 @@ export default async function EventSignUp({
           showParticipants={event.showParticipants ?? false}
           public={event.public ?? false}
           useTeams={event.useTeams ?? false}
-          teams={event.teams} teamSize={event.teamSize}  small      />
+          teams={event.teams} teamSize={event.teamSize} small />
       </AuthCheck>
     );
-  }
+  
 }

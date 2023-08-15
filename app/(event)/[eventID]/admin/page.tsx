@@ -4,6 +4,8 @@ import SmallTeamList from "@/components/Team/SmallTeamList";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
 import { Divider } from "@nextui-org/react";
+export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function EventAdmin({
   params,
