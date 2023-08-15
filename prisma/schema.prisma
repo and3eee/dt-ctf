@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+
+}
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  refresh_token_expires_in Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id          String      @id @unique @default(cuid())
+  email       String      @unique
+  password    String
+  name        String
+  Event       Event?      @relation(fields: [eventId], references: [id])
+  eventId     String?
+  UserEntry   UserEntry[]
+  accounts    Account[]
+  sessions    Session[]
+  role        Role        @default(USER)
+  TeamEntry   TeamEntry?  @relation(fields: [teamEntryId], references: [id])
+  teamEntryId String?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Riddle {
+  id                String      @id @unique @default(cuid())
+  riddle            String      @unique
+  difficulty        String?
+  bucket            String?
+  topic             String?
+  author            String?
+  implemented       Boolean     @default(false)
+  validated         Boolean     @default(false)
+  solution          String
+  sourceLocation    String?
+  sourceDescription String?
+  sourceURL         String?
+  sourcePlaceHolder String?
+  UserEntry         UserEntry[]
+  Event             Event?      @relation(fields: [eventId], references: [id])
+  eventId           String?
+}
+
+model Event {
+  id                String      @id @unique @default(cuid())
+  name              String
+  description       String
+  start             DateTime
+  end               DateTime
+  prize             String?
+  requireURL        Boolean?    @default(false)
+  requireScreenshot Boolean?    @default(false)
+  active            Boolean?    @default(false)
+  participants      User[]
+  showParticipants  Boolean?    @default(false)
+  showTeams         Boolean?    @default(false)
+  useTeams          Boolean?    @default(false)
+  teams             TeamEntry[]
+  riddles           Riddle[]
+  teamSize          Int         @default(3)
+  public            Boolean     @default(true)
+}
+
+model TeamEntry {
+  id          String      @id @unique @default(cuid())
+  members     User[]
+  name        String
+  event       Event       @relation(fields: [eventId], references: [id])
+  eventId     String
+  userEntries UserEntry[]
+}
+
+model UserEntry {
+  id          String     @id @unique @default(cuid())
+  answeredBy  User       @relation(fields: [userId], references: [id])
+  riddle      Riddle     @relation(fields: [riddleId], references: [id])
+  answeredAt  DateTime
+  userId      String
+  riddleId    String    
+  teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])
+  teamEntryId String?
+}
+
+enum Role {
+  ADMIN
+  USER
+  ORGANIZER
+}
+
+enum EventType {
+  CTF
+  LAB
+  OPEN
+}
