@@ -1,4 +1,4 @@
-import AuthCheck from "@/components/AdminCheck";
+import AuthCheck from "@/components/AuthCheck";
 import TeamEventSignUp from "@/components/Event/TeamEventSignUp";
 import SmallTeamList from "@/components/Team/SmallTeamList";
 import { prisma } from "@/lib/prisma";

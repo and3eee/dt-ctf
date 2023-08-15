@@ -3,13 +3,13 @@
 import { Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react"
 
-export default function AuthCheck({ children }: { children: React.ReactNode }) {
+export default function AdminCheck({ children }: { children: React.ReactNode }) {
     const { data: session, status }:any = useSession();
 
     if (status === 'authenticated') {
         if(session.user.role == "ADMIN")
         return <>{children}</>
-        else return <></>
+        else return 
     } else {
         if (status === 'loading') return <div className="flex justify-center items-center "><Spinner size="lg"/></div>
 
