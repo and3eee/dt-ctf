@@ -115,14 +115,18 @@ export default function RiddleList(props: {
           return <Chip color={"secondary"}>{riddle.topic}</Chip>;
         break;
       case "riddle":
-      default:
-        return cellValue;
-      case "author":
-        return riddle.author;
+     return riddle.riddle;
+
+      case "solution":
+        return riddle.solution;
+        case "author":
+          return riddle.author;
       case "implemented":
         return <Checkbox isSelected={riddle.implemented} />;
       case "validated":
         return <Checkbox isSelected={riddle.validated} />;
+        default:
+          return cellValue;
     }
   }, []);
 
@@ -148,7 +152,7 @@ export default function RiddleList(props: {
         }}
         isStriped
         defaultSelectedKeys={props.defaultSelected?.map((riddle) => riddle.id)}
-        selectionMode="multiple"
+        selectionMode={props.admin ? "multiple" : undefined}
               selectedKeys={selectedKeys}
       onSelectionChange={setSelectedKeys}
       >
