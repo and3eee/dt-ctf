@@ -3,7 +3,7 @@
 import TeamRiddleList from "@/components/Team/TeamRiddleList";
 
 import { prisma } from "@/lib/prisma";
-import { useSession } from "next-auth/react";
+
 
 export const dynamic = "force-dynamic";
 export const revalidate = 5;

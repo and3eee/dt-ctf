@@ -77,6 +77,12 @@ export async function GetTeams(eventID: string) {
   return teams;
 }
 
+export async function GetUserTeamID(eventId: string,email:string ){
+
+  const team = prisma.teamEntry.findFirst({where:{members:{some:{email:email}}}})
+  return team;
+}
+
 export async function GetTeamsRaw(eventID: string) {
   const event = await prisma.event.findFirst({
     where: { id: eventID },

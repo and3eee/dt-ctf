@@ -9,7 +9,6 @@ import RiddleList from "@/components/Riddle/RiddleList";
 import EventCard from "@/components/Event/EventCard";
 import EventModal from "@/components/Event/EventModal";
 import { TeamEntry } from "@prisma/client";
-import { useSession } from "next-auth/react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 600;

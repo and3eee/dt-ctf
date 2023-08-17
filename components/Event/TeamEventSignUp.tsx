@@ -61,12 +61,12 @@ export default function TeamEventSignUp(props: TeamEventSignUpProps) {
               small={props.small}
             />
           )}
-          <TeamModal
+         {!props.active &&  <TeamModal
             buttonText={"Create Team"}
             id={"NEW"}
             name={""}
             eventId={props.id}
-          />
+          />}
         </CardBody>
       </Card>
     );

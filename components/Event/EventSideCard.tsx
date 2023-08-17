@@ -20,6 +20,8 @@ import SmallTeamList from "../Team/SmallTeamList";
 
 import { EventProps } from "@/types";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { GetUserTeamID } from "./EventControl";
 
 export default function EventSideCard(props: {
   event: Event;
@@ -27,6 +29,8 @@ export default function EventSideCard(props: {
   solved?: UserEntry[];
   teamEntry?: TeamEntry;
 }) {
+  const { data: session, status }:any = useSession();
+
   const now = new Date();
   const start = props.event.start;
   const end = props.event.end;
@@ -40,6 +44,15 @@ export default function EventSideCard(props: {
 
   var minLeft = Math.round(Math.abs(now.getTime() - end.getTime()) / 60000); // minutes
   const router = useRouter();
+
+  const teamRedirect = async() => {
+  
+    const email = await session.user.email;
+  
+    const team = await GetUserTeamID(props.event.id,email)
+    if(team)
+    router.push(`${team.id}`)
+  }  
 
   return (
     <div className={"h-screen"}>
@@ -239,7 +252,7 @@ export default function EventSideCard(props: {
           )}
         </CardBody>
         <CardFooter>
-          <Button
+          {!props.event.active && <Button
             color="success"
             className="min-w-full justify-self-end"
             onPress={() => {
@@ -247,7 +260,16 @@ export default function EventSideCard(props: {
             }}
           >
             Sign Up
-          </Button>
+          </Button>}
+          {props.event.active && <Button
+            color="success"
+            className="min-w-full justify-self-end"
+            onPress={() => {
+            teamRedirect()
+            }}
+          >
+            Go to Team Page
+          </Button>}
         </CardFooter>
       </Card>
     </div>
