@@ -50,8 +50,10 @@ export default function EventSideCard(props: {
     const email = await session.user.email;
   
     const team = await GetUserTeamID(props.event.id,email)
-    if(team)
-    router.push(`${team.id}`)
+
+
+    if(team && team.name)
+    router.replace(`/${props.event.id}/${team.id}`)
   }  
 
   return (

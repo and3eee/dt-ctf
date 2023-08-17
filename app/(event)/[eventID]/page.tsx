@@ -1,10 +1,13 @@
 //Leaderboard/info page
 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { GetUserTeamID } from "@/components/Event/EventControl";
 import EventLeaderBoard from "@/components/Event/EventLeaderBoard";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 5;
+export const revalidate = 30;
 
 export default async function EventPage({
     params,
@@ -12,6 +15,7 @@ export default async function EventPage({
     params: { eventID: string };
   }) {
     const event = await prisma.event.findFirst({ where: { id: params.eventID } ,include:{teams:{include:{members:true,userEntries:true}}}});
-  
+
+
     return(<div><EventLeaderBoard event={event!} teams={event!.teams}/></div>)
 }

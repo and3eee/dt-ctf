@@ -2,8 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventProps } from "@/types";
+import { TeamEntry } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+
 
 export async function CreateEvent(formData: FormData) {
   //Ignore ID as its only used in update
@@ -79,7 +81,7 @@ export async function GetTeams(eventID: string) {
 
 export async function GetUserTeamID(eventId: string,email:string ){
 
-  const team = prisma.teamEntry.findFirst({where:{members:{some:{email:email}}}})
+  const team = await prisma.teamEntry.findFirst({where:{members:{some:{email:email}}}})
   return team;
 }
 

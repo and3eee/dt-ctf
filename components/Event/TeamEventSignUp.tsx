@@ -17,6 +17,8 @@ import {
 import { GetTeams } from "./EventControl";
 import TeamModal from "../Team/TeamModal";
 import TeamList from "../Team/TeamList";
+import { useRouter } from "next/navigation";
+
 
 export interface TeamEventSignUpProps extends EventProps {
   small?:boolean;
@@ -28,6 +30,12 @@ const columns = [
 ];
 
 export default function TeamEventSignUp(props: TeamEventSignUpProps) {
+
+  const router = useRouter()
+  console.log(props.active)
+  if(props.active){
+    router.replace(`/${props.id}`)
+  }
   if (props.useTeams) {
     return (
       <Card >

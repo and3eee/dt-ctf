@@ -54,19 +54,25 @@ export default function EventCard(props: EventCardProps) {
 
   function TeamsGroup() {
     if (teams) {
-      const trimmedTeams = teams.slice(0, 5);
+      const trimmedTeams = teams.slice(0, 10);
       return (
         <div className="flex flex-row">
           {trimmedTeams.map((team: TeamEntry) => {
+            if(team.name){
+            let initials: string = team.name
+              .split(" ")
+              .map((n) => n[0])
+              .join(".");
+
             return (
               <div className="isBordered" key={team.id}>
                 <Tooltip content={team.name}>
-                  <Chip>{team.name}</Chip>
+                  <Avatar color="primary" name={initials}/>
                 </Tooltip>
               </div>
-            );
+            );}
           })}
-          {teams?.length > 5 && <Chip>+{teams.length - 5}</Chip>}
+          {teams?.length > 10 && <Avatar name={`+${teams.length - 10}`}/>}
         </div>
       );
     }
@@ -201,11 +207,11 @@ export default function EventCard(props: EventCardProps) {
             )}
           </div>
         </CardBody>
-        {((now < event.start && !event.active) || props.admin) && (
+        
           <>
             <Divider />
             <CardFooter className="flex flex-row-reverse gap-5">
-              <Button
+              {((now < event.start && !event.active) || props.admin) && (<Button
                 color="success"
                 className="justify-self-end"
                 onPress={() => {
@@ -213,7 +219,7 @@ export default function EventCard(props: EventCardProps) {
                 }}
               >
                 Sign Up
-              </Button>
+              </Button>)}
               <Button
                 color="primary"
                 className="justify-self-end"
@@ -231,21 +237,21 @@ export default function EventCard(props: EventCardProps) {
                   start={event.start}
                   end={event.end}
                   description={event.description}
-                  requireURL={event.requireURL?? false}
-                  requireScreenshot={event.requireScreenshot?? false}
-                  active={event.active?? false}
+                  requireURL={event.requireURL ?? false}
+                  requireScreenshot={event.requireScreenshot ?? false}
+                  active={event.active ?? false}
                   participants={[]}
                   riddleCount={riddles?.length ?? 0}
-                  showTeams={event.showTeams?? false}
-                  showParticipants={event.showParticipants?? false}
-                  public={event.public?? false}
-                  useTeams={event.useTeams?? true}
+                  showTeams={event.showTeams ?? false}
+                  showParticipants={event.showParticipants ?? false}
+                  public={event.public ?? false}
+                  useTeams={event.useTeams ?? true}
                   teamSize={event.teamSize}
                 />
               )}
             </CardFooter>
           </>
-        )}
+        
       </Card>
     );
 }
