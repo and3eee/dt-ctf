@@ -129,7 +129,7 @@ export default function EventCard(props: EventCardProps) {
                     track: "stroke-white/10",
                     value: "text-xs font-semibold text-white",
                   }}
-                  value={diffMins + 60 * diffHrs}
+                  value={diffMins}
                   maxValue={
                     riddles
                       ? riddles.length * 5 > diffMins
@@ -167,9 +167,7 @@ export default function EventCard(props: EventCardProps) {
                     }}
                     value={riddles.length}
                     maxValue={
-                      riddles.length < diffMins / 5
-                        ? riddles.length
-                        : diffMins / 5
+                      diffMins/3
                     }
                     strokeWidth={2}
                     isIndeterminate

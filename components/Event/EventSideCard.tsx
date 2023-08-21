@@ -191,9 +191,7 @@ export default function EventSideCard(props: {
                     }}
                     value={props.riddles.length}
                     maxValue={
-                      props.riddles.length < diffMins / 5
-                        ? props.riddles.length
-                        : diffMins / 5
+                      diffMins/3
                     }
                     strokeWidth={2}
                     isIndeterminate
