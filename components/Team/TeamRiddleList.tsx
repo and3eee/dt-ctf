@@ -21,7 +21,7 @@ export default function TeamRiddleList(props: {
 
   
   return (
-    <div className="grid grid-cols-2 auto-rows-max gap-2 justify-items-left p-12">
+    <div className="grid grid-cols-2 auto-rows-max gap-5">
       {solvedRiddles.map((items: { entry: UserEntry; solved: Riddle,solvedBy:User ,id:string}) => {
 
   

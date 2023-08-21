@@ -111,3 +111,12 @@ export async function SetRiddleSet(eventId: string, ids: string[]) {
 
 
 }
+
+
+export async function StartEvent(id:string){
+  return await prisma.event.update({where:{id:id},data:{active:true}})
+}
+
+export async function StopEvent(id:string){
+  return await prisma.event.update({where:{id:id},data:{active:false}})
+}

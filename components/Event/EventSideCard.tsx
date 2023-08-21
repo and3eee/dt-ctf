@@ -22,14 +22,15 @@ import { EventProps } from "@/types";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { GetUserTeamID } from "./EventControl";
+import EventStateButton from "./EventStateButton";
 
 export default function EventSideCard(props: {
   event: Event;
-  riddles:Riddle[];
+  riddles: Riddle[];
   solved?: UserEntry[];
   teamEntry?: TeamEntry;
 }) {
-  const { data: session, status }:any = useSession();
+  const { data: session, status }: any = useSession();
 
   const now = new Date();
   const start = props.event.start;
@@ -45,16 +46,13 @@ export default function EventSideCard(props: {
   var minLeft = Math.round(Math.abs(now.getTime() - end.getTime()) / 60000); // minutes
   const router = useRouter();
 
-  const teamRedirect = async() => {
-  
+  const teamRedirect = async () => {
     const email = await session.user.email;
-  
-    const team = await GetUserTeamID(props.event.id,email)
 
+    const team = await GetUserTeamID(props.event.id, email);
 
-    if(team && team.name)
-    router.replace(`/${props.event.id}/${team.id}`)
-  }  
+    if (team && team.name) router.replace(`/${props.event.id}/${team.id}`);
+  };
 
   return (
     <div className={"h-screen"}>
@@ -125,7 +123,7 @@ export default function EventSideCard(props: {
                       track: "stroke-white/10",
                       value: "text-3xl font-semibold text-white",
                     }}
-                    value={(props.solved?.length ?? 0)/props.riddles.length }
+                    value={(props.solved?.length ?? 0) / props.riddles.length}
                     maxValue={props.riddles.length}
                     strokeWidth={4}
                     showValueLabel={true}
@@ -140,85 +138,83 @@ export default function EventSideCard(props: {
                     variant="bordered"
                   >
                     <p>Riddles Solved</p>
-                    
                   </Chip>
                 </CardFooter>
               </Card>
             </div>
           )}
 
-          {!props.event.active && now.getTime() < start.getTime() && (
-            <div className="flex flex-col gap-5 justify-items-center">
-              <p className={"test-xl "}>{props.event.description}</p>
+          <div className="flex flex-col gap-5 justify-items-center">
+            <p className={"test-xl "}>{props.event.description}</p>
 
-              <div className="flex flex-row gap-5">
-                <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-green-500 to-blue-500">
-                  <CardBody className="justify-center items-center pb-0">
-                    <CircularProgress
-                      classNames={{
-                        svg: "w-14 h-14 drop-shadow-md",
-                        indicator: "stroke-white",
-                        track: "stroke-white/10",
-                        value: "text-xs font-semibold text-white",
-                      }}
-                      value={diffMins}
-                      maxValue={
-                        props.riddles.length * 5 > diffMins
-                          ? props.riddles.length * 5
-                          : diffMins
-                      }
-                      strokeWidth={2}
-                      formatOptions={{ style: "unit", unit: "minute" }}
-                      showValueLabel={true}
-                    />
-                  </CardBody>
-                  <CardFooter className="justify-center items-center pt-0">
-                    <Chip
-                      classNames={{
-                        base: "border-1 border-white/30",
-                        content: "text-white/90 text-xs font-semibold",
-                      }}
-                      variant="bordered"
-                    >
-                      <p>Duration</p>
-                    </Chip>
-                  </CardFooter>
-                </Card>
-                <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-blue-500 to-cyan-500">
-                  <CardBody className="justify-center items-center pb-0">
-                    <CircularProgress
-                      classNames={{
-                        svg: "w-14 h-14 drop-shadow-md",
-                        indicator: "stroke-white",
-                        track: "stroke-white/10",
-                        value: "text-small font-semibold text-white",
-                      }}
-                      value={props.riddles.length}
-                      maxValue={
-                        props.riddles.length < diffMins / 5
-                          ? props.riddles.length
-                          : diffMins / 5
-                      }
-                      strokeWidth={2}
-                      isIndeterminate
-                      formatOptions={{ style: "decimal" }}
-                      showValueLabel={true}
-                    />
-                  </CardBody>
-                  <CardFooter className="justify-center items-center pt-0">
-                    <Chip
-                      classNames={{
-                        base: "border-1 border-white/30",
-                        content: "text-white/90 text-xs font-semibold",
-                      }}
-                      variant="bordered"
-                    >
-                      <p>Riddles</p>
-                    </Chip>
-                  </CardFooter>
-                </Card>
-              </div>
-
+            <div className="flex flex-row gap-5">
+              <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-green-500 to-blue-500">
+                <CardBody className="justify-center items-center pb-0">
+                  <CircularProgress
+                    classNames={{
+                      svg: "w-14 h-14 drop-shadow-md",
+                      indicator: "stroke-white",
+                      track: "stroke-white/10",
+                      value: "text-xs font-semibold text-white",
+                    }}
+                    value={diffMins}
+                    maxValue={
+                      props.riddles.length * 5 > diffMins
+                        ? props.riddles.length * 5
+                        : diffMins
+                    }
+                    strokeWidth={2}
+                    formatOptions={{ style: "unit", unit: "minute" }}
+                    showValueLabel={true}
+                  />
+                </CardBody>
+                <CardFooter className="justify-center items-center pt-0">
+                  <Chip
+                    classNames={{
+                      base: "border-1 border-white/30",
+                      content: "text-white/90 text-xs font-semibold",
+                    }}
+                    variant="bordered"
+                  >
+                    <p>Duration</p>
+                  </Chip>
+                </CardFooter>
+              </Card>
+              <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-blue-500 to-cyan-500">
+                <CardBody className="justify-center items-center pb-0">
+                  <CircularProgress
+                    classNames={{
+                      svg: "w-14 h-14 drop-shadow-md",
+                      indicator: "stroke-white",
+                      track: "stroke-white/10",
+                      value: "text-small font-semibold text-white",
+                    }}
+                    value={props.riddles.length}
+                    maxValue={
+                      props.riddles.length < diffMins / 5
+                        ? props.riddles.length
+                        : diffMins / 5
+                    }
+                    strokeWidth={2}
+                    isIndeterminate
+                    formatOptions={{ style: "decimal" }}
+                    showValueLabel={true}
+                  />
+                </CardBody>
+                <CardFooter className="justify-center items-center pt-0">
+                  <Chip
+                    classNames={{
+                      base: "border-1 border-white/30",
+                      content: "text-white/90 text-xs font-semibold",
+                    }}
+                    variant="bordered"
+                  >
+                    <p>Riddles</p>
+                  </Chip>
+                </CardFooter>
+              </Card>
+            </div>
+            {!props.event.active && now.getTime() < start.getTime() && (
               <Card className="w-[260px] h-[260px] border-none bg-gradient-to-br from-violet-500 to-blue-500">
                 <CardBody className="justify-center items-center pb-0">
                   <CircularProgress
@@ -250,28 +246,33 @@ export default function EventSideCard(props: {
                   </Chip>
                 </CardFooter>
               </Card>
-            </div>
-          )}
+            )}
+          </div>
         </CardBody>
         <CardFooter>
-          {!props.event.active && <Button
-            color="success"
-            className="min-w-full justify-self-end"
-            onPress={() => {
-              router.replace(`/${props.event.id}/signup`);
-            }}
-          >
-            Sign Up
-          </Button>}
-          {props.event.active && <Button
-            color="success"
-            className="min-w-full justify-self-end"
-            onPress={() => {
-            teamRedirect()
-            }}
-          >
-            Go to Team Page
-          </Button>}
+          {!props.event.active && (
+            <Button
+              color="success"
+              className="min-w-full justify-self-end"
+              onPress={() => {
+                router.replace(`/${props.event.id}/signup`);
+              }}
+            >
+              Sign Up
+            </Button>
+          )}
+          {props.event.active && (
+            <Button
+              color="success"
+              className="min-w-full justify-self-end"
+              onPress={() => {
+                teamRedirect();
+              }}
+            >
+              Go to Team Page
+            </Button>
+          )}
+         
         </CardFooter>
       </Card>
     </div>

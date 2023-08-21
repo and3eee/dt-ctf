@@ -3,6 +3,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { GetUserTeamID } from "@/components/Event/EventControl";
 import EventLeaderBoard from "@/components/Event/EventLeaderBoard";
+import EventStateButton from "@/components/Event/EventStateButton";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
@@ -17,5 +18,5 @@ export default async function EventPage({
     const event = await prisma.event.findFirst({ where: { id: params.eventID } ,include:{teams:{include:{members:true,userEntries:true}}}});
 
 
-    return(<div><EventLeaderBoard event={event!} teams={event!.teams}/></div>)
+    return(<div > <EventStateButton event={event!}/><EventLeaderBoard event={event!} teams={event!.teams}/></div>)
 }
