@@ -24,7 +24,7 @@ export default async function TeamPage({
     const team = await prisma.teamEntry.findFirst({where:{id:params.teamID},include:{userEntries:{include:{riddle:true,answeredBy:true}}}})
 
     if(team && event)
-    return(<div className="container">
+    return(<div>
        {event.active && <TeamRiddleList team={team} riddles={event?.riddles} solved={team.userEntries}/>}
     </div>)
 }

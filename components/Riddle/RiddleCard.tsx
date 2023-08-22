@@ -39,18 +39,18 @@ export default function RiddleCard(props: RiddleCardProps) {
   const [value, setValue] = React.useState("");
 
   const onClick = () => {
-    if(value == props.solution && props.teamID){
-    AddTeamUserEntry(props.id, props.teamID);
+    if (value == props.solution && props.teamID) {
+      AddTeamUserEntry(props.id, props.teamID);
     }
     router.refresh();
   };
 
-  const onDelete = async ( ) => {
-    if(props.teamID){
-     const res = await RemoveTeamUserEntry(props.id, props.teamID);
-      }
-      router.refresh();
-  }
+  const onDelete = async () => {
+    if (props.teamID) {
+      const res = await RemoveTeamUserEntry(props.id, props.teamID);
+    }
+    router.refresh();
+  };
 
   function Difficulty() {
     if (props.difficulty) {
@@ -102,7 +102,7 @@ export default function RiddleCard(props: RiddleCardProps) {
   return (
     <Card
       isBlurred
-      className="border-none bg-background/60 dark:bg-default-100/50 min-w-[500px] max-w-[800px]"
+      className="border-none bg-background/60 dark:bg-default-100/50 min-w-[500px] max-w-[800px] m-5"
       shadow="sm"
     >
       <CardHeader className="flex growflex-row gap-2">
@@ -111,7 +111,11 @@ export default function RiddleCard(props: RiddleCardProps) {
             <h1 className="text-large">Riddle: {props.number}</h1>
           )}
           {(props.admin || props.answered) && (
-            <Button isIconOnly color="danger" onPress={onDelete}>X</Button>
+            <Tooltip color="danger" content={"Clear Answer"}>
+              <Button isIconOnly color="danger" onPress={onDelete}>
+                X
+              </Button>
+            </Tooltip>
           )}
         </div>
         <div className="flex gap-2 flex-row-reverse">
@@ -178,7 +182,7 @@ export default function RiddleCard(props: RiddleCardProps) {
       </CardHeader>
 
       <Divider />
-      <CardBody>
+      <CardBody className="flex flex-col gap-5">
         <h1 className="text-large">{props.riddle}</h1>
 
         {props.admin && props.sourceLocation && (
@@ -205,6 +209,47 @@ export default function RiddleCard(props: RiddleCardProps) {
             <h1 className="text-large">{props.sourcePlaceHolder}</h1>
           </div>
         )}
+
+        {((props.sourceDescription && props.sourceDescription.length > 0) ||
+          props.sourceLocation) && (
+          <div className="grid auto-cols-max gap-5 mx-auto">
+            {props.sourceDescription &&
+              props.sourceDescription.length > 0 &&
+              !props.admin && (
+                <Card
+                  isBlurred
+                  radius={"lg"}
+                  shadow={"md"}
+                  className="flex max-w-[600px]"
+                >
+                  <CardHeader>
+                    <h1 className="text-small">Description</h1>
+                  </CardHeader>
+                  <Divider />
+                  <CardBody>
+                    <h1 className="text-small">{props.sourceDescription} </h1>
+                  </CardBody>
+                </Card>
+              )}
+            {props.sourceLocation && !props.admin && (
+              <Card
+                isBlurred
+                radius={"lg"}
+                shadow={"md"}
+                className="flex max-w-[600px]"
+              >
+                <CardHeader>
+                  <h1 className="text-xs">Hint</h1>
+                </CardHeader>
+
+                <Divider />
+                <CardBody>
+                  <h1 className="text-xs">{props.sourceLocation} </h1>{" "}
+                </CardBody>
+              </Card>
+            )}
+          </div>
+        )}
       </CardBody>
       <Divider />
 
@@ -216,17 +261,19 @@ export default function RiddleCard(props: RiddleCardProps) {
             onValueChange={setValue}
             placeholder={props.sourcePlaceHolder ?? "Riddle Answer Here...."}
           ></Input>
-          <Popover placement="right" color={"danger"} showArrow={true} >
+          <Popover placement="right" color={"danger"} showArrow={true}>
             <PopoverTrigger>
               <Button color="success" onPress={onClick}>
                 Submit
               </Button>
             </PopoverTrigger>
-            {value!== props.solution && <PopoverContent>
-               <div className="px-1 py-2">
-                <div className="text-small font-bold">Wrong, try again!</div>
-              </div>
-            </PopoverContent>}
+            {value !== props.solution && (
+              <PopoverContent>
+                <div className="px-1 py-2">
+                  <div className="text-small font-bold">Wrong, try again!</div>
+                </div>
+              </PopoverContent>
+            )}
           </Popover>
         </CardFooter>
       )}

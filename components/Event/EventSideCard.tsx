@@ -123,7 +123,7 @@ export default function EventSideCard(props: {
                       track: "stroke-white/10",
                       value: "text-3xl font-semibold text-white",
                     }}
-                    value={(props.solved?.length ?? 0) / props.riddles.length}
+                    value={(props.solved?.length ?? 0)}
                     maxValue={props.riddles.length}
                     strokeWidth={4}
                     showValueLabel={true}
