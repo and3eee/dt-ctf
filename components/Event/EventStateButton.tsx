@@ -5,7 +5,7 @@ import { Card } from "@nextui-org/card";
 import { Event } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { StartEvent, StopEvent } from "./EventControl";
-import AdminCheck from "../AdminCheck";
+import AdminCheck from "../Auth/AdminCheck";
 
 export default function EventStateButton(props: { event: Event }) {
   const event = props.event;

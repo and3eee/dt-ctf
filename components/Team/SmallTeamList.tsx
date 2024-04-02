@@ -19,7 +19,7 @@ import {
 import React from "react";
 import { registerMember } from "./TeamControl";
 import { useSession } from "next-auth/react";
-import AuthCheck from "../AuthCheck";
+import AuthCheck from "../Auth/AuthCheck";
 import { useRouter } from "next/navigation";
 import TeamModal from "./TeamModal";
 import { User } from "next-auth";

@@ -29,9 +29,9 @@ import {
 
 import { Logo } from "@/components/icons";
 import { FaFlag } from "react-icons/fa";
-import { SignInButton } from "./buttons";
+import { SignInButton } from "./Auth/buttons";
 import { Chip } from "@nextui-org/chip";
-import AdminCheck from "./AdminCheck";
+import AdminCheck from "./Auth/AdminCheck";
 
 export const Navbar = () => {
   const searchInput = (

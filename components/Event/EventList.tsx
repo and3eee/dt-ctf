@@ -1,9 +1,9 @@
 
 import { Event, TeamEntry } from "@prisma/client";
-import AuthCheck from "../AuthCheck";
+import AuthCheck from "../Auth/AuthCheck";
 import EventModal from "./EventModal";
 import { prisma } from "@/lib/prisma";
-import AdminCheck from "../AdminCheck";
+import AdminCheck from "../Auth/AdminCheck";
 import EventCard from "./EventCard";
 
 

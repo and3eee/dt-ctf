@@ -1,25 +1,17 @@
 "use client";
 
 import { TeamProps } from "@/types";
-import { Button } from "@nextui-org/button";
-import {
-  Chip,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Spinner,
-} from "@nextui-org/react";
+
 import { Event, TeamEntry } from "@prisma/client";
 import router from "next/router";
 import React from "react";
-import AuthCheck from "../AuthCheck";
+import AuthCheck from "../Auth/AuthCheck";
 import { registerMember } from "../Team/TeamControl";
 import TeamModal from "../Team/TeamModal";
 import { useAsyncList } from "@react-stately/data";
 import { GetTeams, GetTeamsRaw } from "./EventControl";
+import { Chip } from "@dynatrace/strato-components-preview";
+import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 
 export default function EventLeaderBoard(props: { event: Event,teams:TeamEntry[] }) {
   const event = props.event;
@@ -53,7 +45,7 @@ export default function EventLeaderBoard(props: { event: Event,teams:TeamEntry[]
     },
   });
 
-  const renderCell = React.useCallback((team: TeamEntry, columnKey: string) => {
+  const renderCell = React.useCallback((team: any, columnKey: string) => {
     const cellValue = team.name;
 
     switch (columnKey) {
@@ -63,7 +55,7 @@ export default function EventLeaderBoard(props: { event: Event,teams:TeamEntry[]
       case "members":
         if (!props.teams) return <></>;
         let temp: string[] = [];
-        team.members?.forEach((member) => temp.push(member.name));
+        team.members?.forEach((member: any) => temp.push(member.name));
 
         return (
           <div className="relative flex items-center gap-2">
@@ -78,11 +70,13 @@ export default function EventLeaderBoard(props: { event: Event,teams:TeamEntry[]
         );
 
       case "score":
-        return <Chip>{team.userEntries?.length ?? 0}</Chip>;
+        return 0;
       default:
         return cellValue;
     }
   }, []);
+
+  //TODO convert to Stratos Table
 
   if (props.teams) {
     return (

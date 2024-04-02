@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
-
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -44,6 +43,8 @@ model User {
   email       String      @unique
   password    String
   name        String
+  bucket      Bucket?     @default(NONE)
+  skillLevel  Int?        @default(5)
   Event       Event?      @relation(fields: [eventId], references: [id])
   eventId     String?
   UserEntry   UserEntry[]
@@ -91,6 +92,7 @@ model Event {
   requireURL        Boolean?    @default(false)
   requireScreenshot Boolean?    @default(false)
   active            Boolean?    @default(false)
+  useAssignedTeams  Boolean?    @default(true)
   participants      User[]
   showParticipants  Boolean?    @default(false)
   showTeams         Boolean?    @default(false)
@@ -116,7 +118,7 @@ model UserEntry {
   riddle      Riddle     @relation(fields: [riddleId], references: [id])
   answeredAt  DateTime
   userId      String
-  riddleId    String    
+  riddleId    String
   teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
 }
@@ -125,6 +127,13 @@ enum Role {
   ADMIN
   USER
   ORGANIZER
+}
+
+enum Bucket {
+  AGENT
+  ENV
+  DEM
+  NONE
 }
 
 enum EventType {

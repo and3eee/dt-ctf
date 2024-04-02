@@ -10,19 +10,22 @@ import EventCard from "@/components/Event/EventCard";
 import EventEdit from "@/components/Event/EventEdit";
 import RiddleCard from "@/components/Riddle/RiddleCard";
 import RiddleEdit from "@/components/Riddle/RiddleEdit";
-import { SignInButton, SignOutButton } from "@/components/buttons";
-import AuthCheck from "@/components/AuthCheck";
+import { SignInButton, SignOutButton } from "@/components/Auth/buttons";
+import AuthCheck from "@/components/Auth/AuthCheck";
 import RiddleList from "@/components/Riddle/RiddleList";
 import { prisma } from "@/lib/prisma";
 import EventList from "@/components/Event/EventList";
+import { Container, TitleBar } from "@dynatrace/strato-components-preview";
 
 export default async function Home() {
   const riddles = await prisma.riddle.findMany();
+  
+  
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-
+      
       <EventList admin={false}/>
-     
+    
 
     </section>
   );

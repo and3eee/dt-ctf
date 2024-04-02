@@ -2,25 +2,24 @@
 
 import { EventProps } from "@/types";
 import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+import { Event, Riddle, TeamEntry } from "@prisma/client";
+import EventModal from "./EventModal";
 import {
   Avatar,
-  AvatarGroup,
-  Badge,
   Button,
+  Chip,
+  Divider,
+  Tooltip,
+} from "@dynatrace/strato-components-preview";
+import {
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Chip,
   CircularProgress,
-  Divider,
-  Image,
-  Progress,
-  Tooltip,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { Event, Riddle, TeamEntry } from "@prisma/client";
-import EventModal from "./EventModal";
 
 interface EventCardProps {
   event: Event;
@@ -58,25 +57,30 @@ export default function EventCard(props: EventCardProps) {
       return (
         <div className="flex flex-row">
           {trimmedTeams.map((team: TeamEntry) => {
-            if(team.name){
-            let initials: string = team.name
-              .split(" ")
-              .map((n) => n[0])
-              .join(".");
+            if (team.name) {
+              let initials: string = team.name
+                .split(" ")
+                .map((n) => n[0])
+                .join(".");
 
-            return (
-              <div className="isBordered" key={team.id}>
-                <Tooltip content={team.name}>
-                  <Avatar color="primary" name={initials}/>
-                </Tooltip>
-              </div>
-            );}
+              return (
+                <div className="isBordered" key={team.id}>
+                  <Tooltip text={team.name}>
+                    <Avatar color="primary" abbreviation={initials} />
+                  </Tooltip>
+                </div>
+              );
+            }
           })}
-          {teams?.length > 10 && <Avatar name={`+${teams.length - 10}`}/>}
+          {teams?.length > 10 && (
+            <Avatar abbreviation={`+${teams.length - 10}`} />
+          )}
         </div>
       );
     }
   }
+
+  //TODO: Replace the circular chart with Stratos Donut chart, which should support showing per person contribution as well
 
   if (event.public || props.admin)
     return (
@@ -89,30 +93,22 @@ export default function EventCard(props: EventCardProps) {
           <h1 className="flex-grow text-large font-medium mt-2">
             {event.name}
           </h1>
-          <Divider className="flex-none" orientation="vertical" />
-          {props.admin && !event.public && (
-            <Chip color="secondary">Private</Chip>
-          )}
+          <Divider orientation="vertical" />
+          {props.admin && !event.public && <Chip color="primary">Private</Chip>}
           {!event.active && (
-            <Tooltip content="Event starts at">
-              <Chip color="success" variant="shadow" size="lg">
-                {start}
-              </Chip>
+            <Tooltip text="Event starts at">
+              <Chip color="success">{start}</Chip>
             </Tooltip>
           )}
 
           {(event.active || props.admin) && (
-            <Tooltip content="Event ends at">
-              <Chip color="warning" variant="shadow">
-                {end}
-              </Chip>
+            <Tooltip text="Event ends at">
+              <Chip color="warning">{end}</Chip>
             </Tooltip>
           )}
           {event.active && (
-            <Tooltip content="Registration Closed">
-              <Chip color="danger" variant="shadow">
-                Event is Live!
-              </Chip>
+            <Tooltip text="Registration Closed">
+              <Chip color="critical">Event is Live!</Chip>
             </Tooltip>
           )}
         </CardHeader>
@@ -143,13 +139,7 @@ export default function EventCard(props: EventCardProps) {
                 />
               </CardBody>
               <CardFooter className="justify-center items-center pt-0">
-                <Chip
-                  classNames={{
-                    base: "border-1 border-white/30",
-                    content: "text-white/90 text-xs font-semibold",
-                  }}
-                  variant="bordered"
-                >
+                <Chip>
                   <p>Duration</p>
                 </Chip>
               </CardFooter>
@@ -166,9 +156,7 @@ export default function EventCard(props: EventCardProps) {
                       value: "text-small font-semibold text-white",
                     }}
                     value={riddles.length}
-                    maxValue={
-                      diffMins/3
-                    }
+                    maxValue={diffMins / 3}
                     strokeWidth={2}
                     isIndeterminate
                     formatOptions={{ style: "decimal" }}
@@ -176,13 +164,7 @@ export default function EventCard(props: EventCardProps) {
                   />
                 </CardBody>
                 <CardFooter className="justify-center items-center pt-0">
-                  <Chip
-                    classNames={{
-                      base: "border-1 border-white/30",
-                      content: "text-white/90 text-xs font-semibold",
-                    }}
-                    variant="bordered"
-                  >
+                  <Chip>
                     <p>Riddles</p>
                   </Chip>
                 </CardFooter>
@@ -205,51 +187,52 @@ export default function EventCard(props: EventCardProps) {
             )}
           </div>
         </CardBody>
-        
-          <>
-            <Divider />
-            <CardFooter className="flex flex-row-reverse gap-5">
-              {((now < event.start && !event.active) || props.admin) && (<Button
+
+        <>
+          <Divider />
+          <CardFooter className="flex flex-row-reverse gap-5">
+            {((now < event.start && !event.active) || props.admin) && (
+              <Button
                 color="success"
                 className="justify-self-end"
-                onPress={() => {
+                onClick={() => {
                   router.replace(`/${event.id}/signup`);
                 }}
               >
                 Sign Up
-              </Button>)}
-              <Button
-                color="primary"
-                className="justify-self-end"
-                onPress={() => {
-                  router.replace(`/${event.id}`);
-                }}
-              >
-                Goto Event Page
               </Button>
-              {props.admin && (
-                <EventModal
-                  buttonText={"Edit Event"}
-                  id={event.id}
-                  name={event.name}
-                  start={event.start}
-                  end={event.end}
-                  description={event.description}
-                  requireURL={event.requireURL ?? false}
-                  requireScreenshot={event.requireScreenshot ?? false}
-                  active={event.active ?? false}
-                  participants={[]}
-                  riddleCount={riddles?.length ?? 0}
-                  showTeams={event.showTeams ?? false}
-                  showParticipants={event.showParticipants ?? false}
-                  public={event.public ?? false}
-                  useTeams={event.useTeams ?? true}
-                  teamSize={event.teamSize}
-                />
-              )}
-            </CardFooter>
-          </>
-        
+            )}
+            <Button
+              color="primary"
+              className="justify-self-end"
+              onClick={() => {
+                router.replace(`/${event.id}`);
+              }}
+            >
+              Goto Event Page
+            </Button>
+            {props.admin && (
+              <EventModal
+                buttonText={"Edit Event"}
+                id={event.id}
+                name={event.name}
+                start={event.start}
+                end={event.end}
+                description={event.description}
+                requireURL={event.requireURL ?? false}
+                requireScreenshot={event.requireScreenshot ?? false}
+                active={event.active ?? false}
+                participants={[]}
+                riddleCount={riddles?.length ?? 0}
+                showTeams={event.showTeams ?? false}
+                showParticipants={event.showParticipants ?? false}
+                public={event.public ?? false}
+                useTeams={event.useTeams ?? true}
+                teamSize={event.teamSize}
+              />
+            )}
+          </CardFooter>
+        </>
       </Card>
     );
 }

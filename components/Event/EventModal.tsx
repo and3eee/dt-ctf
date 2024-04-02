@@ -1,19 +1,14 @@
 "use client";
 import {
-  Button,
   Modal,
-  ModalBody,
   ModalContent,
-  ModalFooter,
-  ModalHeader,
   useDisclosure,
 } from "@nextui-org/react";
 import EventEdit from "./EventEdit";
 import { EventProps } from "@/types";
-import { revalidatePath } from "next/dist/server/web/spec-extension/revalidate-path";
 import { NextRequest } from "next/server";
+import { Button } from "@dynatrace/strato-components-preview/buttons";
 
-import { usePathname, useRouter } from "next/navigation";
 interface EventModalProps extends EventProps {
   buttonText: string;
 }
@@ -26,7 +21,7 @@ export default function EventModal(
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
+      <Button color="primary" onClick={onOpen}>
         {props.buttonText}
       </Button>
 

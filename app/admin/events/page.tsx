@@ -1,4 +1,4 @@
-import AdminCheck from "@/components/AdminCheck";
+import AdminCheck from "@/components/Auth/AdminCheck";
 import RiddleCard from "@/components/Riddle/RiddleCard";
 import RiddleModal from "@/components/Riddle/RiddleModal";
 import { prisma } from "@/lib/prisma";
