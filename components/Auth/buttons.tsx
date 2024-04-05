@@ -1,8 +1,8 @@
 'use client';
 
 import UserSignUp from '@/app/signup/UserSignUp';
-import { Avatar } from '@nextui-org/avatar';
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, User, useDisclosure } from '@nextui-org/react';
+import { Avatar, Button, Tooltip } from '@dynatrace/strato-components-preview';
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, User, useDisclosure } from '@nextui-org/react';
 import { getToken } from 'next-auth/jwt';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
@@ -23,32 +23,32 @@ export function SignInButton() {
     switch( session.user.role){
       case "USER":
         return ( 
-          <div className="flex flex-row gap-2"><Tooltip content={session.user?.name ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"primary",name:initials}}/></Tooltip>
+          <div className="flex flex-row gap-2"><Tooltip text={session.user?.name ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"primary",name:initials}}/></Tooltip>
           {SignOutButton()}</div>
         );
         case "ORGANIZER":
           return ( 
-            <div className="flex flex-row gap-2"><Tooltip content={session.user?.name ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"secondary",name:initials}}/></Tooltip>
+            <div className="flex flex-row gap-2"><Tooltip text={session.user?.name ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"secondary",name:initials}}/></Tooltip>
             {SignOutButton()}</div>
           );
         case "ADMIN":
           return ( 
-            <div className="flex flex-row gap-2"><Tooltip content={session.user?.name  + " ADMIN" ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"danger",name:initials}}/></Tooltip>
+            <div className="flex flex-row gap-2"><Tooltip text={session.user?.name  + " ADMIN" ?? "Unknown"}><User name={session.user.name} description={session.user.email}avatarProps={{color:"danger",name:initials}}/></Tooltip>
             {SignOutButton()}</div>
           );
     }
     return ( 
-      <div><Tooltip content={session.user?.name ?? "Unknown"}><Avatar name={initials ?? "Unknown"} size="lg"/></Tooltip>
+      <div><Tooltip text={session.user?.name ?? "Unknown"}><Avatar abbreviation={initials ?? "Unknown"} size="default"/></Tooltip>
       {SignOutButton()}</div>
       
     );
   }
 
-  return <div className="flex flex-row gap-2"><Button onPress={() => signIn()}>Sign In</Button>{SignUpButton()}</div>;
+  return <div className="flex flex-row gap-2"><Button onClick={() => signIn()}>Sign In</Button>{SignUpButton()}</div>;
 }
 
 export function SignOutButton() {
-  return <div ><Button color={"primary"} onPress={() => signOut()}>Sign Out</Button></div>;
+  return <div ><Button color={"primary"} onClick={() => signOut()}>Sign Out</Button></div>;
 }
 
 export function SignUpButton(){
@@ -57,7 +57,7 @@ export function SignUpButton(){
 
   return (
     
-      <Button onPress={() => router.replace("/signup")}>Sign Up</Button>
+      <Button onClick={() => router.replace("/signup")}>Sign Up</Button>
       
     
   );
