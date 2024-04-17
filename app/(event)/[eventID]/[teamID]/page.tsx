@@ -5,7 +5,7 @@ import AdminTeamList from "@/components/Team/AdminTeamList";
 import TeamRiddleList from "@/components/Team/TeamRiddleList";
 
 import { prisma } from "@/lib/prisma";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Card, Card.Section, Card.Section  } from "@nextui-org/react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 5;

@@ -1,27 +1,21 @@
 "use client";
 import { RiddleProps } from "@/types";
-import {
-  Avatar,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Chip,
-  Divider,
-  Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Tooltip,
-} from "@nextui-org/react";
-import { Underdog } from "next/font/google";
-import RiddleEdit from "./RiddleEdit";
+
 import RiddleModal from "./RiddleModal";
-import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 import { AddTeamUserEntry, RemoveTeamUserEntry } from "../Team/TeamControl";
 import React from "react";
+import {
+  Tooltip,
+  Chip,
+  Card,
+  Button,
+  Avatar,
+  Divider,
+  Input,
+  Popover,
+  TextInput,
+} from "@mantine/core";
 
 interface RiddleCardProps extends RiddleProps {
   answered?: boolean;
@@ -57,25 +51,25 @@ export default function RiddleCard(props: RiddleCardProps) {
       switch (props.difficulty) {
         case "easy":
           return (
-            <Tooltip content="Difficulty">
+            <Tooltip label="Difficulty">
               <Chip color="success">Easy</Chip>
             </Tooltip>
           );
         case "medium":
           return (
-            <Tooltip content="Difficulty">
+            <Tooltip label="Difficulty">
               <Chip color="warning">Medium</Chip>
             </Tooltip>
           );
         case "hard":
           return (
-            <Tooltip content="Difficulty">
+            <Tooltip label="Difficulty">
               <Chip color="danger">Hard</Chip>
             </Tooltip>
           );
         case "insane":
           return (
-            <Tooltip content="Difficulty">
+            <Tooltip label="Difficulty">
               <Chip variant="shadow" color="secondary">
                 Insane
               </Chip>
@@ -101,18 +95,17 @@ export default function RiddleCard(props: RiddleCardProps) {
 
   return (
     <Card
-      isBlurred
       className="border-none bg-background/60 dark:bg-default-100/50 min-w-[500px] max-w-[800px] m-5"
       shadow="sm"
     >
-      <CardHeader className="flex growflex-row gap-2">
+      <Card.Section className="flex growflex-row gap-2">
         <div className="grow basis-7/8">
           {props.number && (
             <h1 className="text-large">Riddle: {props.number}</h1>
           )}
           {(props.admin || props.answered) && (
-            <Tooltip color="danger" content={"Clear Answer"}>
-              <Button isIconOnly color="danger" onPress={onDelete}>
+            <Tooltip color="danger" label={"Clear Answer"}>
+              <Button color="danger" onClick={onDelete}>
                 X
               </Button>
             </Tooltip>
@@ -120,8 +113,8 @@ export default function RiddleCard(props: RiddleCardProps) {
         </div>
         <div className="flex gap-2 flex-row-reverse">
           {props.answered && props.answeredBy && (
-            <Tooltip content={`Solved by ${props.answeredBy}`}>
-              <Avatar color="success" name={ansInitials} />
+            <Tooltip label={`Solved by ${props.answeredBy}`}>
+              <Avatar color="success">{ansInitials} </Avatar>
             </Tooltip>
           )}
           {props.admin && (
@@ -144,45 +137,45 @@ export default function RiddleCard(props: RiddleCardProps) {
           )}
           <Difficulty />
           {props.topic && (
-            <Tooltip content={`Topic`}>
+            <Tooltip label={`Topic`}>
               <Chip color="primary">{props.topic}</Chip>
             </Tooltip>
           )}
           {props.bucket && (
-            <Tooltip content={`Bucket`}>
+            <Tooltip label={`Bucket`}>
               <Chip color="secondary">{props.bucket}</Chip>
             </Tooltip>
           )}
           {props.admin && props.implemented && (
-            <Tooltip content={`Status`}>
+            <Tooltip label={`Status`}>
               <Chip color="success">Implemented</Chip>
             </Tooltip>
           )}
           {props.admin && !props.implemented && (
-            <Tooltip content={`Status`}>
+            <Tooltip label={`Status`}>
               <Chip color="danger">Not Implemented</Chip>
             </Tooltip>
           )}
           {props.admin && !props.validated && (
-            <Tooltip content={`Status`}>
+            <Tooltip label={`Status`}>
               <Chip color="warning">Not validated</Chip>
             </Tooltip>
           )}
           {props.admin && props.validated && (
-            <Tooltip content={`Status`}>
+            <Tooltip label={`Status`}>
               <Chip color="success">Validated</Chip>
             </Tooltip>
           )}
           {props.admin && props.author && authInitials && (
-            <Tooltip content={`Author: ${props.author}`}>
-              <Avatar color="success" name={authInitials} />
+            <Tooltip label={`Author: ${props.author}`}>
+              <Avatar color="success">{authInitials} </Avatar>
             </Tooltip>
           )}
         </div>
-      </CardHeader>
+      </Card.Section>
 
       <Divider />
-      <CardBody className="flex flex-col gap-5">
+      <Card.Section className="flex flex-col gap-5">
         <h1 className="text-large">{props.riddle}</h1>
 
         {props.admin && props.sourceLocation && (
@@ -217,75 +210,73 @@ export default function RiddleCard(props: RiddleCardProps) {
               props.sourceDescription.length > 0 &&
               !props.admin && (
                 <Card
-                  isBlurred
                   radius={"lg"}
                   shadow={"md"}
                   className="flex max-w-[600px]"
                 >
-                  <CardHeader>
+                  <Card.Section>
                     <h1 className="text-small">Description</h1>
-                  </CardHeader>
+                  </Card.Section>
                   <Divider />
-                  <CardBody>
+                  <Card.Section>
                     <h1 className="text-small">{props.sourceDescription} </h1>
-                  </CardBody>
+                  </Card.Section>
                 </Card>
               )}
             {props.sourceLocation && !props.admin && (
               <Card
-                isBlurred
                 radius={"lg"}
                 shadow={"md"}
                 className="flex max-w-[600px]"
               >
-                <CardHeader>
+                <Card.Section>
                   <h1 className="text-xs">Hint</h1>
-                </CardHeader>
+                </Card.Section>
 
                 <Divider />
-                <CardBody>
+                <Card.Section>
                   <h1 className="text-xs">{props.sourceLocation} </h1>{" "}
-                </CardBody>
+                </Card.Section>
               </Card>
             )}
           </div>
         )}
-      </CardBody>
+      </Card.Section>
       <Divider />
 
       {!props.answered && (
-        <CardFooter className="flex gap-3">
-          <Input
-            label="Answer"
+        <Card.Section className="flex gap-3">
+          <TextInput
+            c="Answer"
             value={value}
-            onValueChange={setValue}
+            onChange={(event) => setValue(event.currentTarget.value)}
             placeholder={props.sourcePlaceHolder ?? "Riddle Answer Here...."}
-          ></Input>
-          <Popover placement="right" color={"danger"} showArrow={true}>
-            <PopoverTrigger>
-              <Button color="success" onPress={onClick}>
+          ></TextInput>
+          <Popover position="right" withArrow>
+            <Popover.Target>
+              <Button color="success" onClick={onClick}>
                 Submit
               </Button>
-            </PopoverTrigger>
+            </Popover.Target>
             {value !== props.solution && (
-              <PopoverContent>
+              <Popover.Dropdown>
                 <div className="px-1 py-2">
                   <div className="text-small font-bold">Wrong, try again!</div>
                 </div>
-              </PopoverContent>
+              </Popover.Dropdown>
             )}
           </Popover>
-        </CardFooter>
+        </Card.Section>
       )}
       {props.answered && (
-        <CardFooter className="flex gap-3">
+        <Card.Section className="flex gap-3">
           <h1 color="success" className="text-large">
             Solution:
           </h1>
           <h1 color="success" className="text-medium font-light">
             {props.solution}
           </h1>
-        </CardFooter>
+        </Card.Section>
       )}
     </Card>
   );

@@ -1,57 +1,36 @@
 "use client";
 
 import { RiddleProps } from "@/types";
-import { Button } from "@nextui-org/button";
-import { Input, Textarea } from "@nextui-org/input";
-import {
-  Card,
-  CardHeader,
-  Divider,
-  CardFooter,
-  RadioGroup,
-  Radio,
-} from "@nextui-org/react";
-import { Switch } from "@nextui-org/switch";
-import { useSession } from "next-auth/react";
+
 import React from "react";6
 import { EditRiddle } from "./RiddleControl";
-import { NextRequest } from "next/server";
+
 import { useRouter } from "next/navigation";
+import { Card, Divider, Textarea, RadioGroup, Radio, Switch, Button, TextInput } from "@mantine/core";
+import { Riddle } from "@prisma/client";
+import { useForm } from '@mantine/form';
 
 
-interface RiddleEditProps extends RiddleProps{
-  onClick:() => void
-}
 
-export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) {
+export default function RiddleEdit(props:{riddle: Riddle, onClick?: () => void}) {
 
   const router = useRouter();
 
-  const { data: session, status } = useSession();
+  const form = useForm<Riddle>({
+    mode: 'uncontrolled',
+    initialValues: props.riddle,
+})
 
-
-
-  const updateUser = async (e: React.FormEvent<HTMLFormElement>)=>{
-    e.preventDefault();
-    
-    const formData = new FormData(e.currentTarget);
-
-  
-    const res = await EditRiddle(formData)
-
-    router.refresh()
-
-  }
   return (
-    <form onSubmit={updateUser}  >
+    <form onSubmit={() => {if(props.onClick) props.onClick()}}  >
     <Card>
-      <CardHeader>
-       <Input isReadOnly
-       name="id"
-       defaultValue={props.id}
+      <Card.Section >
+       <TextInput 
+      {...form.getInputProps('riddle')}
+    
        label="RIDDLE ID"
        variant="bordered"/>
-      </CardHeader>
+      </Card.Section >
       <Divider />
       <div
         className="grid grow
@@ -63,18 +42,17 @@ export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) 
             className="m-1"
             placeholder="Riddle..."
             name="riddle"
-            type="string"
-            defaultValue={props.riddle}
-            isRequired
+        
+      
+            required
           />
         </div>
         <div className="col-span-1">
           <Textarea
             label="Solution"
             className="m-1"
-            placeholder={props.sourcePlaceHolder}
-            defaultValue={props.solution}
-            isRequired
+    
+            required
             name="solution"
             
           />
@@ -84,32 +62,32 @@ export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) 
           <Textarea
             label="Source Description"
             className="m-1"
-            defaultValue={props.sourceDescription}
+   
             name="sourceDescription"
             
           />
         </div>
 
         <div className="grow ">
-          <Input
+         <TextInput
             label="Source Location"
             className="m-1"
-            defaultValue={props.sourceLocation}
+      
             name="sourceLocation"
           />
-          <Input label="Topic" name="topic" className="m-1" defaultValue={props.topic} />
+         <TextInput label="Topic" name="topic" className="m-1"  />
         </div>
         <div className="grow">
-          <Input
+         <TextInput
             label="Source URL"
             className="m-1"
-            defaultValue={props.sourceURL}
+
             name="sourceURL"
           />
-                    <Input
+                   <TextInput
             label="Source Placeholder"
             className="m-1"
-            defaultValue={props.sourcePlaceHolder}
+  
             name="sourcePlaceHolder"
           />
         </div>
@@ -117,9 +95,9 @@ export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) 
         <RadioGroup
           className="col-span-3"
           label="Bucket"
-          orientation="horizontal"
+
           name="bucket"
-          defaultValue={props.bucket?? "none"}
+       
         >
           <Radio value="Agent">Agent</Radio>
           <Radio value="Env">Environment</Radio>
@@ -130,9 +108,9 @@ export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) 
         <RadioGroup
           className="col-span-3"
           label="Difficulty"
-          orientation="horizontal"
+
           name="difficulty"
-          defaultValue={props.difficulty?? "none"}
+        
         >
           <Radio value="easy">Easy</Radio>
           <Radio value="medium">Medium</Radio>
@@ -143,17 +121,19 @@ export default function RiddleEdit(props: RiddleEditProps,request: NextRequest) 
         
 
         <div className="flex col-span-3 gap-2">
-          <Input label="Author" name="author" defaultValue={ props.author}/>
-          <Switch value="implemented" name="implemented" defaultSelected={props.implemented}>Implemented</Switch>
-          <Switch value="validated" name="validated" defaultSelected={props.validated}>Validated</Switch>
+         <TextInput label="Author" name="author" />
+          <Switch value="implemented" name="implemented" >Implemented</Switch>
+          <Switch value="validated" name="validated" >Validated</Switch>
         </div>
       </div>
 
       <Divider/>
-      <CardFooter>
-        <Button type="submit" color="success" onPress={props.onClick}>Submit</Button>
-      </CardFooter>
+      <Card.Section >
+        <Button type="submit" color="success" onClick={props.onClick}>Submit</Button>
+      </Card.Section >
     </Card>
     </form>
   );
 }
+
+

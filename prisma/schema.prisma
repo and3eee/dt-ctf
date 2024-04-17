@@ -64,7 +64,7 @@ model VerificationToken {
 }
 
 model Riddle {
-  id                String      @id @unique @default(cuid())
+  id                Int         @id @unique @default(autoincrement())
   riddle            String      @unique
   difficulty        String?
   bucket            String?
@@ -118,7 +118,7 @@ model UserEntry {
   riddle      Riddle     @relation(fields: [riddleId], references: [id])
   answeredAt  DateTime
   userId      String
-  riddleId    String
+  riddleId    Int
   teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
 }
@@ -127,6 +127,7 @@ enum Role {
   ADMIN
   USER
   ORGANIZER
+  FLAGMASTER
 }
 
 enum Bucket {

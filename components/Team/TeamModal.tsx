@@ -1,43 +1,36 @@
 "use client";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/react";
+
 import TeamEdit from "./TeamEdit";
 
-import { revalidatePath } from "next/dist/server/web/spec-extension/revalidate-path";
 import { NextRequest } from "next/server";
 
 import { usePathname, useRouter } from "next/navigation";
 import { TeamEntry } from "@prisma/client";
 import { TeamProps } from "@/types";
+import { useDisclosure } from "@mantine/hooks";
+import { Button, Modal, ModalContent } from "@mantine/core";
 interface TeamModalProps extends TeamProps {
   buttonText: string;
 }
 
 export default function TeamModal(props: TeamModalProps, request: NextRequest) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [opened, { open, close }] = useDisclosure(false);
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
+      <Button color="primary" onClick={open}>
         {props.buttonText}
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="3xl">
+      <Modal opened={opened} onClose={close} size="3xl">
         <ModalContent>
-          {(onClose) => (
-            <TeamEdit
-                          onClick={onClose}
-                          id={props.id}
-                          name={props.name}
-                          eventId={props.eventId} event={props.event}            />
-          )}
+          <TeamEdit
+            onClick={close}
+            id={props.id}
+            name={props.name}
+            eventId={props.eventId}
+            event={props.event}
+          />
         </ModalContent>
       </Modal>
     </>

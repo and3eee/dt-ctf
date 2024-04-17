@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@nextui-org/react";
 import TeamRiddleList from "./TeamRiddleList";
 import { Riddle, TeamEntry, UserEntry } from "@prisma/client";
 

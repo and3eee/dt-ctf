@@ -1,21 +1,7 @@
 "use client";
 
 import { EventProps, TeamProps } from "@/types";
-import {
-  Avatar,
-  AvatarGroup,
-  Button,
-  Chip,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
-  getKeyValue,
-} from "@nextui-org/react";
+
 import React from "react";
 import { registerMember } from "./TeamControl";
 import { useSession } from "next-auth/react";
@@ -24,6 +10,8 @@ import { useRouter } from "next/navigation";
 import TeamModal from "./TeamModal";
 import { User } from "next-auth";
 import { FaPen, FaPenSquare } from "react-icons/fa";
+import { AvatarGroup, Tooltip, Avatar, Button, Table } from "@mantine/core";
+import { TableHeader, TableBody } from "react-stately";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -48,15 +36,15 @@ export default function SmallTeamList(event: TeamListProps, user: User) {
         team.members?.forEach((member) => temp.push(member.name));
 
         return (
-          <AvatarGroup isBordered>
+          <AvatarGroup>
             {temp.map((name) => {
               const initials = name
                 .split(" ")
                 .map((n) => n[0])
                 .join(".");
               return (
-                <Tooltip key={name}  content={name}>
-                  <Avatar name={initials} />
+                <Tooltip key={name} label={name}>
+                  <Avatar>{initials}</Avatar>
                 </Tooltip>
               );
             })}
@@ -68,10 +56,10 @@ export default function SmallTeamList(event: TeamListProps, user: User) {
         return (
           <div className="flex gap-2">
             {
-              <Tooltip content="Join Team">
+              <Tooltip label="Join Team">
                 <Button
-                  isIconOnly
-                  onPress={() => {
+                  
+                  onClick={() => {
                     registerMember(team.id);
                     router.refresh();
                   }}
@@ -91,7 +79,7 @@ export default function SmallTeamList(event: TeamListProps, user: User) {
             )}
             {(event.admin || (teamUser && event.active)) && (
               <Button
-                onPress={() => {
+              onClick={() => {
                   router.push(`${team.id}`);
                 }}
               >

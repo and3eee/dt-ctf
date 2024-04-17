@@ -1,9 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Input, Textarea } from "@nextui-org/input";
 
-import { Switch } from "@nextui-org/switch";
 import { useSession } from "next-auth/react";
 import React from "react";
 6;
@@ -11,7 +8,8 @@ import { EditTeam } from "./TeamControl";
 import { NextRequest } from "next/server";
 import { useRouter } from "next/navigation";
 import { TeamProps } from "@/types";
-import { Card, CardFooter, CardHeader, Divider } from "@nextui-org/react";
+import { Card, Input, Divider, Textarea, Button, TextInput } from "@mantine/core";
+
 
 interface TeamEditProps extends TeamProps {
   onClick: () => void;
@@ -36,22 +34,22 @@ export default function TeamEdit(props: TeamEditProps, request: NextRequest) {
   return (
     <form onSubmit={updateTeam}>
       <Card>
-        <CardHeader>
-          <Input
-            isReadOnly
+        <Card.Section >
+          <TextInput
+            
             name="id"
             defaultValue={props.id}
             label="Team ID"
             variant="bordered"
           />
-          <Input
+          <TextInput
             label="Event ID"
             className="m-1"
             defaultValue={props.eventId}
             name="eventID"
-            isReadOnly
+            
           />
-        </CardHeader>
+        </Card.Section >
         <Divider />
         <div
           className="grid grow
@@ -62,18 +60,18 @@ export default function TeamEdit(props: TeamEditProps, request: NextRequest) {
             className="m-1 col-span-2 "
             placeholder="Team Placeholder"
             name="name"
-            type="string"
+            
             defaultValue={props.name}
-            isRequired
+            required
           />
         </div>
 
         <Divider />
-        <CardFooter>
-          <Button type="submit" color="success" onPress={props.onClick}>
+        <Card.Section >
+          <Button type="submit" color="success" onClick={props.onClick}>
             Submit
           </Button>
-        </CardFooter>
+        </Card.Section >
       </Card>
     </form>
   );

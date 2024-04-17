@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Card, CardHeader, Divider, CardBody, CardFooter } from "@nextui-org/react";
+import { Button, Card, Divider } from "@mantine/core";
+
+
 import { Event } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
@@ -23,18 +24,18 @@ export default function TeamUserRegisterPage(props: { event: Event }) {
     return (
       
       <Card>
-        <CardHeader>
+        <Card.Section >
           <p className="text-xl bold">{event.name} Registration</p>
-        </CardHeader>
+        </Card.Section >
         <Divider />
-        <CardBody className="flex flex-col gap-3">
+        <Card.Section className="flex flex-col gap-3">
           <p>{event.description}</p>
           <p> Teams will be assigned to provide a fair competition</p>
-        </CardBody>
+        </Card.Section>
 
-        <CardFooter>
+        <Card.Section >
           <Button>Register for Event</Button>
-        </CardFooter>
+        </Card.Section >
       </Card>
     );
   }

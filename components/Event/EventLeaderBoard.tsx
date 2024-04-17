@@ -10,8 +10,9 @@ import { registerMember } from "../Team/TeamControl";
 import TeamModal from "../Team/TeamModal";
 import { useAsyncList } from "@react-stately/data";
 import { GetTeams, GetTeamsRaw } from "./EventControl";
-import { Chip } from "@dynatrace/strato-components-preview";
-import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Chip, Table } from "@mantine/core";
+import { TableHeader, TableBody } from "react-stately";
+
 
 export default function EventLeaderBoard(props: { event: Event,teams:TeamEntry[] }) {
   const event = props.event;

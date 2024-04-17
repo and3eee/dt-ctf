@@ -1,6 +1,7 @@
 "use client";
 
-import { Spinner } from "@nextui-org/react";
+
+import { Loader } from "@mantine/core";
 import { useSession } from "next-auth/react"
 
 export default function AdminCheck({ children }: { children: React.ReactNode }) {
@@ -11,7 +12,7 @@ export default function AdminCheck({ children }: { children: React.ReactNode }) 
         return <>{children}</>
         else return 
     } else {
-        if (status === 'loading') return <div className="flex justify-center items-center "><Spinner size="lg"/></div>
+        if (status === 'loading') return <div className="flex justify-center items-center "><Loader size="lg"/></div>
 
     }
 

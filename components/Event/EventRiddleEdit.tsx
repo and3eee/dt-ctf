@@ -2,7 +2,6 @@
 
 import { Event, Riddle } from "@prisma/client";
 import RiddleList from "../Riddle/RiddleList";
-import { Button } from "@nextui-org/button";
 
 
 export default function EventRiddleEdit(props:{event: Event,riddles:Riddle[],defaultSel:Riddle[]}){

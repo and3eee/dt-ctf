@@ -1,17 +1,7 @@
-import "@/styles/globals.css";
-import { Metadata } from "next";
-import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
-
-import { Navbar } from "@/components/navbar";
-import { Link } from "@nextui-org/link";
-import clsx from "clsx";
 import { prisma } from "@/lib/prisma";
 import EventSideCard from "@/components/Event/EventSideCard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { GetUserTeamID } from "@/components/Event/EventControl";
-import { TeamEntry } from "@prisma/client";
 
 export default async function EventLayout({
   children,
@@ -33,9 +23,12 @@ export default async function EventLayout({
   if (team) {
     const session = await getServerSession(authOptions);
 
-    if (session && session.user && event){
-      const userTeam = await prisma.teamEntry.findFirst({where:{members:{some:{email:session.user.email!}}},include:{userEntries:true,members:true}})
-      if(userTeam){
+    if (session && session.user && event) {
+      const userTeam = await prisma.teamEntry.findFirst({
+        where: { members: { some: { email: session.user.email! } } },
+        include: { userEntries: true, members: true },
+      });
+      if (userTeam) {
         return (
           <div className="flex max-w-full min-h-fit max-h-fit gap-10">
             <div className="basis-1/6">

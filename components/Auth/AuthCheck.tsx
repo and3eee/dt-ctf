@@ -1,6 +1,7 @@
 "use client";
 
-import { Spinner } from "@nextui-org/react";
+
+import { Loader } from "@mantine/core";
 import { useSession } from "next-auth/react"
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
         return <>{children}</>
     } else {
         if(status == 'loading')
-        return <Spinner/>
+        return <Loader/>
         else return(<p>You must be signed in to see this page.</p>)
     }
 }

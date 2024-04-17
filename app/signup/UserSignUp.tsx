@@ -1,26 +1,15 @@
 "use client";
 import { prisma } from "@/lib/prisma";
-import { Button } from "@nextui-org/button";
-import { Card } from "@nextui-org/card";
-import { Input } from "@nextui-org/input";
+
 import { useState } from "react";
 
-import {
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Divider,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@nextui-org/react";
+
 import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { Card, Divider, Input, Button, Modal, ModalContent, ModalHeader, ModalBody, TextInput } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function UserSignUp() {
   const router = useRouter();
@@ -28,7 +17,8 @@ export default function UserSignUp() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const [opened, { open, close }] = useDisclosure(false);
   const create = async () => {
     if (email && name && password) {
       const body = {
@@ -47,7 +37,7 @@ export default function UserSignUp() {
       const response = await res.json();
 
       if (!response.created) {
-        return onOpen();
+        return open();
       } else {
         router.replace("/api/auth/signin");
       }
@@ -58,43 +48,42 @@ export default function UserSignUp() {
 
   return (
     <Card className="grid cols-1 gap-1 max-w-md mx-auto ">
-      <CardHeader>
+      <Card.Section >
         <p className="text-large">Sign Up</p>
-      </CardHeader>{" "}
+      </Card.Section >{" "}
       <Divider />
-      <CardBody className="flex flex-col gap-1">
-        <Input
+      <Card.Section className="flex flex-col gap-1">
+        <TextInput
           className="grow"
           type="email"
           label="Email"
           placeholder="Enter your email"
-          isRequired
+          required
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Input
+        <TextInput
           type="text"
           label="Name"
           placeholder="Enter your name"
-          isRequired
+          required
           onChange={(e) => setName(e.target.value)}
         />
-        <Input
+        <TextInput
           label="Pin"
           placeholder="Enter your Pin"
-          isRequired
+          required
           onChange={(e) => setPassword(e.target.value)}
           type="number"
         />
-      </CardBody>
+      </Card.Section>
       <Divider />
-      <CardFooter>
-        <Button color="primary" onPress={create}>
+      <Card.Section >
+        <Button color="primary" onClick={create}>
           Sign Up
         </Button>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal opened={opened} onClose={close}>
           <ModalContent>
-            {(onClose) => (
-              <>
+
                 <ModalHeader className="flex flex-col gap-1">
                   Sign Up Error
                 </ModalHeader>
@@ -104,19 +93,18 @@ export default function UserSignUp() {
                     sign in if you wish to access your account.
                   </p>
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onClick={onClose}>
+
+                  <Button color="danger" variant="light" onClick={close}>
                     Close
                   </Button>
-                  <Button color="primary" href="/api/auth/signin" as={Link}>
+                  <Button color="primary" href="/api/auth/signin" component="a">
                     Sign In
                   </Button>
-                </ModalFooter>
-              </>
-            )}
+    
+
           </ModalContent>
         </Modal>
-      </CardFooter>
+      </Card.Section >
     </Card>
   );
 }

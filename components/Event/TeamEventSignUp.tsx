@@ -1,23 +1,11 @@
 "use client";
 import { EventProps } from "@/types";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  getKeyValue,
-} from "@nextui-org/react";
+
 import { GetTeams } from "./EventControl";
 import TeamModal from "../Team/TeamModal";
 import TeamList from "../Team/TeamList";
 import { useRouter } from "next/navigation";
+import { Card, Divider } from "@mantine/core";
 
 
 export interface TeamEventSignUpProps extends EventProps {
@@ -39,11 +27,11 @@ export default function TeamEventSignUp(props: TeamEventSignUpProps) {
   if (props.useTeams) {
     return (
       <Card >
-        <CardHeader>
+        <Card.Section >
           <p className="text-xl bold">{props.name} Sign Up</p>
-        </CardHeader>
+        </Card.Section >
         <Divider/>
-        <CardBody className="flex flex-col gap-3">
+        <Card.Section className="flex flex-col gap-3">
           <p>{props.description}</p>
 
           <p className="text-medium">Select a team to join or create a new one.</p>
@@ -75,7 +63,7 @@ export default function TeamEventSignUp(props: TeamEventSignUpProps) {
             name={""}
             eventId={props.id}
           />}
-        </CardBody>
+        </Card.Section>
       </Card>
     );
   }

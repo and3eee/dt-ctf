@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Card } from "@nextui-org/card";
+
 import { Event } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { StartEvent, StopEvent } from "./EventControl";
 import AdminCheck from "../Auth/AdminCheck";
+import { Button, Card } from "@mantine/core";
 
 export default function EventStateButton(props: { event: Event }) {
   const event = props.event;
@@ -28,12 +28,12 @@ export default function EventStateButton(props: { event: Event }) {
       {" "}
       <Card>
         {!event.active && (
-          <Button color={"success"} onPress={startEvent}>
+          <Button color={"success"} onClick={startEvent}>
             Start
           </Button>
         )}
         {event.active && (
-          <Button color="danger" onPress={stopEvent}>
+          <Button color="danger" onClick={stopEvent}>
             Stop
           </Button>
         )}

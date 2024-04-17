@@ -35,8 +35,10 @@ CREATE TABLE `User` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
+    `bucket` ENUM('AGENT', 'ENV', 'DEM', 'NONE') NULL DEFAULT 'NONE',
+    `skillLevel` INTEGER NULL DEFAULT 5,
     `eventId` VARCHAR(191) NULL,
-    `role` ENUM('ADMIN', 'USER', 'ORGANIZER') NOT NULL DEFAULT 'USER',
+    `role` ENUM('ADMIN', 'USER', 'ORGANIZER', 'FLAGMASTER') NOT NULL DEFAULT 'USER',
     `teamEntryId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_id_key`(`id`),
@@ -56,7 +58,7 @@ CREATE TABLE `VerificationToken` (
 
 -- CreateTable
 CREATE TABLE `Riddle` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `riddle` VARCHAR(191) NOT NULL,
     `difficulty` VARCHAR(191) NULL,
     `bucket` VARCHAR(191) NULL,
@@ -87,6 +89,7 @@ CREATE TABLE `Event` (
     `requireURL` BOOLEAN NULL DEFAULT false,
     `requireScreenshot` BOOLEAN NULL DEFAULT false,
     `active` BOOLEAN NULL DEFAULT false,
+    `useAssignedTeams` BOOLEAN NULL DEFAULT true,
     `showParticipants` BOOLEAN NULL DEFAULT false,
     `showTeams` BOOLEAN NULL DEFAULT false,
     `useTeams` BOOLEAN NULL DEFAULT false,
@@ -112,7 +115,7 @@ CREATE TABLE `UserEntry` (
     `id` VARCHAR(191) NOT NULL,
     `answeredAt` DATETIME(3) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
-    `riddleId` VARCHAR(191) NOT NULL,
+    `riddleId` INTEGER NOT NULL,
     `teamEntryId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `UserEntry_id_key`(`id`),

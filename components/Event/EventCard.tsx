@@ -3,23 +3,10 @@
 import { EventProps } from "@/types";
 import { useState } from "react";
 
-import { useRouter } from "next/navigation";
 import { Event, Riddle, TeamEntry } from "@prisma/client";
 import EventModal from "./EventModal";
-import {
-  Avatar,
-  Button,
-  Chip,
-  Divider,
-  Tooltip,
-} from "@dynatrace/strato-components-preview";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CircularProgress,
-} from "@nextui-org/react";
+import { Tooltip, Avatar, Card, Divider, Chip, Button } from "@mantine/core";
+import { useRouter } from "next/router";
 
 interface EventCardProps {
   event: Event;
@@ -65,16 +52,14 @@ export default function EventCard(props: EventCardProps) {
 
               return (
                 <div className="isBordered" key={team.id}>
-                  <Tooltip text={team.name}>
-                    <Avatar color="primary" abbreviation={initials} />
+                  <Tooltip label={team.name}>
+                    <Avatar color="primary">{initials}</Avatar>
                   </Tooltip>
                 </div>
               );
             }
           })}
-          {teams?.length > 10 && (
-            <Avatar abbreviation={`+${teams.length - 10}`} />
-          )}
+          {teams?.length > 10 && <Avatar>{`+${teams.length - 10}`}</Avatar>}
         </div>
       );
     }
@@ -85,89 +70,57 @@ export default function EventCard(props: EventCardProps) {
   if (event.public || props.admin)
     return (
       <Card
-        isBlurred
-        className="border-none bg-background/60 dark:bg-default-100/50 min-w-[800px] max-w-[800px]"
+        withBorder
         shadow="sm"
       >
-        <CardHeader className="flex gap-3">
+        <Card.Section className="flex gap-3">
           <h1 className="flex-grow text-large font-medium mt-2">
             {event.name}
           </h1>
           <Divider orientation="vertical" />
           {props.admin && !event.public && <Chip color="primary">Private</Chip>}
           {!event.active && (
-            <Tooltip text="Event starts at">
+            <Tooltip label="Event starts at">
               <Chip color="success">{start}</Chip>
             </Tooltip>
           )}
 
           {(event.active || props.admin) && (
-            <Tooltip text="Event ends at">
+            <Tooltip label="Event ends at">
               <Chip color="warning">{end}</Chip>
             </Tooltip>
           )}
           {event.active && (
-            <Tooltip text="Registration Closed">
+            <Tooltip label="Registration Closed">
               <Chip color="critical">Event is Live!</Chip>
             </Tooltip>
           )}
-        </CardHeader>
+        </Card.Section >
         <Divider />
-        <CardBody className=" gap-y-20 ">
+        <Card.Section  className=" gap-y-20 ">
           <div className="flex flex-row gap-5">
             <p className="basis-2/3">{event.description}</p>
             <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-green-500 to-blue-500">
-              <CardBody className="justify-center items-center pb-0">
-                <CircularProgress
-                  classNames={{
-                    svg: "w-14 h-14 drop-shadow-md",
-                    indicator: "stroke-white",
-                    track: "stroke-white/10",
-                    value: "text-xs font-semibold text-white",
-                  }}
-                  value={diffMins}
-                  maxValue={
-                    riddles
-                      ? riddles.length * 5 > diffMins
-                        ? riddles.length * 5
-                        : diffMins
-                      : diffMins
-                  }
-                  strokeWidth={2}
-                  formatOptions={{ style: "unit", unit: "minute" }}
-                  showValueLabel={true}
-                />
-              </CardBody>
-              <CardFooter className="justify-center items-center pt-0">
+              <Card.Section  className="justify-center items-center pb-0">
+            
+              </Card.Section >
+              <Card.Section  className="justify-center items-center pt-0">
                 <Chip>
                   <p>Duration</p>
                 </Chip>
-              </CardFooter>
+              </Card.Section >
             </Card>
 
             {riddles && (
               <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-blue-500 to-cyan-500">
-                <CardBody className="justify-center items-center pb-0">
-                  <CircularProgress
-                    classNames={{
-                      svg: "w-14 h-14 drop-shadow-md",
-                      indicator: "stroke-white",
-                      track: "stroke-white/10",
-                      value: "text-small font-semibold text-white",
-                    }}
-                    value={riddles.length}
-                    maxValue={diffMins / 3}
-                    strokeWidth={2}
-                    isIndeterminate
-                    formatOptions={{ style: "decimal" }}
-                    showValueLabel={true}
-                  />
-                </CardBody>
-                <CardFooter className="justify-center items-center pt-0">
+                <Card.Section  className="justify-center items-center pb-0">
+                  
+                </Card.Section >
+                <Card.Section  className="justify-center items-center pt-0">
                   <Chip>
                     <p>Riddles</p>
                   </Chip>
-                </CardFooter>
+                </Card.Section >
               </Card>
             )}
           </div>
@@ -186,11 +139,11 @@ export default function EventCard(props: EventCardProps) {
               </div>
             )}
           </div>
-        </CardBody>
+        </Card.Section >
 
         <>
           <Divider />
-          <CardFooter className="flex flex-row-reverse gap-5">
+          <Card.Section  className="flex flex-row-reverse gap-5">
             {((now < event.start && !event.active) || props.admin) && (
               <Button
                 color="success"
@@ -231,7 +184,7 @@ export default function EventCard(props: EventCardProps) {
                 teamSize={event.teamSize}
               />
             )}
-          </CardFooter>
+          </Card.Section >
         </>
       </Card>
     );

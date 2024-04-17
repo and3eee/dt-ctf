@@ -1,18 +1,7 @@
 "use client";
 
 import { EventProps, TeamProps } from "@/types";
-import {
-  Button,
-  Chip,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  getKeyValue,
-} from "@nextui-org/react";
+
 import React from "react";
 import { registerMember } from "./TeamControl";
 import { useSession } from "next-auth/react";

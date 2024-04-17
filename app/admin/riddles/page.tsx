@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { Button } from "@nextui-org/button";
 import RiddleList from "@/components/Riddle/RiddleList";
+import { TableSort } from "@/components/Riddle/TableSort";
+import RiddleEdit from "@/components/Riddle/RiddleEdit";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 5;
@@ -16,6 +18,7 @@ export default async function RiddlePage(request: NextRequest) {
   return (
     <AdminCheck>
       <div className="grid gap-5 justify-center align-center">
+     
         <RiddleModal
           id={"NEW"}
           riddle={""}
@@ -24,7 +27,7 @@ export default async function RiddlePage(request: NextRequest) {
           buttonText={"Create New Riddle"}
           validated={false}
         />
-        <RiddleList riddles={riddles} />
+        <TableSort riddles={riddles} />
         <div className="container mx-auto p-8">
           <div className="grid grid-cols-2 gap-3">
             {riddles.map((riddle) => {

@@ -1,20 +1,7 @@
 "use client";
 
 import { RiddleProps } from "@/types";
-import {
-  Button,
-  Checkbox,
-  Chip,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
-  getKeyValue,
-} from "@nextui-org/react";
+
 import { Riddle } from "@prisma/client";
 import { useAsyncList } from "@react-stately/data";
 import React from "react";
@@ -22,6 +9,8 @@ import { GetRiddles } from "./RiddleControl";
 import RiddleEdit from "./RiddleEdit";
 import RiddleModal from "./RiddleModal";
 import { SetRiddleSet } from "../Event/EventControl";
+import { Badge, Button, Checkbox, Table, Tooltip } from "@mantine/core";
+import { TableHeader, TableBody } from "react-stately";
 
 export default function RiddleList(props: {
   riddles: Riddle[];
@@ -54,8 +43,8 @@ export default function RiddleList(props: {
     async sort({ items, sortDescriptor }) {
       return {
         items: items.sort((a, b) => {
-          let first = a[sortDescriptor.column];
-          let second = b[sortDescriptor.column];
+          let first = a[sortDescriptor.column?];
+          let second = b[sortDescriptor.column?];
           let cmp =
             (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
 
@@ -73,46 +62,48 @@ export default function RiddleList(props: {
     switch (dif) {
       case "easy":
         return (
-          <Tooltip content="Difficulty">
-            <Chip color="success">Easy</Chip>
+          <Tooltip label="Difficulty">
+            <Badge color="success">Easy</Badge>
           </Tooltip>
         );
       case "medium":
         return (
-          <Tooltip content="Difficulty">
-            <Chip color="warning">Medium</Chip>
+          <Tooltip label="Difficulty">
+            <Badge color="warning">Medium</Badge>
           </Tooltip>
         );
       case "hard":
         return (
-          <Tooltip content="Difficulty">
-            <Chip color="danger">Hard</Chip>
+          <Tooltip label="Difficulty">
+            <Badge color="danger">Hard</Badge>
           </Tooltip>
         );
       case "insane":
         return (
-          <Tooltip content="Difficulty">
-            <Chip variant="shadow" color="secondary">
+          <Tooltip label="Difficulty">
+            <Badge variant="shadow" color="secondary">
               Insane
-            </Chip>
+            </Badge>
           </Tooltip>
         );
     }
   }
+
+  const rows = {}
   const renderCell = React.useCallback((riddle: Riddle, columnKey: string) => {
     const cellValue = riddle.riddle;
 
     switch (columnKey) {
       case "bucket":
         if (riddle.bucket)
-          return <Chip color={"primary"}>{riddle.bucket}</Chip>;
+          return <Badge color={"primary"}>{riddle.bucket}</Badge>;
         break;
       case "difficulty":
         if (riddle.difficulty) return Difficulty(riddle.difficulty ?? "N/A");
         break;
       case "topic":
         if (riddle.topic)
-          return <Chip color={"secondary"}>{riddle.topic}</Chip>;
+          return <Badge color={"secondary"}>{riddle.topic}</Badge>;
         break;
       case "riddle":
      return riddle.riddle;
@@ -122,9 +113,9 @@ export default function RiddleList(props: {
         case "author":
           return riddle.author;
       case "implemented":
-        return <Checkbox isSelected={riddle.implemented} />;
+        return <Checkbox defaultChecked={riddle.implemented} />;
       case "validated":
-        return <Checkbox isSelected={riddle.validated} />;
+        return <Checkbox defaultChecked={riddle.validated} />;
         default:
           return cellValue;
     }
@@ -157,30 +148,30 @@ export default function RiddleList(props: {
       onSelectionChange={setSelectedKeys}
       >
         <TableHeader>
-          <TableColumn key="riddle" allowsSorting>
+          <Table.Th key="riddle" allowsSorting>
             Riddle
-          </TableColumn>
-          <TableColumn key="bucket" allowsSorting>
+          </Table.Th>
+          <Table.Th key="bucket" allowsSorting>
             Bucket
-          </TableColumn>
-          <TableColumn key="difficulty" allowsSorting>
+          </Table.Th>
+          <Table.Th key="difficulty" allowsSorting>
             Difficulty
-          </TableColumn>
-          <TableColumn key="topic" allowsSorting>
+          </Table.Th>
+          <Table.Th key="topic" allowsSorting>
             Topic
-          </TableColumn>
-          <TableColumn key="author" allowsSorting>
+          </Table.Th>
+          <Table.Th key="author" allowsSorting>
             Author
-          </TableColumn>
-          <TableColumn key="implemented" allowsSorting>
+          </Table.Th>
+          <Table.Th key="implemented" allowsSorting>
             Implemented
-          </TableColumn>
-          <TableColumn key="validated" allowsSorting>
+          </Table.Th>
+          <Table.Th key="validated" allowsSorting>
             Validated
-          </TableColumn>
-          <TableColumn key="solution" allowsSorting>
+          </Table.Th>
+          <Table.Th key="solution" allowsSorting>
             Solution
-          </TableColumn>
+          </Table.Th>
         </TableHeader>
         <TableBody
           items={list.items}
