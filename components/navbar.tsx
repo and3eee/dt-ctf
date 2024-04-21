@@ -1,18 +1,4 @@
-import { siteConfig } from "@/config/site";
-import NextLink from "next/link";
-import clsx from "clsx";
 
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-} from "@/components/icons";
-
-import { Logo } from "@/components/icons";
-import { FaFlag } from "react-icons/fa";
-import { SignInButton } from "./Auth/buttons";
 
 import AdminCheck from "./Auth/AdminCheck";
 import {
@@ -35,6 +21,7 @@ import {
 } from "react-icons/ri";
 import ContributorCheck from "./Auth/ContributorCheck";
 import RiddleSolutionGenerator from "./Riddle/RiddleSolutionGen";
+import RiddleResourceList from "./RiddleResources/RiddleResourceList";
 
 export const Navbar = () => {
   const searchInput = (
@@ -52,7 +39,7 @@ export const Navbar = () => {
     <Paper>
       <Stack gap={0}>
         <NavLink
-          href="#required-for-focus"
+          href="/"
           label="Go to Homepage"
           leftSection={<RiHome2Fill size="1rem" />}
         />
@@ -61,12 +48,12 @@ export const Navbar = () => {
           <Title order={5}>Admin Utils</Title>
 
           <NavLink
-            href="#required-for-focus"
+            href="/admin/events"
             label="Event List"
             leftSection={<RiCalendar2Fill size="1rem" />}
           />
           <NavLink
-            href="#required-for-focus"
+            href="/admin/users"
             label="User List"
             leftSection={<RiCalendar2Fill size="1rem" />}
           />
@@ -76,16 +63,19 @@ export const Navbar = () => {
           <Title order={5}>Contributor Utils</Title>
 
           <NavLink
-            href="#required-for-focus"
+            href="/admin/riddles"
             label="Riddle List"
             leftSection={<RiMessage3Line size="1rem" />}
           />
           <NavLink
-            href="#required-for-focus"
+            href="/admin/docs/"
             label="Docs"
             leftSection={<RiBook2Line size="1rem" />}
           />
-          <RiddleSolutionGenerator/>
+                  <RiddleResourceList/>
+        
+            <RiddleSolutionGenerator/>
+  
         </ContributorCheck>
       </Stack>
     </Paper>

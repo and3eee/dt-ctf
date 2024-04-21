@@ -30,14 +30,18 @@ import AdminCheck from "./Auth/AdminCheck";
 import { SignInButton } from "./Auth/buttons";
 import ColorSchemeContext from "@/lib/ColorSchemeContext";
 import ThemeSwitch from "./theme-switch";
-import { theme } from "@/theme";
-import { RiFlag2Fill, RiHeart2Fill } from "react-icons/ri";
+import { supersecrettheme, theme } from "@/theme";
+import { RiEye2Fill, RiFlag2Fill, RiHeart2Fill } from "react-icons/ri";
 
 export default function Shell(props: { children: any }) {
   const [opened, { toggle }] = useDisclosure(false);
-  const [colorScheme, setColorScheme] = useState("dark");
+  const [themeHold, setTheme] = useState(theme);
+  const trigger = () => {
+  
+    setTheme(supersecrettheme);
+  };
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider theme={themeHold}>
       <AppShell
         header={{ height: "5rem" }}
         navbar={{
@@ -49,24 +53,34 @@ export default function Shell(props: { children: any }) {
       >
         <AppShell.Header h={"5rem"}>
           <Group grow h={"5rem"}>
-            <Group justify="center" grow maw={"10%"}>
-              <ActionIcon
-              radius={"xl"}
-                variant="gradient"
-                size="xl"
-                aria-label="Gradient action icon"
-                gradient={{ from: "orange", to: "yellow", deg: 192 }}
-              >
-                       <RiFlag2Fill />
-              </ActionIcon>
-             
-       
+            <Group miw={"7rem"} justify="center" grow maw={"10rem"}>
+              {themeHold !== supersecrettheme && (
+                <ActionIcon
+                  radius={"xl"}
+                  variant="gradient"
+                  size="xl"
+                  aria-label="Gradient action icon"
+                  gradient={{ from: "orange", to: "yellow", deg: 192 }}
+                >
+                  <RiFlag2Fill />
+                </ActionIcon>
+              )}
+                    {themeHold == supersecrettheme && (
+                <ActionIcon
+                  radius={"xl"}
+                  variant="gradient"
+                  size="xl"
+                  aria-label="Gradient action icon"
+                  gradient={{ from: "red", to: "red", deg: 192 }}
+                >
+                  <RiEye2Fill size="md"/>
+                  <RiEye2Fill size="md"/>
+                </ActionIcon>
+              )}
 
-              <Title order={2} >
-                CTF
-              </Title>
+              <Title order={2}>CTF</Title>
             </Group>
-            <Space />
+
             <Group h={"5rem"}>
               <AdminCheck>
                 <Divider orientation="vertical" />
@@ -82,9 +96,13 @@ export default function Shell(props: { children: any }) {
               </AdminCheck>
               <Divider orientation="vertical" />{" "}
             </Group>
-            <Space />
+
             <Group grow p={4} gap="xs" justify="right">
-              <ThemeSwitch />
+              <ThemeSwitch
+                trigger={() => {
+                  trigger();
+                }}
+              />
               <SignInButton />
             </Group>
           </Group>

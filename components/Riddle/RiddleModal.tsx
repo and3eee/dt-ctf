@@ -33,6 +33,7 @@ export default function RiddleModal(props: {
       sourceURL: null,
       sourcePlaceHolder: null,
       eventId: null,
+      showRiddleResource: false
     };
     return (
       <>

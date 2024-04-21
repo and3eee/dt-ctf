@@ -11,11 +11,11 @@ export default function RiddleSolutionGenerator() {
   };
 
   return (
-    <Card withBorder>
+    <Card withBorder radius="xl" p={16} m={4}>
      
         <Center>{value}</Center>
  
-      <Button onClick={updateValue}>Generate New Solution</Button>
+      <Button  radius="xl" onClick={updateValue}>Generate New Solution</Button>
     </Card>
   );
 }

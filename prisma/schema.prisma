@@ -64,22 +64,34 @@ model VerificationToken {
 }
 
 model Riddle {
-  id                Int         @id @unique @default(autoincrement())
-  riddle            String      @unique
-  difficulty        String?
-  bucket            String?
-  topic             String?
-  author            String?
-  implemented       Boolean     @default(false)
-  validated         Boolean     @default(false)
-  solution          String
-  sourceLocation    String?
-  sourceDescription String?
-  sourceURL         String?
-  sourcePlaceHolder String?
-  UserEntry         UserEntry[]
-  Event             Event?      @relation(fields: [eventId], references: [id])
-  eventId           String?
+  id                 Int              @id @unique @default(autoincrement())
+  riddle             String           @unique
+  difficulty         String?
+  bucket             String?
+  topic              String?
+  author             String?
+  implemented        Boolean          @default(false)
+  validated          Boolean          @default(false)
+  solution           String
+  sourceLocation     String?
+  showRiddleResource Boolean          @default(false)
+  sourceDescription  String?
+  sourceURL          String?
+  sourcePlaceHolder  String?
+  UserEntry          UserEntry[]
+  Event              Event?           @relation(fields: [eventId], references: [id])
+  eventId            String?
+  RiddleResource     RiddleResource[]
+}
+
+model RiddleResource {
+  id          Int      @id @unique @default(autoincrement())
+  name        String   @unique
+  description String?
+  link        String?
+  AuthInfo    String?
+  owner       String?
+  riddles     Riddle[]
 }
 
 model Event {
