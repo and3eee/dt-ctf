@@ -12,7 +12,7 @@ export default function AdminCheck({ children }: { children: React.ReactNode }) 
         return <>{children}</>
         else return 
     } else {
-        if (status === 'loading') return <div className="flex justify-center items-center "><Loader size="lg"/></div>
+        if (status === 'loading') return <Loader/>
 
     }
 

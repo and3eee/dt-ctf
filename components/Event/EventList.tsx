@@ -8,7 +8,7 @@ import EventCard from "./EventCard";
 
 
 export const dynamic = "force-dynamic";
-export const revalidate = 600;
+export const revalidate = 15;
 
 export default async function EventList(props:{admin?:boolean}){
     const events = await prisma.event.findMany({

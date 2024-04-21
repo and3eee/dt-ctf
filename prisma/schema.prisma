@@ -43,7 +43,7 @@ model User {
   email       String      @unique
   password    String
   name        String
-  bucket      Bucket?     @default(NONE)
+  bucket      String?
   skillLevel  Int?        @default(5)
   Event       Event?      @relation(fields: [eventId], references: [id])
   eventId     String?
@@ -142,12 +142,6 @@ enum Role {
   FLAGMASTER
 }
 
-enum Bucket {
-  AGENT
-  ENV
-  DEM
-  NONE
-}
 
 enum EventType {
   CTF

@@ -69,7 +69,7 @@ export default function RiddleEdit(props: {
       sourcePlaceHolder: props.riddle.sourcePlaceHolder,
 
       eventId: props.riddle.eventId,
-      RiddleResource:  mappedInit ,
+      RiddleResource: mappedInit,
     },
     validate: {
       difficulty: (value: string | null) => {
@@ -128,13 +128,13 @@ export default function RiddleEdit(props: {
   const submissionHandler = async (values: typeof form.values) => {
     const riddle = values;
 
-    if (riddle.RiddleResource)
-      await UpdateResourceLinks(riddle, riddle.RiddleResource);
     if (riddle.id < 0) {
-      const reply = await CreateRiddle(riddle);
+      const reply = await CreateRiddle(riddle, riddle.RiddleResource);
       if (props.onClick) props.onClick();
     } else {
       const reply = await EditRiddle(riddle);
+      if (riddle.RiddleResource)
+        await UpdateResourceLinks(riddle, riddle.RiddleResource);
       if (props.onClick) props.onClick();
     }
   };

@@ -36,7 +36,7 @@ export const Navbar = () => {
 
   return (
     <Paper >
-      <ScrollArea.Autosize   mah="78%" scrollbarSize={2}  offsetScrollbars >
+      <ScrollArea.Autosize   mih="50rem" mah="78%" scrollbarSize={2}  offsetScrollbars >
         <Stack gap={0}>
           <NavLink
             href="/"

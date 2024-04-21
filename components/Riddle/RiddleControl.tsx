@@ -6,7 +6,7 @@ import { Riddle } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function CreateRiddle(formData: Riddle) {
+export async function CreateRiddle(formData: Riddle, resources?: string[]) {
   //Ignore ID as its only used in update
 
   const out = await prisma.riddle.create({
@@ -34,19 +34,29 @@ export async function CreateRiddle(formData: Riddle) {
       validated: formData.validated, //
     },
   });
-  console.log(out);
+  if (resources) await UpdateResourceLinks(out, resources);
 
   return out;
 }
 
-export async function UpdateResourceLinks(riddle:Riddle,resources:string[]){
-  console.log(resources)
+export async function UpdateResourceLinks(riddle: Riddle, resources: string[]) {
+  const connectIds = await prisma.riddleResource.findMany({
+    where: { name: { in: resources } },
+  });
 
-  const connectIds = await prisma.riddleResource.findMany({where:{name:{in:resources}}})
+  const ids = connectIds.map((resource) => {
+    return { id: resource.id };
+  });
+  const reset = await prisma.riddle.update({
+    where: { id: riddle.id },
+    data: { RiddleResource: { set: [] } },
+  });
+  const updateMessage = await prisma.riddle.update({
+    where: { id: riddle.id },
+    data: { RiddleResource: { connect: ids } },
+  });
 
-  const ids = connectIds.map((resource) => {return{"id":resource.id}})
-console.log(ids)
-  return await prisma.riddle.update({where:{id:riddle.id},data:{RiddleResource:{connect: ids}}})
+  return updateMessage;
 }
 
 export async function GenerateNewSolution() {
@@ -59,7 +69,7 @@ export async function GenerateNewSolution() {
   );
   var gen: string;
   do {
-    gen = Math.random().toString().split(".")[1].substring(0,8);
+    gen = Math.random().toString().split(".")[1].substring(0, 8);
   } while (existingIds.includes(gen));
   return "ctf_" + gen;
 }
@@ -100,7 +110,9 @@ export async function EditRiddle(formData: Riddle) {
   }
 }
 
-export async function GetRiddles(includeResources?:boolean) {
-  const out = await prisma.riddle.findMany({include:{RiddleResource:includeResources}});
+export async function GetRiddles(includeResources?: boolean) {
+  const out = await prisma.riddle.findMany({
+    include: { RiddleResource: includeResources },
+  });
   return out;
 }

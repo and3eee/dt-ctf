@@ -23,38 +23,18 @@ import {
   RiRadioButtonLine,
   RiSearch2Fill,
 } from "react-icons/ri";
-import { Riddle } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import RiddleModal from "./RiddleModal";
-import { SetRiddleSet } from "../Event/EventControl";
-import { GetRiddles } from "./RiddleControl";
-import SpoilerText from "../SpoilerText";
+import { GetUsers } from "./UserControl";
+
 import { useListState } from "@mantine/hooks";
+import UserModal from "./UserModal";
 
 interface ThProps {
   children: React.ReactNode;
   reversed: boolean;
   sorted: boolean;
   onSort(): void;
-}
-function Difficulty(dif: string) {
-  switch (dif.toLowerCase()) {
-    case "easy":
-      return <Badge color="green">Easy</Badge>;
-    case "medium":
-      return <Badge color="orange">Medium</Badge>;
-    case "hard":
-      return <Badge color="red">Hard</Badge>;
-    case "expert":
-      return (
-        <Badge
-          variant="gradient"
-          gradient={{ from: "grape", to: "indigo", deg: 90 }}
-        >
-          Expert
-        </Badge>
-      );
-  }
 }
 
 function Th({ children, reversed, sorted, onSort }: ThProps) {
@@ -79,21 +59,21 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
   );
 }
 
-function filterData(data: Riddle[], search: string) {
+function filterData(data: User[], search: string) {
   const query = search.toLowerCase().trim();
 
   if (query.length > 0)
-    return data.filter((riddle: Riddle) =>
-      keys(riddle).some((key) => {
-        riddle[key]?.toString().toLowerCase().includes(query);
+    return data.filter((User: User) =>
+      keys(User).some((key) => {
+        User[key]?.toString().toLowerCase().includes(query);
       })
     );
   else return data;
 }
 
 function sortData(
-  data: Riddle[],
-  payload: { sortBy: keyof Riddle | null; reversed: boolean; search: string }
+  data: User[],
+  payload: { sortBy: keyof User | null; reversed: boolean; search: string }
 ) {
   const { sortBy } = payload;
 
@@ -108,32 +88,33 @@ function sortData(
           if (!a[sortBy]) return -1;
           if (!b[sortBy]) return 1;
 
-          return b[sortBy]!.localeCompare(a[sortBy]);
+          return b[sortBy]!.toString().localeCompare(a[sortBy]!.toString());
         }
         if (!a[sortBy]) return 1;
         if (!b[sortBy]) return -1;
 
-        return a[sortBy]!.localeCompare(b[sortBy]);
-      } catch (e) {return 1}
+        return a[sortBy]!.toString().localeCompare(b[sortBy]!.toString());
+      } catch (e) {
+        return 1;
+      }
     }),
     payload.search
   );
 }
 
-export function TableSort(props: {
-  riddles: Riddle[];
-  defaultSelected?: Riddle[];
-  eventID?: string;
+export function UserTable(props: {
+  users: User[];
+
 }) {
   const { data: session, status }: any = useSession();
-  const [data, setRiddleData] = useState<Riddle[]>(props.riddles);
+  const [data, setUserData] = useState<User[]>(props.users);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<keyof Riddle | null>(null);
+  const [sortBy, setSortBy] = useState<keyof User | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
-  const [values, handlers] = useListState<Riddle>(props.riddles);
+  const [values, handlers] = useListState<User>(props.users);
 
-  const setSorting = (field: keyof Riddle) => {
+  const setSorting = (field: keyof User) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
     setSortBy(field);
@@ -141,8 +122,8 @@ export function TableSort(props: {
   };
 
   const refreshList = async () => {
-    const newData = await GetRiddles();
-    await setRiddleData(newData);
+    const newData = await GetUsers();
+    await setUserData(newData);
 
     handlers.setState(
       sortData(newData, {
@@ -166,37 +147,22 @@ export function TableSort(props: {
     );
     await handlers.setState(data);
     console.log(values);
-    handlers.filter((item: Riddle) => {
+    handlers.filter((item: User) => {
       return keys(item).some((key) =>
         item[key]?.toString().toLowerCase().includes(value)
       );
     });
   };
-  const admin = session.user.role == "ADMIN";
-  const contributor = session.user.role == "FLAGMASTER";
 
-  const rows = values.map((row: Riddle) => [
+
+  const rows = values.map((row: User) => [
     <Table.Tr key={row.id}>
-      <Table.Td>{row.id}</Table.Td>
-      <Table.Td>{row.riddle}</Table.Td>
+      <Table.Td>{row.name}</Table.Td>
+      <Table.Td>{row.email}</Table.Td>
+      <Table.Td>{row.role}</Table.Td>
+      <Table.Td>{row.skillLevel}</Table.Td>
       <Table.Td>{row.bucket}</Table.Td>
-      <Table.Td>{row.topic}</Table.Td>
-      <Table.Td>{Difficulty(row.difficulty ?? "none")}</Table.Td>
-      <Table.Td>{row.author}</Table.Td>
-      <Table.Td>{row.implemented ? <p>✔️</p> : <p>🗙</p>}</Table.Td>
-      <Table.Td>{row.validated ? <p>✔️</p> : <p>🗙</p>}</Table.Td>
-      {admin && (
-        <Table.Td>
-          <SpoilerText>{row.solution}</SpoilerText>
-        </Table.Td>
-      )}
-      {admin && <Table.Td>{row.sourceLocation}</Table.Td>}
-      {admin && <Table.Td>{row.sourceURL}</Table.Td>}
-      <Table.Td>
-        {(admin || (contributor && row.author == session.user.name)) && (
-          <RiddleModal buttonText={"Edit"} riddle={row} onClose={refreshList} />
-        )}
-      </Table.Td>
+      <Table.Td><UserModal user={row} onResolve={refreshList}/></Table.Td>
     </Table.Tr>,
   ]);
 
@@ -222,13 +188,33 @@ export function TableSort(props: {
           <Table.Tbody>
             <Table.Tr>
               <Th
-                sorted={sortBy === "bucket"}
+                sorted={sortBy === "name"}
                 reversed={reverseSortDirection}
-                onSort={() => setSorting("bucket")}
+                onSort={() => setSorting("name")}
               >
-                ID{" "}
+                Name
               </Th>
-              <Table.Th>Riddle</Table.Th>
+              <Th
+                sorted={sortBy === "email"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("email")}
+              >
+                Email
+              </Th>
+              <Th
+                sorted={sortBy === "role"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("role")}
+              >
+                Role
+              </Th>
+              <Th
+                sorted={sortBy === "skillLevel"}
+                reversed={reverseSortDirection}
+                onSort={() => setSorting("skillLevel")}
+              >
+                Skill Level
+              </Th>
               <Th
                 sorted={sortBy === "bucket"}
                 reversed={reverseSortDirection}
@@ -236,48 +222,7 @@ export function TableSort(props: {
               >
                 Bucket
               </Th>
-              <Th
-                sorted={sortBy === "topic"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("topic")}
-              >
-                Topic
-              </Th>
-              <Th
-                sorted={sortBy === "difficulty"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("difficulty")}
-              >
-                Difficulty
-              </Th>
-              <Th
-                sorted={sortBy === "author"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("author")}
-              >
-                Author
-              </Th>
-              <Th
-                sorted={sortBy === "implemented"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("implemented")}
-              >
-                Implemented
-              </Th>
-              <Th
-                sorted={sortBy === "validated"}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting("validated")}
-              >
-                Validated
-              </Th>
-
-              {admin && <Table.Th>Solution</Table.Th>}
-
-              {admin && <Table.Th>Source Location</Table.Th>}
-
-              {admin && <Table.Th>Source URL</Table.Th>}
-              {(admin || contributor) && <Table.Th>Actions</Table.Th>}
+              <Table.Th>Actions</Table.Th>
             </Table.Tr>
           </Table.Tbody>
           <Table.Tbody>
