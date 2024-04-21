@@ -25,20 +25,52 @@ import {
   Title,
   Stack,
   Flex,
+  MultiSelect,
 } from "@mantine/core";
-import { Riddle } from "@prisma/client";
+import { Riddle, RiddleResource } from "@prisma/client";
 import { useForm } from "@mantine/form";
-import { theme } from "@/theme";
-import { CreateRiddle, EditRiddle } from "./RiddleControl";
+
+import { CreateRiddle, EditRiddle, UpdateResourceLinks } from "./RiddleControl";
+import { GetRiddleResources } from "../RiddleResources/RRController";
+
+interface RiddleWithResourceProps extends Riddle {
+  RiddleResource: string[];
+}
+interface RiddleWithResourceInputProps extends Riddle {
+  RiddleResource: RiddleResource[];
+}
 
 export default function RiddleEdit(props: {
-  riddle: Riddle;
+  riddle: RiddleWithResourceInputProps;
   onClick?: () => void;
 }) {
-  const form = useForm<Riddle>({
+  const mappedInit: string[] = props.riddle.RiddleResource
+    ? props.riddle.RiddleResource.map(
+        (resource: RiddleResource) => resource.name
+      )
+    : [];
+  const form = useForm<RiddleWithResourceProps>({
     mode: "uncontrolled",
     validateInputOnChange: true,
-    initialValues: props.riddle,
+    initialValues: {
+      id: props.riddle.id,
+      riddle: props.riddle.riddle,
+      difficulty: props.riddle.difficulty,
+      bucket: props.riddle.bucket,
+      topic: props.riddle.topic,
+      author: props.riddle.author,
+      implemented: props.riddle.implemented,
+      validated: props.riddle.validated,
+      solution: props.riddle.solution,
+      sourceLocation: props.riddle.sourceLocation,
+      showRiddleResource: props.riddle.showRiddleResource,
+      sourceDescription: props.riddle.sourceDescription,
+      sourceURL: props.riddle.sourceURL,
+      sourcePlaceHolder: props.riddle.sourcePlaceHolder,
+
+      eventId: props.riddle.eventId,
+      RiddleResource:  mappedInit ,
+    },
     validate: {
       difficulty: (value: string | null) => {
         if (value) updateDifficultyColor(value);
@@ -46,8 +78,33 @@ export default function RiddleEdit(props: {
       },
     },
   });
+  const loadResources = async () => {
+    const data = await GetRiddleResources();
+    setResources(data);
+  };
+  const [resources, setResources] = useState<RiddleResource[]>(() => {
+    loadResources();
+    return [];
+  });
 
-  const [difficultyColor, setDifficultyColor] = useState<string>("none");
+  var initColor: string;
+  switch (props.riddle.difficulty) {
+    case "Easy":
+      initColor = "Green";
+      break;
+    case "Medium":
+      initColor = "Orange";
+      break;
+    case "Hard":
+      initColor = "Red";
+      break;
+    case "Expert":
+      initColor = "Purple";
+      break;
+    default:
+      initColor = "gray";
+  }
+  const [difficultyColor, setDifficultyColor] = useState<string>(initColor);
 
   const updateDifficultyColor = (input: string) => {
     switch (input) {
@@ -68,28 +125,23 @@ export default function RiddleEdit(props: {
     }
   };
 
-  const submissionHandler =  async (values: typeof form.values) => {
+  const submissionHandler = async (values: typeof form.values) => {
+    const riddle = values;
 
-    
-    const riddle = values
-
-    if(riddle.id<0){
-      const reply =  await CreateRiddle(riddle)
-      if(props.onClick)
-        props.onClick()
-    }else{
-      const reply = await EditRiddle(riddle)
-      if(props.onClick)
-        props.onClick()
+    if (riddle.RiddleResource)
+      await UpdateResourceLinks(riddle, riddle.RiddleResource);
+    if (riddle.id < 0) {
+      const reply = await CreateRiddle(riddle);
+      if (props.onClick) props.onClick();
+    } else {
+      const reply = await EditRiddle(riddle);
+      if (props.onClick) props.onClick();
     }
-
-  }
+  };
 
   return (
-    <form
-      onSubmit={form.onSubmit(submissionHandler)}
-    >
-      <Card miw={"32rem"} maw={"48rem"} mah="40rem">
+    <form onSubmit={form.onSubmit(submissionHandler)}>
+      <Card miw={"32rem"} maw={"48rem"} mah="60rem">
         <NumberInput
           disabled
           {...form.getInputProps("id")}
@@ -168,44 +220,65 @@ export default function RiddleEdit(props: {
           <Grid.Col span={6}>
             <Center>
               <Stack gap={2} h={"4rem"}>
-              <Title order={6}>Difficulty</Title>
-              <SegmentedControl
-                name="difficulty"
-                autoContrast
-                radius={"xl"}
-                color={difficultyColor}
-                withItemsBorders={false}
-                data={["none", "Easy", "Medium", "Hard", "Expert"]}
-                {...form.getInputProps("difficulty")}
-              /></Stack>
+                <Title order={6}>Difficulty</Title>
+                <SegmentedControl
+                  name="difficulty"
+                  autoContrast
+                  radius={"xl"}
+                  color={difficultyColor}
+                  withItemsBorders={false}
+                  data={["none", "Easy", "Medium", "Hard", "Expert"]}
+                  {...form.getInputProps("difficulty")}
+                />
+              </Stack>
             </Center>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Flex h={"4rem"} gap={"md"} justify={"center"} align={"center"}>
+            <Stack>
+              <Flex gap={"md"}>
+                <Switch
+                  name="implemented"
+                  label="Implemented"
+                  {...form.getInputProps("implemented", { type: "checkbox" })}
+                >
+                  Implemented
+                </Switch>
+                <Switch
+                  name="validated"
+                  label="Validated"
+                  {...form.getInputProps("validated", { type: "checkbox" })}
+                >
+                  Validated
+                </Switch>
+              </Flex>
               <Switch
-               
-                name="implemented"
-                label="Implemented"
-                {...form.getInputProps("implemented")}
+                name="showRiddleResource"
+                label="Show Riddle Resource(s)"
+                {...form.getInputProps("showRiddleResource", {
+                  type: "checkbox",
+                })}
               >
-                Implemented
+                Show Riddle Resource(s)
               </Switch>
-              <Switch
-              
-                name="validated"
-                label="Validated"
-                {...form.getInputProps("validated")}
-              >
-                Validated
-              </Switch>
-            </Flex>
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <Group grow>
+              <MultiSelect
+                label="Linked Resources"
+                placeholder="Selected Resource(s)"
+                data={resources.map((resource) => resource.name)}
+                {...form.getInputProps("RiddleResource")}
+                searchable
+              />
+            </Group>
           </Grid.Col>
         </Grid>
 
         <Divider />
         <Card.Section p={"1rem"}>
           <Center>
-            <Button type="submit" color="green" >
+            <Button type="submit" color="green">
               Submit
             </Button>
           </Center>

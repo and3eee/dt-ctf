@@ -39,6 +39,16 @@ export async function CreateRiddle(formData: Riddle) {
   return out;
 }
 
+export async function UpdateResourceLinks(riddle:Riddle,resources:string[]){
+  console.log(resources)
+
+  const connectIds = await prisma.riddleResource.findMany({where:{name:{in:resources}}})
+
+  const ids = connectIds.map((resource) => {return{"id":resource.id}})
+console.log(ids)
+  return await prisma.riddle.update({where:{id:riddle.id},data:{RiddleResource:{connect: ids}}})
+}
+
 export async function GenerateNewSolution() {
   var data = await prisma.riddle.findMany();
   data = data.filter((riddle: Riddle) => {
@@ -90,7 +100,7 @@ export async function EditRiddle(formData: Riddle) {
   }
 }
 
-export async function GetRiddles() {
-  const out = await prisma.riddle.findMany();
+export async function GetRiddles(includeResources?:boolean) {
+  const out = await prisma.riddle.findMany({include:{RiddleResource:includeResources}});
   return out;
 }
