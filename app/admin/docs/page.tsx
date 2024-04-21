@@ -9,22 +9,13 @@ import { TableSort } from "@/components/Riddle/TableSort";
 import RiddleEdit from "@/components/Riddle/RiddleEdit";
 import { Riddle } from "@prisma/client";
 import ContributorCheck from "@/components/Auth/ContributorCheck";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 5;
-
-
+import { Title } from "@mantine/core";
 
 export default async function RiddlePage() {
-  const riddles = await prisma.riddle.findMany();
-  console.log(riddles);
-  if (riddles)
+
     return (
       <ContributorCheck>
-        <div className="grid gap-5 justify-center align-center">
-          <RiddleModal buttonText={"Create New Riddle"} createNew />
-          <TableSort riddles={riddles} />
-        </div>
+        <Title>CTF Docs</Title>
       </ContributorCheck>
     );
 }

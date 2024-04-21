@@ -30,7 +30,7 @@ export interface EventProps{
 }
 
 export interface RiddleProps {
-    id: string;
+    id: number;
     riddle: string;
     difficulty?: string;
     bucket?: string;

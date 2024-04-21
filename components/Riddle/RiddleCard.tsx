@@ -16,39 +16,36 @@ import {
   Popover,
   TextInput,
 } from "@mantine/core";
+import { Riddle } from "@prisma/client";
 
-interface RiddleCardProps extends RiddleProps {
+export default function RiddleCard(props: {
   answered?: boolean;
   answeredBy?: string;
   number?: number;
   admin: boolean;
   teamID?: string;
-}
-
-const defaults: Pick<RiddleCardProps, "answered"> = {
-  answered: false,
-};
-export default function RiddleCard(props: RiddleCardProps) {
+  riddle: Riddle;
+}) {
   const router = useRouter();
   const [value, setValue] = React.useState("");
 
   const onClick = () => {
-    if (value == props.solution && props.teamID) {
-      AddTeamUserEntry(props.id, props.teamID);
+    if (value == props.riddle.solution && props.teamID) {
+      AddTeamUserEntry(props.riddle.id, props.teamID);
     }
     router.refresh();
   };
 
   const onDelete = async () => {
     if (props.teamID) {
-      const res = await RemoveTeamUserEntry(props.id, props.teamID);
+      const res = await RemoveTeamUserEntry(props.riddle.id, props.teamID);
     }
     router.refresh();
   };
 
   function Difficulty() {
-    if (props.difficulty) {
-      switch (props.difficulty) {
+    if (props.riddle.difficulty) {
+      switch (props.riddle.difficulty) {
         case "easy":
           return (
             <Tooltip label="Difficulty">
@@ -79,8 +76,8 @@ export default function RiddleCard(props: RiddleCardProps) {
     }
   }
   let authInitials = undefined;
-  if (props.author) {
-    authInitials = props.author
+  if (props.riddle.author) {
+    authInitials = props.riddle.author
       .split(" ")
       .map((n) => n[0])
       .join(".");
@@ -117,57 +114,40 @@ export default function RiddleCard(props: RiddleCardProps) {
               <Avatar color="success">{ansInitials} </Avatar>
             </Tooltip>
           )}
-          {props.admin && (
-            <RiddleModal
-              id={props.id}
-              riddle={props.riddle}
-              solution={props.solution}
-              implemented={props.implemented}
-              difficulty={props.difficulty}
-              bucket={props.bucket}
-              topic={props.topic}
-              sourceDescription={props.sourceDescription}
-              sourceLocation={props.sourceLocation}
-              sourcePlaceHolder={props.sourcePlaceHolder}
-              sourceURL={props.sourceURL}
-              buttonText={"Edit"}
-              validated={props.validated}
-              author={props.author}
-            />
-          )}
+          {props.admin && <RiddleModal buttonText={"Edit"} riddle={props.riddle} />}
           <Difficulty />
-          {props.topic && (
+          {props.riddle.topic && (
             <Tooltip label={`Topic`}>
-              <Chip color="primary">{props.topic}</Chip>
+              <Chip color="primary">{props.riddle.topic}</Chip>
             </Tooltip>
           )}
-          {props.bucket && (
+          {props.riddle.bucket && (
             <Tooltip label={`Bucket`}>
-              <Chip color="secondary">{props.bucket}</Chip>
+              <Chip color="secondary">{props.riddle.bucket}</Chip>
             </Tooltip>
           )}
-          {props.admin && props.implemented && (
+          {props.admin && props.riddle.implemented && (
             <Tooltip label={`Status`}>
               <Chip color="success">Implemented</Chip>
             </Tooltip>
           )}
-          {props.admin && !props.implemented && (
+          {props.admin && !props.riddle.implemented && (
             <Tooltip label={`Status`}>
               <Chip color="danger">Not Implemented</Chip>
             </Tooltip>
           )}
-          {props.admin && !props.validated && (
+          {props.admin && !props.riddle.validated && (
             <Tooltip label={`Status`}>
               <Chip color="warning">Not validated</Chip>
             </Tooltip>
           )}
-          {props.admin && props.validated && (
+          {props.admin && props.riddle.validated && (
             <Tooltip label={`Status`}>
               <Chip color="success">Validated</Chip>
             </Tooltip>
           )}
-          {props.admin && props.author && authInitials && (
-            <Tooltip label={`Author: ${props.author}`}>
+          {props.admin && props.riddle.author && authInitials && (
+            <Tooltip label={`Author: ${props.riddle.author}`}>
               <Avatar color="success">{authInitials} </Avatar>
             </Tooltip>
           )}
@@ -176,38 +156,38 @@ export default function RiddleCard(props: RiddleCardProps) {
 
       <Divider />
       <Card.Section className="flex flex-col gap-5">
-        <h1 className="text-large">{props.riddle}</h1>
+        <h1 className="text-large">{props.riddle.riddle}</h1>
 
-        {props.admin && props.sourceLocation && (
+        {props.admin && props.riddle.sourceLocation && (
           <div className="col-span-3">
             <h1 className="text-large font-bold">Source Location:</h1>
-            <h1 className="text-large">{props.sourceLocation}</h1>
+            <h1 className="text-large">{props.riddle.sourceLocation}</h1>
           </div>
         )}
-        {props.admin && props.sourceDescription && (
+        {props.admin && props.riddle.sourceDescription && (
           <div className="col-span-3">
             <h1 className="text-large font-bold">Source Description:</h1>
-            <h1 className="text-large">{props.sourceDescription}</h1>
+            <h1 className="text-large">{props.riddle.sourceDescription}</h1>
           </div>
         )}
-        {props.admin && props.sourceURL && (
+        {props.admin && props.riddle.sourceURL && (
           <div className="flex gap-3 col-span-3">
             <h1 className="text-large font-bold">Source URL:</h1>
-            <h1 className="text-large">{props.sourceURL}</h1>
+            <h1 className="text-large">{props.riddle.sourceURL}</h1>
           </div>
         )}
-        {props.admin && props.sourcePlaceHolder && (
+        {props.admin && props.riddle.sourcePlaceHolder && (
           <div className="flex gap-3 col-span-3">
             <h1 className="text-large font-bold">Source Placeholder:</h1>
-            <h1 className="text-large">{props.sourcePlaceHolder}</h1>
+            <h1 className="text-large">{props.riddle.sourcePlaceHolder}</h1>
           </div>
         )}
 
-        {((props.sourceDescription && props.sourceDescription.length > 0) ||
-          props.sourceLocation) && (
+        {((props.riddle.sourceDescription && props.riddle.sourceDescription.length > 0) ||
+          props.riddle.sourceLocation) && (
           <div className="grid auto-cols-max gap-5 mx-auto">
-            {props.sourceDescription &&
-              props.sourceDescription.length > 0 &&
+            {props.riddle.sourceDescription &&
+              props.riddle.sourceDescription.length > 0 &&
               !props.admin && (
                 <Card
                   radius={"lg"}
@@ -219,23 +199,19 @@ export default function RiddleCard(props: RiddleCardProps) {
                   </Card.Section>
                   <Divider />
                   <Card.Section>
-                    <h1 className="text-small">{props.sourceDescription} </h1>
+                    <h1 className="text-small">{props.riddle.sourceDescription} </h1>
                   </Card.Section>
                 </Card>
               )}
-            {props.sourceLocation && !props.admin && (
-              <Card
-                radius={"lg"}
-                shadow={"md"}
-                className="flex max-w-[600px]"
-              >
+            {props.riddle.sourceLocation && !props.admin && (
+              <Card radius={"lg"} shadow={"md"} className="flex max-w-[600px]">
                 <Card.Section>
                   <h1 className="text-xs">Hint</h1>
                 </Card.Section>
 
                 <Divider />
                 <Card.Section>
-                  <h1 className="text-xs">{props.sourceLocation} </h1>{" "}
+                  <h1 className="text-xs">{props.riddle.sourceLocation} </h1>{" "}
                 </Card.Section>
               </Card>
             )}
@@ -250,7 +226,7 @@ export default function RiddleCard(props: RiddleCardProps) {
             c="Answer"
             value={value}
             onChange={(event) => setValue(event.currentTarget.value)}
-            placeholder={props.sourcePlaceHolder ?? "Riddle Answer Here...."}
+            placeholder={props.riddle.sourcePlaceHolder ?? "Riddle Answer Here...."}
           ></TextInput>
           <Popover position="right" withArrow>
             <Popover.Target>
@@ -258,7 +234,7 @@ export default function RiddleCard(props: RiddleCardProps) {
                 Submit
               </Button>
             </Popover.Target>
-            {value !== props.solution && (
+            {value !== props.riddle.solution && (
               <Popover.Dropdown>
                 <div className="px-1 py-2">
                   <div className="text-small font-bold">Wrong, try again!</div>
@@ -274,7 +250,7 @@ export default function RiddleCard(props: RiddleCardProps) {
             Solution:
           </h1>
           <h1 color="success" className="text-medium font-light">
-            {props.solution}
+            {props.riddle.solution}
           </h1>
         </Card.Section>
       )}

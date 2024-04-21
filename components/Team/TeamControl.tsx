@@ -18,7 +18,7 @@ export async function CreateTeam(formData: FormData, userID?: string) {
   });
 
   if (userID) {
-    registerMember(out.id, userID);
+    registerMember(out.id);
   }
   return out;
 }
@@ -42,7 +42,7 @@ export async function EditTeam(formData: FormData, userID?: string) {
   }
 }
 
-export async function AddTeamUserEntry(riddleID: string, teamID: string) {
+export async function AddTeamUserEntry(riddleID: number, teamID: string) {
   const session = await getServerSession();
 
   if (session) {
@@ -50,7 +50,7 @@ export async function AddTeamUserEntry(riddleID: string, teamID: string) {
       data: {
         answeredAt: new Date(),
         riddle: { connect: { id: riddleID } },
-        answeredBy: { connect: { email: session.user!.email } },
+        answeredBy: { connect: { email: session.user!.email! } },
         teamEntry: { connect: { id: teamID } },
       },
     });
@@ -58,7 +58,7 @@ export async function AddTeamUserEntry(riddleID: string, teamID: string) {
   }
 }
 
-export async function RemoveTeamUserEntry(riddleID: string, teamID: string) {
+export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {
   const session = await getServerSession();
 
   if (session) {
@@ -86,8 +86,8 @@ export async function registerMember(teamId: string) {
     include: { members: true },
   });
 
-  let ids = [{ email: session?.user?.email }];
-  teams.members.forEach((member) => ids.push({ email: member.email }));
+  let ids = [{ email: session?.user?.email! }];
+  teams.members.forEach((member) => ids.push({ email: member.email! }));
 
   const teamEntry = await prisma.teamEntry.update({
     where: { id: teamId },
