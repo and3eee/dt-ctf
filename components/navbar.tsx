@@ -1,11 +1,10 @@
-
-
 import AdminCheck from "./Auth/AdminCheck";
 import {
   Chip,
   Kbd,
   NavLink,
   Paper,
+  ScrollArea,
   Space,
   Stack,
   TextInput,
@@ -36,48 +35,49 @@ export const Navbar = () => {
   );
 
   return (
-    <Paper>
-      <Stack gap={0}>
-        <NavLink
-          href="/"
-          label="Go to Homepage"
-          leftSection={<RiHome2Fill size="1rem" />}
-        />
-        <AdminCheck>
-          <Space h={"1rem"} />
-          <Title order={5}>Admin Utils</Title>
+    <Paper >
+      <ScrollArea.Autosize   mah="78%" scrollbarSize={2}  offsetScrollbars >
+        <Stack gap={0}>
+          <NavLink
+            href="/"
+            label="Go to Homepage"
+            leftSection={<RiHome2Fill size="1rem" />}
+          />
+          <AdminCheck>
+            <Space h={"1rem"} />
+            <Title order={5}>Admin Utils</Title>
 
-          <NavLink
-            href="/admin/events"
-            label="Event List"
-            leftSection={<RiCalendar2Fill size="1rem" />}
-          />
-          <NavLink
-            href="/admin/users"
-            label="User List"
-            leftSection={<RiCalendar2Fill size="1rem" />}
-          />
-        </AdminCheck>
-        <ContributorCheck>
-          <Space h={"1rem"} />
-          <Title order={5}>Contributor Utils</Title>
+            <NavLink
+              href="/admin/events"
+              label="Event List"
+              leftSection={<RiCalendar2Fill size="1rem" />}
+            />
+            <NavLink
+              href="/admin/users"
+              label="User List"
+              leftSection={<RiCalendar2Fill size="1rem" />}
+            />
+          </AdminCheck>
+          <ContributorCheck>
+            <Space h={"1rem"} />
+            <Title order={5}>Contributor Utils</Title>
 
-          <NavLink
-            href="/admin/riddles"
-            label="Riddle List"
-            leftSection={<RiMessage3Line size="1rem" />}
-          />
-          <NavLink
-            href="/admin/docs/"
-            label="Docs"
-            leftSection={<RiBook2Line size="1rem" />}
-          />
-                  <RiddleResourceList/>
-        
-            <RiddleSolutionGenerator/>
-  
-        </ContributorCheck>
-      </Stack>
+            <NavLink
+              href="/admin/riddles"
+              label="Riddle List"
+              leftSection={<RiMessage3Line size="1rem" />}
+            />
+            <NavLink
+              href="/admin/docs/"
+              label="Docs"
+              leftSection={<RiBook2Line size="1rem" />}
+            />
+            <RiddleResourceList />
+
+            <RiddleSolutionGenerator />
+          </ContributorCheck>
+        </Stack>
+      </ScrollArea.Autosize >
     </Paper>
   );
 };

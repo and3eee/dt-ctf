@@ -1,7 +1,7 @@
 "use client";
 
 import { prisma } from "@/lib/prisma";
-import { Button, Collapse, Group, Loader, NavLink, Stack } from "@mantine/core";
+import { Button, Collapse, Group, Loader, NavLink, ScrollArea, Stack } from "@mantine/core";
 import { RiddleResource } from "@prisma/client";
 import RiddleResourceCard from "./RiddleResourceCard";
 import { GetRiddleResources } from "./RRController";
@@ -36,6 +36,7 @@ export default function RiddleResourceList() {
           />
         
         <Collapse in={opened}>
+           
             <Stack gap="md">
           <Suspense fallback={<Loader />}>
             <RiddleResourceModal
@@ -55,6 +56,7 @@ export default function RiddleResourceList() {
               ))}
           </Suspense>
           </Stack>
+        
         </Collapse>
       </Stack>
     );
