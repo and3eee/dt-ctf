@@ -12,22 +12,25 @@ datasource db {
 
 model Account {
   id                       String  @id @default(cuid())
-  userId                   String
+  userId                   String  @unique
   type                     String
   provider                 String
   providerAccountId        String
   refresh_token            String? @db.Text
   access_token             String? @db.Text
   expires_at               Int?
-  refresh_token_expires_in Int?
   token_type               String?
   scope                    String?
   id_token                 String? @db.Text
   session_state            String?
+  refresh_token_expires_in Int?
+  user                     User?   @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -35,24 +38,35 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model User {
-  id          String      @id @unique @default(cuid())
-  email       String      @unique
-  password    String
-  name        String
+  id            String    @id @default(cuid())
+  name          String?
+  username      String?   @unique
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  Session       Session[]
+  Account       Account?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role        Role        @default(USER)
+  TeamEntry   TeamEntry?  @relation(fields: [teamEntryId], references: [id])
+  teamEntryId String?
   bucket      String?
   skillLevel  Int?        @default(5)
   Event       Event?      @relation(fields: [eventId], references: [id])
   eventId     String?
   UserEntry   UserEntry[]
-  accounts    Account[]
-  sessions    Session[]
-  role        Role        @default(USER)
-  TeamEntry   TeamEntry?  @relation(fields: [teamEntryId], references: [id])
-  teamEntryId String?
 }
 
 model VerificationToken {
@@ -82,6 +96,8 @@ model Riddle {
   Event              Event?           @relation(fields: [eventId], references: [id])
   eventId            String?
   RiddleResource     RiddleResource[]
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 }
 
 model RiddleResource {
@@ -92,6 +108,8 @@ model RiddleResource {
   AuthInfo    String?
   owner       String?
   riddles     Riddle[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Event {
@@ -113,6 +131,8 @@ model Event {
   riddles           Riddle[]
   teamSize          Int         @default(3)
   public            Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 }
 
 model TeamEntry {
@@ -122,6 +142,8 @@ model TeamEntry {
   event       Event       @relation(fields: [eventId], references: [id])
   eventId     String
   userEntries UserEntry[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model UserEntry {
@@ -133,6 +155,8 @@ model UserEntry {
   riddleId    Int
   teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum Role {
@@ -141,7 +165,6 @@ enum Role {
   ORGANIZER
   FLAGMASTER
 }
-
 
 enum EventType {
   CTF
