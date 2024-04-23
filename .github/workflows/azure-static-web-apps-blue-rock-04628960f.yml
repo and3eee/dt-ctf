@@ -32,6 +32,12 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        env:
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_AZURE_AD_ID: ${{ secrets.AUTH_AZURE_AD_ID }}
+          AUTH_AZURE_AD_SECRET: ${{ secrets.AUTH_AZURE_AD_SECRET }}
+          AUTH_AZURE_AD_TENANT_ID:  ${{ secrets.AUTH_AZURE_AD_TENANT_ID }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
