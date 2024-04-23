@@ -1,9 +1,7 @@
-import EventRiddleEdit from "@/components/Event/EventRiddleEdit";
-import RiddleList from "@/components/Riddle/RiddleList";
-import SmallTeamList from "@/components/Team/SmallTeamList";
+
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
-import { Divider } from "@nextui-org/react";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
@@ -24,7 +22,7 @@ export default async function EventAdmin({
       <div className="flex flex-col gap-5">
         <p className="text-3xl">{event.name} Admin </p>
         <p className="text-xl">Riddles</p>
-        <RiddleList riddles={riddles} defaultSelected={event.riddles} eventID={event.id} admin/>
+      
         <p className="text-xl">Teams</p>
         <TeamList
           id={event.id}
