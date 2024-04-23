@@ -3,11 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
+    serverComponentsExternalPackages: ["@prisma/client"],
   },
-  typescript:{
-    ignoreBuildErrors: true
-  }
+
+  output: "standalone",
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;

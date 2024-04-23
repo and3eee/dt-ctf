@@ -1,6 +1,6 @@
 "use server";
 
-import { User } from ".prisma/client";
+import { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function GetUsers() {

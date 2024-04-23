@@ -5,7 +5,8 @@ import { GetUserTeamID } from "@/components/Event/EventControl";
 import EventLeaderBoard from "@/components/Event/EventLeaderBoard";
 import EventStateButton from "@/components/Event/EventStateButton";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 30;

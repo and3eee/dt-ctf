@@ -37,7 +37,6 @@ export default function Shell(props: { children: any }) {
   const [opened, { toggle }] = useDisclosure(false);
   const [themeHold, setTheme] = useState(theme);
   const trigger = () => {
-  
     setTheme(supersecrettheme);
   };
   return (
@@ -53,7 +52,7 @@ export default function Shell(props: { children: any }) {
       >
         <AppShell.Header h={"5rem"}>
           <Group grow h={"5rem"}>
-            <Group miw={"7rem"} justify="center" grow maw={"10rem"}>
+            <Group miw={"7rem"} p={8} justify="center" grow maw={"10rem"}>
               {themeHold !== supersecrettheme && (
                 <ActionIcon
                   radius={"xl"}
@@ -65,7 +64,7 @@ export default function Shell(props: { children: any }) {
                   <RiFlag2Fill />
                 </ActionIcon>
               )}
-                    {themeHold == supersecrettheme && (
+              {themeHold == supersecrettheme && (
                 <ActionIcon
                   radius={"xl"}
                   variant="gradient"
@@ -73,8 +72,8 @@ export default function Shell(props: { children: any }) {
                   aria-label="Gradient action icon"
                   gradient={{ from: "red", to: "red", deg: 192 }}
                 >
-                  <RiEye2Fill size="md"/>
-                  <RiEye2Fill size="md"/>
+                  <RiEye2Fill size="md" />
+                  <RiEye2Fill size="md" />
                 </ActionIcon>
               )}
 
