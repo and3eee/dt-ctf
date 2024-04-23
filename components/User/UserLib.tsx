@@ -4,6 +4,7 @@ import {
   Card,
   Divider,
   Flex,
+  Group,
   Menu,
   Stack,
   Text,
@@ -28,23 +29,25 @@ export function User(props: {
   description: string;
   color: string;
 }) {
+  let initials: string = props
+    .name!.match(/(\b\S)?/g)
+    .join("")
+    .toUpperCase();
+
   return (
-    <Menu shadow="md" width={"10rem"}>
+    <Menu shadow="md">
       <Menu.Target>
-        <Card withBorder  maw={"10rem"} radius={"lg"} m={2} p={8}>
-          <Flex>
-            <Stack gap="0">
+        <Card withBorder maw={"20rem"} radius={"lg"} m={2} p={8}>
+          <Group grow>
+            <Stack gap="0" maw={"15rem"}>
               <Text size="md">{props.name}</Text>
               <Divider />
               <Text size="xs">{props.description}</Text>
             </Stack>
-            <Avatar color={props.color}>
-              {props.name
-                .split(" ")
-                .map((word) => word[0])
-                .join(".")}
+            <Avatar maw={"2rem"} color={props.color}>
+              {initials}
             </Avatar>
-          </Flex>
+          </Group>
         </Card>
       </Menu.Target>
       <Menu.Dropdown>
@@ -80,7 +83,7 @@ export function User(props: {
           </Menu.Item>
         </AdminCheck>
         <Menu.Item>
-          <SignOutButton/>
+          <SignOutButton />
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

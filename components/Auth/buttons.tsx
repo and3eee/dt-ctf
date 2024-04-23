@@ -64,26 +64,15 @@ export function SignInButton() {
     );
   }
 
-  return (
-    <div className="flex flex-row gap-2">
-      <Button onClick={() => signIn()}>Sign In</Button>
-      {SignUpButton()}
-    </div>
-  );
+  return <Button radius="xl" maw={"6rem"} onClick={() => signIn()}>Sign In</Button>;
 }
 
 export function SignOutButton() {
   return (
     <div>
-      <Button color={"primary"} onClick={() => signOut()}>
+      <Button color={"red"} onClick={() => signOut()}>
         Sign Out
       </Button>
     </div>
   );
-}
-
-export function SignUpButton() {
-  const router = useRouter();
-
-  return <Button onClick={() => router.replace("/signup")}>Sign Up</Button>;
 }
