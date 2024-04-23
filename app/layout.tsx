@@ -1,11 +1,11 @@
 import "@mantine/core/styles.css";
-import { Navbar } from "@/components/navbar";
 
-import AuthProvider from "./AuthProvider";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { theme } from "@/theme";
+
+
+
 import Shell from "@/components/Shell";
-import { useState } from "react";
+import AuthProvider from "@/components/AuthProvider";
+
 export const metadata = {
   title: "Capture The Flag",
   description: "",
