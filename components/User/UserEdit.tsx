@@ -5,12 +5,14 @@ import {
   Select,
   Slider,
   Stack,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { User } from "@prisma/client";
 import { UpdateUser } from "./UserControl";
+import AdminCheck from "../Auth/AdminCheck";
 
 export default function UserEdit(props: { user: User; onClick?: () => void }) {
   const form = useForm<User>({
@@ -28,7 +30,7 @@ export default function UserEdit(props: { user: User; onClick?: () => void }) {
       <Stack>
         <Group grow>
           <TextInput label="Name" {...form.getInputProps("name")} />
-          <TextInput label="Email" {...form.getInputProps("email")} />
+          <TextInput disabled label="Email" {...form.getInputProps("email")} />
         </Group>
         <Group grow>
           <Select
@@ -37,22 +39,28 @@ export default function UserEdit(props: { user: User; onClick?: () => void }) {
             {...form.getInputProps("bucket")}
             data={["Agent", "Environment", "DEM", "Platform", "none"]}
           />
-                    <Select
-            label="Role"
-            placeholder="Pick a role"
-            {...form.getInputProps("role")}
-            data={["USER", "FLAGMASTER", "ORGANIZER", "ADMIN"]}
-          />
-         
+          <AdminCheck>
+            <Select
+              label="Role"
+              placeholder="Pick a role"
+              {...form.getInputProps("role")}
+              data={["USER", "FLAGMASTER", "ORGANIZER", "ADMIN"]}
+            />
+          </AdminCheck>
         </Group>
-        <Slider
-        mt={"2rem"}
+        <Stack gap={0}>
+          <Text>Skill Level</Text>
+          <Text c="dimmed" size="xs">
+            1-10, 10 being SME
+          </Text>
+          <Slider
+            mt={"2rem"}
             labelAlwaysOn
             min={1}
             max={10}
-            label="Skill Level"
             {...form.getInputProps("skillLevel")}
           />
+        </Stack>
         <Button type="submit">Update User</Button>
       </Stack>
     </form>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -15,7 +17,7 @@ export default function UserModal(props: {
       <Modal opened={opened} onClose={close} title="User Editor">
         <UserEdit user={props.user} onClick={props.onResolve} />
       </Modal>
-      <Button onClick={open}>Edit</Button>
+      <Button maw={"8rem"} onClick={open}>Edit</Button>
     </>
   );
 }

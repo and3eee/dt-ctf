@@ -1,52 +1,35 @@
-import NextAuth from "next-auth/next";
-import type { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import AzureAd from "next-auth/providers/azure-ad";
 
-export const authOptions: NextAuthOptions = {
+// we use the common tenant to accept any Microsoft account
+const microsoftTenantId = process.env.AUTH_AZURE_AD_TENANT_ID;
+const microsoftConfig = AzureAd({
+  // copied from the Essentials section in the Azure Console, Microsoft Entra ID,
+  // make an App Registration, get the client ID after done with that
+  clientId: process.env.AUTH_AZURE_AD_ID,
+  clientSecret: process.env.AUTH_AZURE_AD_SECRET,
+  tenantId: microsoftTenantId,
+  // need to override these URLs to skip the Discovery phase, to sidestep OIDC
+  // validation issues
+  token: {
+    url: `https://login.microsoftonline.com/${microsoftTenantId}/oauth2/v2.0/token`,
+  },
+  userinfo: { url: "https://graph.microsoft.com/oidc/userinfo" },
+  authorization: {
+    url: `https://login.microsoftonline.com/${microsoftTenantId}/oauth2/v2.0/authorize`,
+    params: { scope: "openid profile email User.Read" },
+  },
+  issuer: `https://login.microsoftonline.com/${microsoftTenantId}/v2.0`,
+});
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider({
-      // The name to display on the sign in form (e.g. "Sign in with...")
-      name: "Credentials",
-      // `credentials` is used to generate a form on the sign in page.
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
-      credentials: {
-        username: {
-          label: "Email",
-          type: "email",
-          placeholder: "jsmith@dynatrace.com",
-        },
-        password: { label: "Pin", type: "number" },
-      },
-      async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-
-        if (credentials?.username && credentials.password) {
-          const user = await prisma.user.findFirst({
-            where: {
-              email: credentials.username,
-              password: credentials.password,
-            },
-          });
-
-          if (user) {
-            // Any object returned will be saved in `user` property of the JWT
-            return user;
-          } else {
-            // If you return null then an error will be displayed advising the user to check their details.
-            return null;
-
-            // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
-          }
-        } else {
-          return null;
-        }
-      },
-    }),
+   microsoftConfig,
   ],
   session: { strategy: "jwt" },
   callbacks: {
@@ -59,9 +42,9 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, user, token }: any) => {
-      if(token){
-        session.user.role = token.user.role
-      } 
+      if (token) {
+        session.user.role = token.user.role;
+      }
       return session;
     },
     //   async signIn({ user, account, profile, email, credentials }) {
@@ -73,7 +56,6 @@ export const authOptions: NextAuthOptions = {
     //     }
     //   },
   },
-};
+});
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export const { GET, POST } = handlers;

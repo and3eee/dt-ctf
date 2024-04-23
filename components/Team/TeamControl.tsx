@@ -1,9 +1,11 @@
 "use server";
 
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { TeamProps, EventProps } from "@/types";
 import { UserEntry } from "@prisma/client";
-import { getServerSession } from "next-auth";
+
+
 
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
@@ -43,7 +45,7 @@ export async function EditTeam(formData: FormData, userID?: string) {
 }
 
 export async function AddTeamUserEntry(riddleID: number, teamID: string) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (session) {
     let out = await prisma.userEntry.create({
@@ -59,7 +61,7 @@ export async function AddTeamUserEntry(riddleID: number, teamID: string) {
 }
 
 export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (session) {
     let out = await prisma.userEntry.deleteMany({
@@ -79,7 +81,7 @@ export async function purgeEmptyTeams(eventId: string) {
 }
 
 export async function registerMember(teamId: string) {
-  const session = await getServerSession();
+  const session = await auth();
 
   const teams = await prisma.teamEntry.findFirstOrThrow({
     where: { id: teamId },

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import EventSideCard from "@/components/Event/EventSideCard";
-import { getServerSession } from "next-auth";
+
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function EventLayout({
