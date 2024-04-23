@@ -52,7 +52,7 @@ model User {
   username      String?   @unique
   email         String?   @unique
   emailVerified DateTime?
-  image         String?
+  image         String?   @db.Text
   Session       Session[]
   Account       Account?
 

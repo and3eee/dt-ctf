@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User } from "../User/UserLib";
+import UserCard from "../User/UserCard";
 
 export function SignInButton() {
   const { data: session, status }: any = useSession();
@@ -22,46 +23,12 @@ export function SignInButton() {
       .match(/(\b\S)?/g)
       .join("")
       .toUpperCase();
+      console.log(session)
 
-    switch (session.user.role) {
-      case "USER":
-        return (
-          <Tooltip label={session.user?.name ?? "Unknown"}>
-            <User
-              name={session.user.name}
-              description={session.user.email}
-              color="blue"
-            />
-          </Tooltip>
-        );
-      case "ORGANIZER":
-        return (
-          <Tooltip label={session.user?.name ?? "Unknown"}>
-            <User
-              name={session.user.name}
-              description={session.user.email}
-              color="purple"
-            />
-          </Tooltip>
-        );
-      case "ADMIN":
-        return (
-          <Tooltip label={session.user?.name + " ADMIN" ?? "Unknown"}>
-            <User
-              name={session.user.name}
-              description={session.user.email}
-              color="red"
-            />
-          </Tooltip>
-        );
-    }
-    return (
-      <div>
-        <Tooltip label={session.user?.name ?? "Unknown"}>
-          <Avatar>{initials ?? "Unknown"} </Avatar>
-        </Tooltip>
-      </div>
-    );
+
+      return <UserCard user={session.user}/>
+  
+    
   }
 
   return <Button radius="xl" maw={"6rem"} onClick={() => signIn()}>Sign In</Button>;
