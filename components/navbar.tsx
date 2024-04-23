@@ -36,7 +36,7 @@ export const Navbar = () => {
 
   return (
     <Paper >
-      <ScrollArea.Autosize   mih="50rem" mah="78%" scrollbarSize={2}  offsetScrollbars >
+     
         <Stack gap={0}>
           <NavLink
             href="/"
@@ -72,12 +72,13 @@ export const Navbar = () => {
               label="Docs"
               leftSection={<RiBook2Line size="1rem" />}
             />
+            
             <RiddleResourceList />
 
             <RiddleSolutionGenerator />
           </ContributorCheck>
         </Stack>
-      </ScrollArea.Autosize >
+     
     </Paper>
   );
 };

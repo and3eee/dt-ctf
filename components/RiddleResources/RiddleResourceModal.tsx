@@ -14,12 +14,14 @@ export default function RiddleResourceModal(props: {
   const session = useSession();
   if (props.createNew) {
     const newRiddle: RiddleResource = {
-        id: 0,
-        name: "",
-        description: null,
-        link: null,
-        AuthInfo: null,
-        owner: null
+      id: 0,
+      name: "",
+      description: null,
+      link: null,
+      AuthInfo: null,
+      owner: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     return (
       <>

@@ -1,15 +1,10 @@
 "use client";
 
-import UserSignUp from "@/app/signup/UserSignUp";
-import { Tooltip, Avatar, Button } from "@mantine/core";
 
-import { getToken } from "next-auth/jwt";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { User } from "../User/UserLib";
+
 import UserCard from "../User/UserCard";
+import { Button, Center } from "@mantine/core";
 
 export function SignInButton() {
   const { data: session, status }: any = useSession();
@@ -36,10 +31,10 @@ export function SignInButton() {
 
 export function SignOutButton() {
   return (
-    <div>
+    <Center>
       <Button color={"red"} onClick={() => signOut()}>
         Sign Out
       </Button>
-    </div>
+    </Center>
   );
 }
