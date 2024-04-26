@@ -116,3 +116,8 @@ export async function GetRiddles(includeResources?: boolean) {
   });
   return out;
 }
+
+
+export async function DeleteRiddle(riddle:Riddle){
+  return await prisma.riddle.delete({where:{id:riddle.id}})
+}

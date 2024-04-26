@@ -30,7 +30,7 @@ import {
 import { Riddle, RiddleResource } from "@prisma/client";
 import { useForm } from "@mantine/form";
 
-import { CreateRiddle, EditRiddle, UpdateResourceLinks } from "./RiddleControl";
+import { CreateRiddle, DeleteRiddle, EditRiddle, UpdateResourceLinks } from "./RiddleControl";
 import { GetRiddleResources } from "../RiddleResources/RRController";
 
 interface RiddleWithResourceProps extends Riddle {
@@ -86,6 +86,13 @@ export default function RiddleEdit(props: {
     loadResources();
     return [];
   });
+
+
+  const handleDelete = async() => {
+
+    const reply = await DeleteRiddle(props.riddle)
+    close();
+  }
 
   var initColor: string;
   switch (props.riddle.difficulty) {
@@ -280,6 +287,9 @@ export default function RiddleEdit(props: {
           <Center>
             <Button type="submit" color="green">
               Submit
+            </Button>
+            <Button  color="red" onClick={handleDelete}>
+              Delete
             </Button>
           </Center>
         </Card.Section>
