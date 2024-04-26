@@ -33,9 +33,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    //   redirect: async ({ url, baseUrl }) => {
-    //     return baseUrl;
-    //   },
+
     jwt: async ({ token, user, account, profile, isNewUser }) => {
       if (user) token.user = user;
 
@@ -47,14 +45,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
       return session;
     },
-    //   async signIn({ user, account, profile, email, credentials }) {
-    //     if (user) {
-    //       return true;
-    //     } else {
-    //       // Return false to display a default error message
-    //       return false;
-    //     }
-    //   },
+
   },
 });
 
