@@ -29,8 +29,12 @@ export default async function RiddlePage() {
           <RiddleListMetrics riddles={riddles} />
           <RiddleResourceList resources={resources} />
 
-          <RiddleModal buttonText={"Create New Riddle"} createNew />
-          <TableSort riddles={riddles} />
+          <RiddleModal
+            resources={resources}
+            buttonText={"Create New Riddle"}
+            createNew
+          />
+          <TableSort riddles={riddles} resources={resources} />
         </Stack>
       </ContributorCheck>
     );

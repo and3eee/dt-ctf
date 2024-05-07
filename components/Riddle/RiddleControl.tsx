@@ -53,7 +53,7 @@ export async function UpdateResourceLinks(riddle: any, resources: string[]) {
   });
   const updateMessage = await prisma.riddle.update({
     where: { id: riddle.id },
-    data: { RiddleResource: { connect: ids } },
+    data: { RiddleResource: { connect: ids } }, include:{ RiddleResource:true}
   });
 
   return updateMessage;

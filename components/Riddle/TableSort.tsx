@@ -24,7 +24,7 @@ import {
   RiRadioButtonLine,
   RiSearch2Fill,
 } from "react-icons/ri";
-import { Riddle } from "@prisma/client";
+import { Riddle, RiddleResource } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import RiddleModal from "./RiddleModal";
 import { SetRiddleSet } from "../Event/EventControl";
@@ -124,6 +124,7 @@ function sortData(
 export function TableSort(props: {
   riddles: Riddle[];
   defaultSelected?: Riddle[];
+  resources:RiddleResource[];
   eventID?: string;
 }) {
   const { data: session, status }: any = useSession();
@@ -131,7 +132,7 @@ export function TableSort(props: {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Riddle | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
-
+  
   const [values, handlers] = useListState<Riddle>(props.riddles);
 
   const setSorting = (field: keyof Riddle) => {
@@ -195,7 +196,7 @@ export function TableSort(props: {
       {admin && <Table.Td>{row.sourceURL}</Table.Td>}
       <Table.Td>
         {(admin || (contributor && row.author == session.user.name)) && (
-          <RiddleModal buttonText={"Edit"} riddle={row} onClose={refreshList} />
+          <RiddleModal resources={props.resources} buttonText={"Edit"} riddle={row} onClose={refreshList} />
         )}
       </Table.Td>
     </Table.Tr>,

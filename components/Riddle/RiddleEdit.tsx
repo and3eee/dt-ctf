@@ -1,7 +1,5 @@
 "use client";
 
-import { RiddleProps } from "@/types";
-
 import React, { useState } from "react";
 6;
 
@@ -12,13 +10,10 @@ import {
   Switch,
   Button,
   TextInput,
-  Slider,
   Select,
   NumberInput,
   SegmentedControl,
-  getGradient,
-  useMantineTheme,
-  Chip,
+  Text,
   Group,
   Grid,
   Center,
@@ -27,28 +22,27 @@ import {
   Flex,
   MultiSelect,
 } from "@mantine/core";
-import { Riddle, RiddleResource } from "@prisma/client";
+import { RiddleResource } from "@prisma/client";
 import { useForm } from "@mantine/form";
 
-import { CreateRiddle, DeleteRiddle, EditRiddle, UpdateResourceLinks } from "./RiddleControl";
-import { GetRiddleResources } from "../RiddleResources/RRController";
-
-interface RiddleWithResourceProps extends Riddle {
-  RiddleResource: string[];
-}
-interface RiddleWithResourceInputProps extends Riddle {
-  RiddleResource: RiddleResource[];
-}
+import {
+  CreateRiddle,
+  DeleteRiddle,
+  EditRiddle,
+  UpdateResourceLinks,
+} from "./RiddleControl";
+import { modals } from "@mantine/modals";
 
 export default function RiddleEdit(props: {
-  riddle: RiddleWithResourceInputProps;
+  riddle: any;
   onClick?: () => void;
+  resources?: RiddleResource[];
 }) {
   const mappedInit: string[] = props.riddle.RiddleResource
-    ? props.riddle.RiddleResource.map(
-        (resource: RiddleResource) => resource.name
-      )
+    ? props.riddle.RiddleResource.map((resource: RiddleResource) => resource.name)
     : [];
+
+  
   const form = useForm({
     mode: "uncontrolled",
     validateInputOnChange: true,
@@ -78,21 +72,27 @@ export default function RiddleEdit(props: {
       },
     },
   });
-  const loadResources = async () => {
-    const data = await GetRiddleResources();
-    setResources(data);
-  };
-  const [resources, setResources] = useState<RiddleResource[]>(() => {
-    loadResources();
-    return [];
-  });
 
 
-  const handleDelete = async() => {
 
-    const reply = await DeleteRiddle(props.riddle)
-    close();
-  }
+
+
+  const deleteModal = () =>
+    modals.openConfirmModal({
+      title: "Please confirm your action",
+      children: (
+        <Text size="sm">
+          This action is so important that you are required to confirm it with a
+          modal. Please click one of these buttons to proceed.
+        </Text>
+      ),
+      labels: { confirm: "Confirm", cancel: "Cancel" },
+      onCancel: () => {},
+      onConfirm: () => {
+        DeleteRiddle(props.riddle);
+        if (props.onClick) props.onClick();
+      },
+    });
 
   var initColor: string;
   switch (props.riddle.difficulty) {
@@ -140,8 +140,9 @@ export default function RiddleEdit(props: {
       if (props.onClick) props.onClick();
     } else {
       const reply = await EditRiddle(riddle);
-      if (riddle.RiddleResource)
-        await UpdateResourceLinks(riddle, riddle.RiddleResource);
+      if (riddle.RiddleResource){
+        const update =  await UpdateResourceLinks(riddle, riddle.RiddleResource);
+      }
       if (props.onClick) props.onClick();
     }
   };
@@ -274,7 +275,7 @@ export default function RiddleEdit(props: {
               <MultiSelect
                 label="Linked Resources"
                 placeholder="Selected Resource(s)"
-                data={resources.map((resource) => resource.name)}
+                data={props.resources?.map((resource) => resource.name)}
                 {...form.getInputProps("RiddleResource")}
                 searchable
               />
@@ -288,7 +289,7 @@ export default function RiddleEdit(props: {
             <Button type="submit" color="green">
               Submit
             </Button>
-            <Button  color="red" onClick={handleDelete}>
+            <Button color="red" onClick={deleteModal}>
               Delete
             </Button>
           </Center>

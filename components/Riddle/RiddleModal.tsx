@@ -5,20 +5,21 @@ import { RiddleProps } from "@/types";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import RiddleEdit from "./RiddleEdit";
-import { Riddle } from "@prisma/client";
+import { Riddle, RiddleResource } from "@prisma/client";
 import { useSession } from "next-auth/react";
-
 
 export default function RiddleModal(props: {
   buttonText: string;
   riddle?: Riddle;
+  resources?: RiddleResource[];
   createNew?: boolean;
   onClose?: () => void;
 }) {
   const [opened, { open, close }] = useDisclosure(false);
   const session = useSession();
+
   if (props.createNew) {
-    const newRiddle: Riddle = {
+    const newRiddle: any = {
       id: -1,
       riddle: "",
       difficulty: "none",
@@ -33,7 +34,7 @@ export default function RiddleModal(props: {
       sourceURL: null,
       sourcePlaceHolder: null,
       eventId: null,
-      showRiddleResource: false
+      showRiddleResource: false,
     };
     return (
       <>
@@ -44,10 +45,14 @@ export default function RiddleModal(props: {
           title="Create New Flag"
           centered
         >
-          <RiddleEdit riddle={newRiddle} onClick={() => {
+          <RiddleEdit
+            resources={props.resources}
+            riddle={newRiddle}
+            onClick={() => {
               if (props.onClose) props.onClose();
               close();
-            }} />
+            }}
+          />
         </Modal>
         <Button onClick={open}>{props.buttonText}</Button>
       </>
@@ -59,10 +64,11 @@ export default function RiddleModal(props: {
           size="auto"
           opened={opened}
           onClose={close}
-          title="Authentication"
+          title="Edit Flag"
           centered
         >
           <RiddleEdit
+            resources={props.resources}
             riddle={props.riddle!}
             onClick={() => {
               if (props.onClose) props.onClose();

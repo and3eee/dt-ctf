@@ -45,7 +45,7 @@ export default function CounterMetricWheel(props: {
     }
   });
 
-  console.log(count_dict);
+  
 
   return (
     <Stack align="center">
