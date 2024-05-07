@@ -6,7 +6,7 @@ import { Riddle } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function CreateRiddle(formData: Riddle, resources?: string[]) {
+export async function CreateRiddle(formData: any, resources?: string[]) {
   //Ignore ID as its only used in update
 
   const out = await prisma.riddle.create({
@@ -39,7 +39,7 @@ export async function CreateRiddle(formData: Riddle, resources?: string[]) {
   return out;
 }
 
-export async function UpdateResourceLinks(riddle: Riddle, resources: string[]) {
+export async function UpdateResourceLinks(riddle: any, resources: string[]) {
   const connectIds = await prisma.riddleResource.findMany({
     where: { name: { in: resources } },
   });
@@ -74,7 +74,7 @@ export async function GenerateNewSolution() {
   return "ctf_" + gen;
 }
 
-export async function EditRiddle(formData: Riddle) {
+export async function EditRiddle(formData: any) {
   if (formData.id?.toString() == "NEW") return CreateRiddle(formData);
   else {
     //Logic to update a riddle

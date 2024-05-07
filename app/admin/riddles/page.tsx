@@ -11,22 +11,27 @@ import { Riddle } from "@prisma/client";
 import ContributorCheck from "@/components/Auth/ContributorCheck";
 import { GetRiddleResources } from "@/components/RiddleResources/RRController";
 import { GetRiddles } from "@/components/Riddle/RiddleControl";
+import RiddleResourceList from "@/components/RiddleResources/RiddleResourceList";
+import CounterMetricWheel from "@/components/General/CounterMetricWheel";
+import RiddleListMetrics from "@/components/Riddle/RiddleListMetrics";
+import { Stack } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 5;
-
-
 
 export default async function RiddlePage() {
   const riddles = await GetRiddles(true);
-  console.log(riddles);
+  const resources = await GetRiddleResources();
+
   if (riddles)
     return (
       <ContributorCheck>
-        <div className="grid gap-5 justify-center align-center">
+        <Stack>
+          <RiddleListMetrics riddles={riddles} />
+          <RiddleResourceList resources={resources} />
+
           <RiddleModal buttonText={"Create New Riddle"} createNew />
           <TableSort riddles={riddles} />
-        </div>
+        </Stack>
       </ContributorCheck>
     );
 }

@@ -22,6 +22,8 @@ import ContributorCheck from "./Auth/ContributorCheck";
 import RiddleSolutionGenerator from "./Riddle/RiddleSolutionGen";
 import RiddleResourceList from "./RiddleResources/RiddleResourceList";
 
+export const dynamic = 'force-dynamic'
+
 export const Navbar = () => {
   const searchInput = (
     <TextInput
@@ -73,7 +75,6 @@ export const Navbar = () => {
               leftSection={<RiBook2Line size="1rem" />}
             />
             
-            <RiddleResourceList />
 
             <RiddleSolutionGenerator />
           </ContributorCheck>

@@ -49,7 +49,7 @@ export default function RiddleEdit(props: {
         (resource: RiddleResource) => resource.name
       )
     : [];
-  const form = useForm<RiddleWithResourceProps>({
+  const form = useForm({
     mode: "uncontrolled",
     validateInputOnChange: true,
     initialValues: {

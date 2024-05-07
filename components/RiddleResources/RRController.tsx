@@ -16,6 +16,10 @@ export async function CreateRiddleResource(resource: RiddleResource) {
   return out;
 }
 
+export async function DeleteResource(resource: RiddleResource) {
+  return await prisma.riddleResource.delete({ where: { id: resource.id } });
+}
+
 export async function EditRiddleResource(resource: RiddleResource) {
   const out = await prisma.riddleResource.update({
     where: { id: resource.id },

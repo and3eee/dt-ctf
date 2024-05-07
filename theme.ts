@@ -29,20 +29,8 @@ export const theme = createTheme({
       "#ca6e00",
       "#b05d00",
     ],
-    dark: [
-      "#DEDEDE",
-      "#C6C5C9",
-      "#ACABB5",
-      "#96969C",
-      "#7D7D87",
-      "#282834",
-      "#202028",
-      "#17181C",
-      "#0E0F10",
-      "#0C0C0D"
-    ],
   },
-  defaultRadius:"xl"
+  defaultRadius:"md"
 });
 
 export const supersecrettheme = createTheme({

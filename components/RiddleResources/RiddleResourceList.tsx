@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import {
   Button,
   Collapse,
+  Grid,
   Group,
   Loader,
   NavLink,
@@ -23,17 +24,14 @@ import {
   RiFile2Line,
 } from "react-icons/ri";
 
-export default function RiddleResourceList() {
-  const load = async () => {
-    const data = await GetRiddleResources();
-    updateResources(data);
-  };
+export default function RiddleResourceList(props: {
+  resources: RiddleResource[];
+}) {
   const [opened, { toggle }] = useDisclosure(false);
 
-  const [resources, updateResources] = useState<RiddleResource[]>(() => {
-    load();
-    return [];
-  });
+  const [resources, updateResources] = useState<RiddleResource[]>(
+    props.resources
+  );
 
   if (resources)
     return (
@@ -47,28 +45,35 @@ export default function RiddleResourceList() {
         />
 
         <Collapse in={opened}>
-          <ScrollArea.Autosize mah="50rem" scrollbarSize={2} offsetScrollbars>
-            <Stack gap="md">
+     <Stack gap="md">
+          <RiddleResourceModal
+            createNew
+            resource={{
+              id: 0,
+              name: "New Resource",
+              description: null,
+              link: null,
+              AuthInfo: null,
+              owner: null,
+            }}
+          />
+          <ScrollArea.Autosize h="30rem" scrollbarSize={2} offsetScrollbars>
+          
               <Suspense fallback={<Loader />}>
-                <RiddleResourceModal
-                  createNew
-                  resource={{
-                    id: 0,
-                    name: "New Resource",
-                    description: null,
-                    link: null,
-                    AuthInfo: null,
-                    owner: null,
-                  }}
-                />
-
-                {resources &&
-                  resources.map((resource: RiddleResource) => (
-                    <RiddleResourceCard key={resource.id} resource={resource} />
-                  ))}
+                <Grid  h="30rem" >
+                  {resources &&
+                    resources.map((resource: RiddleResource) => (
+                      <Grid.Col span={4} key={resource.id}>
+                        <RiddleResourceCard
+                          key={resource.id}
+                          resource={resource}
+                        />
+                      </Grid.Col>
+                    ))}
+                </Grid>
               </Suspense>
-            </Stack>
-          </ScrollArea.Autosize>
+           
+          </ScrollArea.Autosize> </Stack>
         </Collapse>
       </Stack>
     );

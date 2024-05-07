@@ -15,6 +15,7 @@ import {
   Tooltip,
   Button,
   Paper,
+  Title,
 } from "@mantine/core";
 import {
   RiArrowDownFill,
@@ -165,7 +166,7 @@ export function TableSort(props: {
       })
     );
     await handlers.setState(data);
-    console.log(values);
+    
     handlers.filter((item: Riddle) => {
       return keys(item).some((key) =>
         item[key]?.toString().toLowerCase().includes(value)
@@ -202,6 +203,8 @@ export function TableSort(props: {
 
   return (
     <Paper>
+      <Title order={3}>Flag List</Title>
+
       <ScrollArea h={"60%"}>
         <TextInput
           p={"2rem"}
@@ -228,7 +231,7 @@ export function TableSort(props: {
               >
                 ID{" "}
               </Th>
-              <Table.Th>Riddle</Table.Th>
+              <Table.Th>Flag Riddle</Table.Th>
               <Th
                 sorted={sortBy === "bucket"}
                 reversed={reverseSortDirection}

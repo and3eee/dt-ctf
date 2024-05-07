@@ -20,7 +20,7 @@ export const revalidate = 5;
 
 export default async function RiddlePage() {
   const users = await prisma.user.findMany();
-  console.log(users);
+  
   if (users)
     return (
       <AdminCheck>

@@ -8,7 +8,7 @@ export async function GetUsers() {
 }
 
 export async function UpdateUser(user: User) {
-    console.log(user)
+    
   return await prisma.user.update({
     where: { id: user.id },
     data: {

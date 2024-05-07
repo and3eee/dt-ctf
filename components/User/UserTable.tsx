@@ -146,7 +146,7 @@ export function UserTable(props: {
       })
     );
     await handlers.setState(data);
-    console.log(values);
+    
     handlers.filter((item: User) => {
       return keys(item).some((key) =>
         item[key]?.toString().toLowerCase().includes(value)

@@ -6,7 +6,7 @@ import RiddleEdit from "../Riddle/RiddleEdit";
 import RiddleResourceEdit from "./RiddleResourceEdit";
 
 export default function RiddleResourceModal(props: {
-  resource: RiddleResource;
+  resource: RiddleResource | any;
   createNew?: boolean;
   onClose?: () => void;
 }) {
@@ -62,7 +62,7 @@ export default function RiddleResourceModal(props: {
           />
         </Modal>
 
-        <Button onClick={open} h={"2rem"} w={"2rem"} p={0}>✏️</Button>
+        <Button onClick={open} h={"2rem"} maw={"3rem"} p={0}>Edit</Button>
       </>
     );
 }

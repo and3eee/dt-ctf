@@ -6,24 +6,41 @@ import {
   Textarea,
   Group,
   TextInput,
-  Select,
   Center,
-  Stack,
-  Title,
-  SegmentedControl,
-  Flex,
-  Switch,
+  Text,
   Button,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Riddle, RiddleResource } from "@prisma/client";
-import { CreateRiddleResource, EditRiddleResource } from "./RRController";
+import {
+  CreateRiddleResource,
+  DeleteResource,
+  EditRiddleResource,
+} from "./RRController";
+import { modals } from "@mantine/modals";
 
 export default function RiddleResourceEdit(props: {
   resource: RiddleResource;
   createNew?: boolean;
   onClick?: () => void;
 }) {
+  const openModal = () =>
+    modals.openConfirmModal({
+      title: "Please confirm your action",
+      children: (
+        <Text size="sm">
+          You are about to delete a resource, this will cause it to disconnect
+          from ever related flag. This cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => {
+        DeleteResource(props.resource);
+        if (props.onClick) props.onClick();
+      },
+    });
+
   const form = useForm<RiddleResource>({
     mode: "uncontrolled",
     initialValues: props.resource,
@@ -83,11 +100,14 @@ export default function RiddleResourceEdit(props: {
 
         <Divider />
         <Card.Section p={"1rem"}>
-          <Center>
+          <Group grow gap="xl">
             <Button type="submit" color="green">
               Submit
             </Button>
-          </Center>
+            <Button color="red" onClick={openModal}>
+              Delete
+            </Button>
+          </Group>
         </Card.Section>
       </Card>
     </form>

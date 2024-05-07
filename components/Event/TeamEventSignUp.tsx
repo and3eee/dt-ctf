@@ -20,7 +20,7 @@ const columns = [
 export default function TeamEventSignUp(props: TeamEventSignUpProps) {
 
   const router = useRouter()
-  console.log(props.active)
+  
   if(props.active){
     router.replace(`/${props.id}`)
   }

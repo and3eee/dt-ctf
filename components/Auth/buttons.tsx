@@ -18,7 +18,7 @@ export function SignInButton() {
       .match(/(\b\S)?/g)
       .join("")
       .toUpperCase();
-      console.log(session)
+      
 
 
       return <UserCard user={session.user}/>

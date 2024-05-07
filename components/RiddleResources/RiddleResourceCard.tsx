@@ -12,6 +12,7 @@ import {
 import { RiddleResource } from "@prisma/client";
 import { RiInformation2Fill, RiPencilLine } from "react-icons/ri";
 import RiddleResourceModal from "./RiddleResourceModal";
+import { modals } from "@mantine/modals";
 
 export default function RiddleResourceCard(props: {
   resource: RiddleResource;
@@ -24,22 +25,25 @@ export default function RiddleResourceCard(props: {
             {props.resource.id} : {props.resource.name}{" "}
           </Title>
           <RiddleResourceModal resource={props.resource} />
-
         </Group>
         <Divider />
         <Group grow>
-          <Stack gap={0}>
-            <Text size="xs" c="dimmed">
-              Owner:{" "}
-            </Text>
-            <Text size="md">{props.resource.owner}</Text>
-          </Stack>
-          {props.resource.AuthInfo && <Stack gap={0}>
-            <Text size="xs" c="dimmed">
-              AuthInfo:{" "}
-            </Text>
-            <Text size="xs">{props.resource.AuthInfo}</Text>
-          </Stack>}
+          {props.resource.owner && (
+            <Stack gap={0}>
+              <Text size="xs" c="dimmed">
+                Owner:{" "}
+              </Text>
+              <Text size="md">{props.resource.owner}</Text>
+            </Stack>
+          )}
+          {props.resource.AuthInfo && (
+            <Stack gap={0}>
+              <Text size="xs" c="dimmed">
+                AuthInfo:{" "}
+              </Text>
+              <Text size="xs">{props.resource.AuthInfo}</Text>
+            </Stack>
+          )}
 
           {props.resource.link && (
             <Stack>
@@ -53,15 +57,7 @@ export default function RiddleResourceCard(props: {
         <Text size="xs" c="dimmed">
           Description:{" "}
         </Text>
-        <Blockquote
-          radius={"xl"}
-          color="blue"
-          cite={"– " + props.resource.owner}
-          icon={<RiInformation2Fill />}
-          m="lg"
-        >
-          {props.resource.description}
-        </Blockquote>
+        <Text>{props.resource.description}</Text>
       </Stack>
     </Card>
   );
