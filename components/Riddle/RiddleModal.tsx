@@ -46,6 +46,8 @@ export default function RiddleModal(props: {
           centered
         >
           <RiddleEdit
+            createMode
+            
             resources={props.resources}
             riddle={newRiddle}
             onClick={() => {
@@ -61,11 +63,12 @@ export default function RiddleModal(props: {
     return (
       <>
         <Modal
-          size="auto"
+          size="medium"
           opened={opened}
           onClose={close}
           title="Edit Flag"
           centered
+          maw="30%"
         >
           <RiddleEdit
             resources={props.resources}

@@ -14,7 +14,7 @@ import { GetRiddles } from "@/components/Riddle/RiddleControl";
 import RiddleResourceList from "@/components/RiddleResources/RiddleResourceList";
 import CounterMetricWheel from "@/components/General/CounterMetricWheel";
 import RiddleListMetrics from "@/components/Riddle/RiddleListMetrics";
-import { Stack } from "@mantine/core";
+import { Center, Container, Stack } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
 
@@ -25,17 +25,19 @@ export default async function RiddlePage() {
   if (riddles)
     return (
       <ContributorCheck>
-        <Stack>
-          <RiddleListMetrics riddles={riddles} />
-          <RiddleResourceList resources={resources} />
+        <Center>
+          <Stack maw="90%" miw="75%" justify="center">
+            <RiddleListMetrics riddles={riddles} />
+            <RiddleResourceList resources={resources} />
 
-          <RiddleModal
-            resources={resources}
-            buttonText={"Create New Riddle"}
-            createNew
-          />
-          <TableSort riddles={riddles} resources={resources} />
-        </Stack>
+            <RiddleModal
+              resources={resources}
+              buttonText={"Create New Riddle"}
+              createNew
+            />
+            <TableSort riddles={riddles} resources={resources} />
+          </Stack>
+        </Center>
       </ContributorCheck>
     );
 }

@@ -7,25 +7,37 @@ import { AddTeamUserEntry, RemoveTeamUserEntry } from "../Team/TeamControl";
 import React from "react";
 import {
   Tooltip,
-  Chip,
+  Badge,
   Card,
   Button,
   Avatar,
   Divider,
+  Text,
   Input,
   Popover,
   TextInput,
+  ActionIcon,
+  Group,
+  Title,
+  Stack,
+  Grid,
+  getGradient,
 } from "@mantine/core";
-import { Riddle } from "@prisma/client";
+import { Riddle, RiddleResource } from "@prisma/client";
+import { RiDeleteBack2Fill } from "react-icons/ri";
+import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
+import { theme } from "@/theme";
 
 export default function RiddleCard(props: {
   answered?: boolean;
   answeredBy?: string;
   number?: number;
-  admin: boolean;
+  admin?: boolean;
   teamID?: string;
-  riddle: Riddle;
+  riddle: any;
+  preview?: boolean;
 }) {
+  console.log(props.riddle.RiddleResource);
   const router = useRouter();
   const [value, setValue] = React.useState("");
 
@@ -45,33 +57,46 @@ export default function RiddleCard(props: {
 
   function Difficulty() {
     if (props.riddle.difficulty) {
-      switch (props.riddle.difficulty) {
+      switch (props.riddle.difficulty.toLowerCase()) {
         case "easy":
-          return (
-            <Tooltip label="Difficulty">
-              <Chip color="success">Easy</Chip>
-            </Tooltip>
-          );
+          return <Badge variant="light" color="green">Easy</Badge>;
         case "medium":
-          return (
-            <Tooltip label="Difficulty">
-              <Chip color="warning">Medium</Chip>
-            </Tooltip>
-          );
+          return <Badge variant="light" color="orange">Medium</Badge>;
         case "hard":
+          return <Badge variant="light" color="red">Hard</Badge>;
+        case "expert":
           return (
-            <Tooltip label="Difficulty">
-              <Chip color="danger">Hard</Chip>
-            </Tooltip>
+            <Badge
+              variant="gradient"
+              gradient={{ from: "grape", to: "indigo", deg: 90 }}
+            >
+              Expert
+            </Badge>
           );
-        case "insane":
+      }
+    }
+  }
+
+  function Bucket() {
+    if (props.riddle.bucket) {
+      switch (props.riddle.bucket.toLowerCase()) {
+        case "agent":
+          return <Badge color="red"  variant="light">Agent</Badge>;
+        case "environment":
+          return <Badge color="blue"  variant="light">Env</Badge>;
+        case "dem":
+          return <Badge color="green" variant="light">DEM</Badge>;
+        case "platform":
           return (
-            <Tooltip label="Difficulty">
-              <Chip variant="shadow" color="secondary">
-                Insane
-              </Chip>
-            </Tooltip>
+            <Badge
+             color="violet"
+             variant="light"
+            >
+              Platform
+            </Badge>
           );
+        default:
+          return <Badge>{props.riddle.bucket}</Badge>;
       }
     }
   }
@@ -79,7 +104,7 @@ export default function RiddleCard(props: {
   if (props.riddle.author) {
     authInitials = props.riddle.author
       .split(" ")
-      .map((n) => n[0])
+      .map((n: string) => n[0])
       .join(".");
   }
   let ansInitials = undefined;
@@ -90,168 +115,170 @@ export default function RiddleCard(props: {
       .join(".");
   }
 
+  const ResourceGrid = () => {
+    const resources: RiddleResource[] = props.riddle.RiddleResource;
+    console.log(resources);
+    return (
+      <Grid>
+        <Grid.Col span={12}>
+          <Divider />
+          <Title order={4}>Related Resource(s)</Title>
+        </Grid.Col>
+        {resources.map((resource: RiddleResource) => (
+          <Grid.Col key={resource.id} span={12}>
+            <RiddleResourcePreview resource={resource} />
+          </Grid.Col>
+        ))}
+      </Grid>
+    );
+  };
+
   return (
-    <Card
-      className="border-none bg-background/60 dark:bg-default-100/50 min-w-[500px] max-w-[800px] m-5"
-      shadow="sm"
-    >
-      <Card.Section className="flex growflex-row gap-2">
-        <div className="grow basis-7/8">
-          {props.number && (
-            <h1 className="text-large">Riddle: {props.number}</h1>
-          )}
-          {(props.admin || props.answered) && (
-            <Tooltip color="danger" label={"Clear Answer"}>
-              <Button color="danger" onClick={onDelete}>
-                X
-              </Button>
-            </Tooltip>
-          )}
-        </div>
-        <div className="flex gap-2 flex-row-reverse">
-          {props.answered && props.answeredBy && (
-            <Tooltip label={`Solved by ${props.answeredBy}`}>
-              <Avatar color="success">{ansInitials} </Avatar>
-            </Tooltip>
-          )}
-          {props.admin && <RiddleModal buttonText={"Edit"} riddle={props.riddle} />}
-          <Difficulty />
-          {props.riddle.topic && (
-            <Tooltip label={`Topic`}>
-              <Chip color="primary">{props.riddle.topic}</Chip>
-            </Tooltip>
-          )}
-          {props.riddle.bucket && (
-            <Tooltip label={`Bucket`}>
-              <Chip color="secondary">{props.riddle.bucket}</Chip>
-            </Tooltip>
-          )}
-          {props.admin && props.riddle.implemented && (
-            <Tooltip label={`Status`}>
-              <Chip color="success">Implemented</Chip>
-            </Tooltip>
-          )}
-          {props.admin && !props.riddle.implemented && (
-            <Tooltip label={`Status`}>
-              <Chip color="danger">Not Implemented</Chip>
-            </Tooltip>
-          )}
-          {props.admin && !props.riddle.validated && (
-            <Tooltip label={`Status`}>
-              <Chip color="warning">Not validated</Chip>
-            </Tooltip>
-          )}
-          {props.admin && props.riddle.validated && (
-            <Tooltip label={`Status`}>
-              <Chip color="success">Validated</Chip>
-            </Tooltip>
-          )}
-          {props.admin && props.riddle.author && authInitials && (
-            <Tooltip label={`Author: ${props.riddle.author}`}>
-              <Avatar color="success">{authInitials} </Avatar>
-            </Tooltip>
-          )}
-        </div>
-      </Card.Section>
-
-      <Divider />
-      <Card.Section className="flex flex-col gap-5">
-        <h1 className="text-large">{props.riddle.riddle}</h1>
-
-        {props.admin && props.riddle.sourceLocation && (
-          <div className="col-span-3">
-            <h1 className="text-large font-bold">Source Location:</h1>
-            <h1 className="text-large">{props.riddle.sourceLocation}</h1>
-          </div>
-        )}
-        {props.admin && props.riddle.sourceDescription && (
-          <div className="col-span-3">
-            <h1 className="text-large font-bold">Source Description:</h1>
-            <h1 className="text-large">{props.riddle.sourceDescription}</h1>
-          </div>
-        )}
-        {props.admin && props.riddle.sourceURL && (
-          <div className="flex gap-3 col-span-3">
-            <h1 className="text-large font-bold">Source URL:</h1>
-            <h1 className="text-large">{props.riddle.sourceURL}</h1>
-          </div>
-        )}
-        {props.admin && props.riddle.sourcePlaceHolder && (
-          <div className="flex gap-3 col-span-3">
-            <h1 className="text-large font-bold">Source Placeholder:</h1>
-            <h1 className="text-large">{props.riddle.sourcePlaceHolder}</h1>
-          </div>
-        )}
-
-        {((props.riddle.sourceDescription && props.riddle.sourceDescription.length > 0) ||
-          props.riddle.sourceLocation) && (
-          <div className="grid auto-cols-max gap-5 mx-auto">
-            {props.riddle.sourceDescription &&
-              props.riddle.sourceDescription.length > 0 &&
-              !props.admin && (
-                <Card
-                  radius={"lg"}
-                  shadow={"md"}
-                  className="flex max-w-[600px]"
-                >
-                  <Card.Section>
-                    <h1 className="text-small">Description</h1>
-                  </Card.Section>
-                  <Divider />
-                  <Card.Section>
-                    <h1 className="text-small">{props.riddle.sourceDescription} </h1>
-                  </Card.Section>
-                </Card>
-              )}
-            {props.riddle.sourceLocation && !props.admin && (
-              <Card radius={"lg"} shadow={"md"} className="flex max-w-[600px]">
-                <Card.Section>
-                  <h1 className="text-xs">Hint</h1>
-                </Card.Section>
-
-                <Divider />
-                <Card.Section>
-                  <h1 className="text-xs">{props.riddle.sourceLocation} </h1>{" "}
-                </Card.Section>
-              </Card>
+    <Card w="40rem" padding={"lg"}>
+      <Card.Section inheritPadding>
+        <Group justify="space-between">
+          {" "}
+          {props.number && <Title order={3}>Riddle: {props.number}</Title>}
+          <Group p="sm" justify="right">
+            {props.answered && props.answeredBy && (
+              <Tooltip label={`Solved by ${props.answeredBy}`}>
+                <Avatar color="green">{ansInitials} </Avatar>
+              </Tooltip>
             )}
-          </div>
+
+            <Difficulty />
+            {props.riddle.topic && (
+              <Tooltip label={`Topic`}>
+                <Badge>{props.riddle.topic}</Badge>
+              </Tooltip>
+            )}
+            {props.riddle.bucket && Bucket()}
+            {(props.admin || props.answered) && (
+              <Tooltip color="red" label={"Clear Answer"}>
+                <ActionIcon color="red" onClick={onDelete}>
+                  <RiDeleteBack2Fill />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
+        </Group>
+
+        {props.admin && (
+          <Group p="sm" justify="right">
+            <Text>Admin Context: </Text>
+            {props.riddle.implemented && (
+              <Tooltip label={`Status`}>
+                <Badge color="green">Implemented</Badge>
+              </Tooltip>
+            )}
+            {!props.riddle.implemented && (
+              <Tooltip label={`Status`}>
+                <Badge color="red">Not Implemented</Badge>
+              </Tooltip>
+            )}
+            {!props.riddle.validated && (
+              <Tooltip label={`Status`}>
+                <Badge color="orange">Not validated</Badge>
+              </Tooltip>
+            )}
+            {props.riddle.validated && (
+              <Tooltip label={`Status`}>
+                <Badge color="green">Validated</Badge>
+              </Tooltip>
+            )}
+            {props.riddle.author && authInitials && (
+              <Tooltip label={`Author: ${props.riddle.author}`}>
+                <Avatar color="green">{authInitials} </Avatar>
+              </Tooltip>
+            )}
+
+            {!props.preview && (
+              <RiddleModal buttonText={"Edit"} riddle={props.riddle} />
+            )}
+          </Group>
         )}
       </Card.Section>
+
       <Divider />
+      <Card.Section inheritPadding>
+        <Stack gap="xl" py={"1rem"} align="center">
+          <Text size="md">{props.riddle.riddle}</Text>
+
+          {props.admin && (
+            <Grid p="md">
+              {props.riddle.sourceLocation && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Location:</Title>
+                    <Text>{props.riddle.sourceLocation}</Text>
+                  </Stack>{" "}
+                </Grid.Col>
+              )}
+
+              {props.admin && props.riddle.sourceDescription && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Description:</Title>
+                    <Text>{props.riddle.sourceDescription}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+
+              {props.admin && props.riddle.sourceURL && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source URL:</Title>
+                    <Text>{props.riddle.sourceURL}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+              {props.admin && props.riddle.sourcePlaceHolder && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Placeholder:</Title>
+                    <Text>{props.riddle.sourcePlaceHolder}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+            </Grid>
+          )}
+        </Stack>
+
+        {props.riddle.showRiddleResource &&
+          props.riddle.RiddleResource &&
+          ResourceGrid()}
+      </Card.Section>
 
       {!props.answered && (
-        <Card.Section className="flex gap-3">
-          <TextInput
-            c="Answer"
-            value={value}
-            onChange={(event) => setValue(event.currentTarget.value)}
-            placeholder={props.riddle.sourcePlaceHolder ?? "Riddle Answer Here...."}
-          ></TextInput>
-          <Popover position="right" withArrow>
-            <Popover.Target>
-              <Button color="success" onClick={onClick}>
-                Submit
-              </Button>
-            </Popover.Target>
-            {value !== props.riddle.solution && (
-              <Popover.Dropdown>
-                <div className="px-1 py-2">
-                  <div className="text-small font-bold">Wrong, try again!</div>
-                </div>
-              </Popover.Dropdown>
-            )}
-          </Popover>
+        <Card.Section m="lg" inheritPadding>
+          <Group justify="center">
+            <TextInput
+              c="Answer"
+              value={value}
+              onChange={(event) => setValue(event.currentTarget.value)}
+              placeholder={
+                props.riddle.sourcePlaceHolder ?? "Riddle Answer Here...."
+              }
+            ></TextInput>
+            <Popover position="right" withArrow>
+              <Popover.Target>
+                <Button color="green" onClick={onClick}>
+                  Submit
+                </Button>
+              </Popover.Target>
+              {value !== props.riddle.solution && (
+                <Popover.Dropdown>
+                  <Text>Wrong, try again!</Text>
+                </Popover.Dropdown>
+              )}
+            </Popover>
+          </Group>
         </Card.Section>
       )}
       {props.answered && (
         <Card.Section className="flex gap-3">
-          <h1 color="success" className="text-large">
-            Solution:
-          </h1>
-          <h1 color="success" className="text-medium font-light">
-            {props.riddle.solution}
-          </h1>
+          <Text c="bold">Solution:</Text>
+          <Text c="dimmed">{props.riddle.solution}</Text>
         </Card.Section>
       )}
     </Card>

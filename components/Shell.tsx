@@ -50,7 +50,7 @@ export default function Shell(props: { children: any }) {
           navbar={{
             width: 300,
             breakpoint: "sm",
-            collapsed: { mobile: !opened },
+            collapsed: { mobile: !opened, desktop:opened},
           }}
           padding="md"
         >
@@ -64,6 +64,7 @@ export default function Shell(props: { children: any }) {
                     size="xl"
                     aria-label="Gradient action icon"
                     gradient={{ from: "orange", to: "yellow", deg: 192 }}
+                    onClick={() => toggle()}
                   >
                     <RiFlag2Fill />
                   </ActionIcon>
@@ -75,6 +76,7 @@ export default function Shell(props: { children: any }) {
                     size="xl"
                     aria-label="Gradient action icon"
                     gradient={{ from: "red", to: "red", deg: 192 }}
+                    onClick={toggle}
                   >
                     <RiEye2Fill size="md" />
                     <RiEye2Fill size="md" />

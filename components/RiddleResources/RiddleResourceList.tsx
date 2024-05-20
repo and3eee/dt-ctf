@@ -29,11 +29,9 @@ export default function RiddleResourceList(props: {
 }) {
   const [opened, { toggle }] = useDisclosure(false);
 
-  const [resources, updateResources] = useState<RiddleResource[]>(
-    props.resources
-  );
 
-  if (resources)
+
+  if (props.resources)
     return (
       <Stack gap="sm">
         <NavLink
@@ -61,8 +59,8 @@ export default function RiddleResourceList(props: {
           
               <Suspense fallback={<Loader />}>
                 <Grid  h="30rem" >
-                  {resources &&
-                    resources.map((resource: RiddleResource) => (
+                  {props.resources &&
+                    props.resources.map((resource: RiddleResource) => (
                       <Grid.Col span={4} key={resource.id}>
                         <RiddleResourceCard
                           key={resource.id}

@@ -67,36 +67,40 @@ export default function RiddleResourceEdit(props: {
         />
 
         <Divider />
-        <Grid p={8}>
-          <Grid.Col span={12}>
-            <Textarea
-              label="Name"
-              {...form.getInputProps("name")}
-              placeholder="Name..."
-              name="name"
-              required
-            />
-            <Group grow>
-              <TextInput
-                label="Description"
-                required
-                name="description"
-                {...form.getInputProps("description")}
-              />
-              <TextInput
-                label="Owner"
-                name="owner"
-                {...form.getInputProps("owner")}
-              />
-            </Group>
 
-            <Textarea
-              label="Link"
-              name="link"
-              {...form.getInputProps("link")}
-            />
-          </Grid.Col>
-        </Grid>
+        <Textarea
+          label="Name"
+          {...form.getInputProps("name")}
+          placeholder="Name..."
+          name="name"
+          required
+        />
+        <Group grow>
+          <TextInput label="Link" name="link" {...form.getInputProps("link")} />
+          <TextInput
+            label="Owner"
+            name="owner"
+            {...form.getInputProps("owner")}
+          />
+        </Group>
+
+        <Textarea
+          label="Description"
+          required
+          name="description"
+          {...form.getInputProps("description")}
+          autosize
+          maxRows={16}
+        />
+
+        <Textarea
+          label="Access Info"
+          required
+          name="AuthInfo"
+          {...form.getInputProps("AuthInfo")}
+          autosize
+          maxRows={16}
+        />
 
         <Divider />
         <Card.Section p={"1rem"}>

@@ -115,7 +115,9 @@ function sortData(
         if (!b[sortBy]) return -1;
 
         return a[sortBy]!.localeCompare(b[sortBy]);
-      } catch (e) {return 1}
+      } catch (e) {
+        return 1;
+      }
     }),
     payload.search
   );
@@ -124,7 +126,7 @@ function sortData(
 export function TableSort(props: {
   riddles: Riddle[];
   defaultSelected?: Riddle[];
-  resources:RiddleResource[];
+  resources: RiddleResource[];
   eventID?: string;
 }) {
   const { data: session, status }: any = useSession();
@@ -132,7 +134,7 @@ export function TableSort(props: {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<keyof Riddle | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
-  
+
   const [values, handlers] = useListState<Riddle>(props.riddles);
 
   const setSorting = (field: keyof Riddle) => {
@@ -167,7 +169,7 @@ export function TableSort(props: {
       })
     );
     await handlers.setState(data);
-    
+
     handlers.filter((item: Riddle) => {
       return keys(item).some((key) =>
         item[key]?.toString().toLowerCase().includes(value)
@@ -180,7 +182,9 @@ export function TableSort(props: {
   const rows = values.map((row: Riddle) => [
     <Table.Tr key={row.id}>
       <Table.Td>{row.id}</Table.Td>
-      <Table.Td>{row.riddle}</Table.Td>
+      <Table.Td>
+        <Text lineClamp={5}>{row.riddle}</Text>
+      </Table.Td>
       <Table.Td>{row.bucket}</Table.Td>
       <Table.Td>{row.topic}</Table.Td>
       <Table.Td>{Difficulty(row.difficulty ?? "none")}</Table.Td>
@@ -192,11 +196,24 @@ export function TableSort(props: {
           <SpoilerText>{row.solution}</SpoilerText>
         </Table.Td>
       )}
-      {admin && <Table.Td>{row.sourceLocation}</Table.Td>}
-      {admin && <Table.Td>{row.sourceURL}</Table.Td>}
+      {admin && (
+        <Table.Td>
+          <Text lineClamp={3}>{row.sourceLocation}</Text>
+        </Table.Td>
+      )}
+      {admin && (
+        <Table.Td>
+          <Text truncate>{row.sourceURL}</Text>
+        </Table.Td>
+      )}
       <Table.Td>
         {(admin || (contributor && row.author == session.user.name)) && (
-          <RiddleModal resources={props.resources} buttonText={"Edit"} riddle={row} onClose={refreshList} />
+          <RiddleModal
+            resources={props.resources}
+            buttonText={"Edit"}
+            riddle={row}
+            onClose={refreshList}
+          />
         )}
       </Table.Td>
     </Table.Tr>,
@@ -218,10 +235,13 @@ export function TableSort(props: {
           onChange={handleSearchChange}
         />
         <Table
+          stickyHeader
           horizontalSpacing="md"
           verticalSpacing="xs"
           miw={700}
           layout="fixed"
+          highlightOnHover
+          
         >
           <Table.Tbody>
             <Table.Tr>

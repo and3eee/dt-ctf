@@ -32,6 +32,7 @@ export async function CreateRiddle(formData: any, resources?: string[]) {
       author: formData.author?.toString(),
       implemented: formData.implemented, //
       validated: formData.validated, //
+      showRiddleResource: formData.showRiddleResource
     },
   });
   if (resources) await UpdateResourceLinks(out, resources);
@@ -103,6 +104,7 @@ export async function EditRiddle(formData: any) {
         author: formData.author?.toString(),
         implemented: formData.implemented, //
         validated: formData.validated, //
+        showRiddleResource: formData.showRiddleResource
       },
     });
 
