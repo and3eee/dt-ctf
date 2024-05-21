@@ -16,6 +16,9 @@ export default async function RiddlePage() {
     return (
       <ContributorCheck>
         <Title>CTF Docs</Title>
+
+        <Title>Flag Contribution</Title>
+        
       </ContributorCheck>
     );
 }

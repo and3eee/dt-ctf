@@ -1,6 +1,7 @@
 import AdminCheck from "./Auth/AdminCheck";
 import {
   Chip,
+  Divider,
   Kbd,
   NavLink,
   Paper,
@@ -37,9 +38,14 @@ export const Navbar = () => {
   );
 
   return (
-    <Paper >
-     
-        <Stack gap={0}>
+    <Paper>
+      <ScrollArea.Autosize
+        mih="50rem"
+        mah="78%"
+        scrollbarSize={2}
+        offsetScrollbars
+      >
+        <Stack gap={0} align="stretch" >
           <NavLink
             href="/"
             label="Go to Homepage"
@@ -78,8 +84,11 @@ export const Navbar = () => {
 
             <RiddleSolutionGenerator />
           </ContributorCheck>
-        </Stack>
      
+          <Divider py={8}/>
+          <RiddleSolutionGenerator  />
+        </Stack>
+      </ScrollArea.Autosize>
     </Paper>
   );
 };
