@@ -1,49 +1,59 @@
 "use client";
 
 import EventEdit from "./EventEdit";
-import { EventProps } from "@/types";
+
+import { Event } from "@prisma/client";
 import { Button, Modal, ModalContent } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { NextRequest } from "next/server";
 
-interface EventModalProps extends EventProps {
-  buttonText: string;
-}
-
 export default function EventModal(
-  props: EventModalProps,
+  props: { event: Event | undefined; buttonText?: String; createMode?: boolean },
   request: NextRequest
 ) {
   const [opened, { open, close }] = useDisclosure(false);
+  const newEvent: Event = {
+    id: "New Event",
+    name: "New Event",
+    description: "",
+    start: new Date(),
+    end: new Date(),
+    prize: null,
+    requireURL: false,
+    requireScreenshot: false,
+    active: false,
+    useAssignedTeams: false,
+    showParticipants: false,
+    showTeams: true,
+    useTeams: true,
+    teamSize: 4,
+    public: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  if (props.createMode)
+    return (
+      <>
+        <Button color="primary" onClick={open}>
+          {props.buttonText ?? "Edit Event"}
+        </Button>
 
-  return (
-    <>
-      <Button color="primary" onClick={open}>
-        {props.buttonText}
-      </Button>
+        <Modal opened={opened} onClose={close} size="auto">
+          <EventEdit event={newEvent} onClick={close} />
+        </Modal>
+      </>
+    );
+  else {
+    return (
+      <>
+        <Button color="primary" onClick={open}>
+          {props.buttonText ?? "Edit Event"}
+        </Button>
 
-      <Modal opened={opened} onClose={close} size="3xl">
-        <ModalContent>
-          <EventEdit
-            id={props.id}
-            name={props.name}
-            start={props.start}
-            end={props.end}
-            description={props.description}
-            requireURL={props.requireURL}
-            requireScreenshot={props.requireScreenshot}
-            active={props.active}
-            participants={props.participants}
-            riddleCount={0}
-            showTeams={props.showTeams}
-            showParticipants={props.showParticipants}
-            public={props.public}
-            useTeams={props.useTeams}
-            onClick={close}
-            teamSize={props.teamSize}
-          />
-        </ModalContent>
-      </Modal>
-    </>
-  );
+        <Modal opened={opened} onClose={close} size="3xl">
+          <EventEdit event={props.event!} onClick={close} />
+        </Modal>
+      </>
+    );
+  }
 }

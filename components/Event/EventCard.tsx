@@ -19,8 +19,7 @@ export default function EventCard(props: EventCardProps) {
   const event = props.event;
   const teams = props.teams;
   const riddles = props.riddles;
-  const [url, setURL] = useState(event.requireURL);
-  const [screenshot, setScreenshot] = useState(event.requireScreenshot);
+
   const now = new Date();
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
@@ -51,11 +50,11 @@ export default function EventCard(props: EventCardProps) {
                 .join(".");
 
               return (
-                <div className="isBordered" key={team.id}>
+              
                   <Tooltip label={team.name}>
                     <Avatar color="primary">{initials}</Avatar>
                   </Tooltip>
-                </div>
+                
               );
             }
           })}

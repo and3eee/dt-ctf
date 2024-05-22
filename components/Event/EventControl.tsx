@@ -23,6 +23,7 @@ export async function CreateEvent(formData: FormData) {
         formData.get("requireScreenshot") == "requireScreenshot", //
       active: formData.get("active") == "active", //
       useTeams: formData.get("useTeams") == "useTeams", //
+      
       public: formData.get("public") == "public", //
       showTeams: formData.get("showTeams") == "showTeams", //
       showParticipants: formData.get("showParticipants") == "showParticipants", //

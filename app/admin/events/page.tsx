@@ -14,8 +14,6 @@ export const dynamic = "force-dynamic";
 export const revalidate = 600;
 
 export default async function EventPage() {
-
-
   const events = await prisma.event.findMany({
     include: {
       participants: {
@@ -23,34 +21,20 @@ export default async function EventPage() {
           name: true,
         },
       },
-      teams:true,
-      riddles:true
+      teams: true,
+      riddles: true,
     },
   });
 
-  
-
-
-  
   return (
     <AdminCheck>
       <div className="grid gap-5 justify-center align-center">
         <EventModal
-          id={"NEW"}
+          event={undefined}
+          createMode
           buttonText={"Create New Event"}
-          name={""}
-          start={new Date()}
-          end={new Date()}
-          description={""}
-          requireURL={false}
-          requireScreenshot={false}
-          active={false}
-          participants={[]}
-          riddleCount={0}
-          showTeams={false}
-          showParticipants={false} public={true} useTeams={true} teamSize={0}        />
+        />
 
-                  
         {events.map((event) => {
           let users: string[] = [];
           event.participants.forEach((user) => {
@@ -59,7 +43,12 @@ export default async function EventPage() {
           let teams: TeamEntry[] = event.teams;
           return (
             <EventCard
-              key={event.id} event={event} teams={event.teams} riddles={event.riddles}  admin         />
+              key={event.id}
+              event={event}
+              teams={event.teams}
+              riddles={event.riddles}
+              admin
+            />
           );
         })}
       </div>
