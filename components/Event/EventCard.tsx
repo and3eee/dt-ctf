@@ -136,7 +136,7 @@ export default function EventCard(props: EventCardProps) {
             <Button
               className="justify-self-end"
               onClick={() => {
-                router.replace(`/${event.id}`);
+                router.replace(`/${event.id.slice(0,5)}`);
               }}
             >
               Goto Event Page

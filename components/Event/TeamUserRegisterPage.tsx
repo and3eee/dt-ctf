@@ -1,7 +1,16 @@
 "use client";
 
 import { EventProps } from "@/types";
-import { Button, Card, Collapse, Divider, NavLink, Stack } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Collapse,
+  Divider,
+  NavLink,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 import { Event, User } from "@prisma/client";
@@ -19,8 +28,7 @@ export default function TeamUserRegisterPage(props: {
   user: User;
 }) {
   const event = props.event;
-  const router = useRouter();
-  const [opened, { toggle }] = useDisclosure(false);
+
   if (event.useTeams) {
     return (
       <Button
@@ -30,21 +38,19 @@ export default function TeamUserRegisterPage(props: {
 
             children: (
               <Stack align="center">
-                <p className="text-xl bold">{event.name} Registration</p>
+       
 
-                <Divider />
+          
 
-                <p>{event.description}</p>
-                <p> Teams will be auto generated</p>
+                <Text> Teams will be auto generated to balance skill-sets. Adjustments can be made once assigned. Please ensure your account information is up to date for accurate assignments. </Text>
 
-                <NavLink component="button" onClick={toggle}>Edit User Preferences</NavLink>
-                <Collapse
-                  in={opened}
-                  transitionDuration={10}
-                  transitionTimingFunction="linear"
-                >
-                  <UserEdit user={props.user} />
-                </Collapse>
+                <NavLink label="Edit Account Info">
+                  {" "}
+                  <Card shadow="xl">
+                    <UserEdit user={props.user} />
+                  </Card>
+                </NavLink>
+
                 <Button>Register for Event</Button>
               </Stack>
             ),

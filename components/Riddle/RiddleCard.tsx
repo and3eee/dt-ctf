@@ -37,7 +37,7 @@ export default function RiddleCard(props: {
   riddle: any;
   preview?: boolean;
 }) {
-  console.log(props.riddle.RiddleResource);
+  
   const router = useRouter();
   const [value, setValue] = React.useState("");
 
@@ -117,7 +117,7 @@ export default function RiddleCard(props: {
 
   const ResourceGrid = () => {
     const resources: RiddleResource[] = props.riddle.RiddleResource;
-    console.log(resources);
+    
     return (
       <Grid>
         <Grid.Col span={12}>

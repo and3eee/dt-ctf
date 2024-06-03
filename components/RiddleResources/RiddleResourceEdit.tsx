@@ -34,7 +34,7 @@ export default function RiddleResourceEdit(props: {
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
-      onCancel: () => console.log("Cancel"),
+      onCancel: () => { if (props.onClick) props.onClick(); },
       onConfirm: () => {
         DeleteResource(props.resource);
         if (props.onClick) props.onClick();

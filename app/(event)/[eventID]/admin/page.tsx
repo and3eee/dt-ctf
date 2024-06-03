@@ -21,28 +21,7 @@ export default async function EventAdmin({
     return (
       <div className="flex flex-col gap-5">
         <p className="text-3xl">{event.name} Admin </p>
-        <p className="text-xl">Riddles</p>
-      
-        <p className="text-xl">Teams</p>
-        <TeamList
-          id={event.id}
-          name={event.name}
-          start={event.start}
-          end={event.end}
-          description={event.description ?? false}
-          requireURL={event.requireURL ?? false}
-          requireScreenshot={event.requireScreenshot ?? false}
-          active={event.requireScreenshot ?? false}
-          participants={[]}
-          riddleCount={0}
-          showTeams={event.showTeams ?? false}
-          showParticipants={event.showParticipants ?? false}
-          public={event.public ?? false}
-          useTeams={event.useTeams ?? false}
-          teams={event.teams}
-          teamSize={event.teamSize}
-          admin={true}
-        />
+    
       </div>
     );
   }

@@ -1,55 +1,77 @@
 "use client";
 
-
-import { useSession } from "next-auth/react";
 import React from "react";
 6;
-import { EditTeam } from "./TeamControl";
+import { EditTeam, UpdateTeam } from "./TeamControl";
 import { NextRequest } from "next/server";
 import { useRouter } from "next/navigation";
 import { TeamProps } from "@/types";
-import { Card, Input, Divider, Textarea, Button, TextInput } from "@mantine/core";
+import {
+  Card,
+  Input,
+  Divider,
+  Textarea,
+  Button,
+  TextInput,
+} from "@mantine/core";
+import { TeamEntry, User } from "@prisma/client";
+import { useForm } from "@mantine/form";
 
-
-interface TeamEditProps extends TeamProps {
+export default function TeamEdit(props: {
   onClick: () => void;
   admin?: boolean;
-}
+  team: TeamEntry;
+  createMode?: boolean;
+  user: User;
+}) {
 
-export default function TeamEdit(props: TeamEditProps, request: NextRequest) {
+
+
   const router = useRouter();
 
-  const { data: session, status } = useSession();
 
-  const updateTeam = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: props.team,
+  });
 
-    const email = await session?.user?.email;
-    if (email) await EditTeam(formData, email);
-    else await EditTeam(formData);
+
+
+  const updateTeam = async (values: TeamEntry ) => {
+
+
+    if(props.createMode){
+
+    }else{
+
+    }
+
+    const email = await props.user?.email;
+    if (email) await UpdateTeam(values);
+    else await UpdateTeam(values);
     router.refresh();
   };
+
   return (
-    <form onSubmit={updateTeam}>
+    <form onSubmit={form.onSubmit((values) => {updateTeam(values)})}>
       <Card>
-        <Card.Section >
+        <Card.Section>
           <TextInput
-            
             name="id"
-            defaultValue={props.id}
             label="Team ID"
             variant="bordered"
+            key={form.key('id')}
+            {...form.getInputProps('id')}
           />
           <TextInput
             label="Event ID"
             className="m-1"
-            defaultValue={props.eventId}
-            name="eventID"
-            
+            defaultValue={props.team.eventId}
+            key={form.key('email')}
+            {...form.getInputProps('email')}
           />
-        </Card.Section >
+        </Card.Section>
         <Divider />
         <div
           className="grid grow
@@ -59,19 +81,19 @@ export default function TeamEdit(props: TeamEditProps, request: NextRequest) {
             label="Team Name"
             className="m-1 col-span-2 "
             placeholder="Team Placeholder"
-            name="name"
-            
-            defaultValue={props.name}
+            key={form.key('name')}
+            {...form.getInputProps('name')}
+            defaultValue={props.team.name}
             required
           />
         </div>
 
         <Divider />
-        <Card.Section >
+        <Card.Section>
           <Button type="submit" color="success" onClick={props.onClick}>
             Submit
           </Button>
-        </Card.Section >
+        </Card.Section>
       </Card>
     </form>
   );

@@ -28,7 +28,7 @@ export default function EventEdit(props: {
   const form = useForm({ mode: "uncontrolled", initialValues: props.event });
 
   const updateEvent = async (e: Event) => {
-    console.log(e);
+    
 
     if (props.createMode) await CreateEvent(e);
     else await EditEvent(e);

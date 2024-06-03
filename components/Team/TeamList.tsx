@@ -8,8 +8,7 @@ import { useSession } from "next-auth/react";
 import AuthCheck from "../Auth/AuthCheck";
 import { useRouter } from "next/navigation";
 import TeamModal from "./TeamModal";
-import { User } from "next-auth";
-import { FaPen } from "react-icons/fa";
+import { User } from "@prisma/client";
 import { Container } from "@mantine/core";
 
 const columns = [

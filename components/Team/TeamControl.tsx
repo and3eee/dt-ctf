@@ -3,45 +3,28 @@
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { TeamProps, EventProps } from "@/types";
-import { UserEntry } from "@prisma/client";
-
-
+import { TeamEntry, User, UserEntry } from "@prisma/client";
 
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { disconnect } from "process";
 import { OutliningSpanKind } from "typescript";
 
-export async function CreateTeam(formData: FormData, userID?: string) {
-  const out = await prisma.teamEntry.create({
+export async function CreateTeam(team: TeamEntry, user: User) {
+  return await prisma.teamEntry.create({
     data: {
-      name: formData.get("name")?.toString() ?? "ERROR WHILE CREATING", //
-      event: { connect: { id: formData.get("eventID")?.toString() } },
+      name: team.name,
+      event: { connect: { id: team.eventId } },
+      members: { connect: { id: user.id } },
     },
   });
-
-  if (userID) {
-    registerMember(out.id);
-  }
-  return out;
 }
 
-export async function EditTeam(formData: FormData, userID?: string) {
-  if (formData.get("id")?.toString() == "NEW")
-    return CreateTeam(formData, userID);
-  else {
-    //Logic to update a event
-
-    const out = await prisma.teamEntry.update({
-      where: { id: formData.get("id")?.toString() },
-      data: {
-        name: formData.get("name")?.toString() ?? "ERROR WHILE CREATING", //
-
-        event: { connect: { id: formData.get("eventID")?.toString() } },
-      },
-    });
-
-    return out;
-  }
+export async function UpdateTeam(team: TeamEntry) {
+  return await prisma.teamEntry.update({
+    where: { id: team.id },
+    data: { name: team.name, event: { connect: { id: team.eventId } } },
+  });
 }
 
 export async function AddTeamUserEntry(riddleID: number, teamID: string) {
@@ -66,8 +49,8 @@ export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {
   if (session) {
     let out = await prisma.userEntry.deleteMany({
       where: {
-        riddle: {  id: riddleID  },
-        teamEntry: { id: teamID  },
+        riddle: { id: riddleID },
+        teamEntry: { id: teamID },
       },
     });
     return out;
@@ -80,21 +63,38 @@ export async function purgeEmptyTeams(eventId: string) {
   });
 }
 
-export async function registerMember(teamId: string) {
-  const session = await auth();
+export async function RemoveFromAllTeams(user: User) {
+  const teamsToTarget = await prisma.teamEntry.findMany({
+    where: { members: { some: { id: user.id } } },
+  });
 
+  if (teamsToTarget && teamsToTarget.length > 0)
+    teamsToTarget.forEach(
+      async (team: TeamEntry) =>
+        await prisma.teamEntry.update({
+          where: { id: team.id },
+          data: { members: { disconnect: { id: user.id } } },
+        })
+    );
+}
+
+export async function registerMember(team: TeamEntry, user: User) {
   const teams = await prisma.teamEntry.findFirstOrThrow({
-    where: { id: teamId },
+    where: { id: team.id },
     include: { members: true },
   });
 
-  let ids = [{ email: session?.user?.email! }];
-  teams.members.forEach((member) => ids.push({ email: member.email! }));
+  await RemoveFromAllTeams(user);
+
+  let ids = [{ id: user.id }];
+  teams.members.forEach((member) => ids.push({ id: member.id }));
 
   const teamEntry = await prisma.teamEntry.update({
-    where: { id: teamId },
+    where: { id: team.id },
     data: { members: { connect: ids } },
   });
 
-  purgeEmptyTeams(teams.eventId);
+  await purgeEmptyTeams(teams.eventId);
+
+  return teamEntry;
 }

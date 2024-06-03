@@ -80,9 +80,9 @@ export default function EventInfo(props: EventCardProps) {
 
   const signUpButton = () => {
     if (props.user) {
-      if (event.useAssignedTeams) return <TeamUserRegisterPage event={event} user={props.user}/>;
-      if (event.useTeams)
-        return <TeamEventSignUp user={props.user} event={event} />;
+      if (event.useAssignedTeams && !event.teamsGenerated) return <TeamUserRegisterPage event={event} user={props.user}/>;
+      if (event.useTeams || (event.useAssignedTeams && event.teamsGenerated))
+        return <TeamEventSignUp user={props.user} event={event} user={props.user}/>;
     } else return "No Sign Up";
   };
   if (event.public || props.admin)

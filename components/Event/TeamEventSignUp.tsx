@@ -1,13 +1,11 @@
 "use client";
 import { EventProps } from "@/types";
-
-import { GetTeams } from "./EventControl";
+import { User } from "@prisma/client";
 import TeamModal from "../Team/TeamModal";
 import TeamList from "../Team/TeamList";
 import { useRouter } from "next/navigation";
 import { Text, Button, Card, Divider } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { User } from "next-auth";
 
 export interface TeamEventSignUpProps {
   event: EventProps;
@@ -52,7 +50,7 @@ export default function TeamEventSignUp(props: TeamEventSignUpProps) {
                   )}
                   {!props.event.active && (
                     <TeamModal
-                      buttonText={"Create Team"}
+                     
                       id={"NEW"}
                       name={""}
                       eventId={props.event.id}
@@ -63,7 +61,9 @@ export default function TeamEventSignUp(props: TeamEventSignUpProps) {
             ),
           })
         }
-      ></Button>
+      >
+        Sign Up
+      </Button>
     );
   }
 }
