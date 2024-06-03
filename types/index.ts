@@ -17,6 +17,7 @@ export interface EventProps{
     prize?:string,
     duration?:number,
     requireURL:boolean,
+    useAssignedTeams:boolean;
     requireScreenshot:boolean,
     active:boolean,
     teams?: TeamProps[],

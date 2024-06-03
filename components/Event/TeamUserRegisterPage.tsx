@@ -1,42 +1,58 @@
 "use client";
 
-import { Button, Card, Divider } from "@mantine/core";
+import { EventProps } from "@/types";
+import { Button, Card, Collapse, Divider, NavLink, Stack } from "@mantine/core";
+import { modals } from "@mantine/modals";
 
-
-import { Event } from "@prisma/client";
+import { Event, User } from "@prisma/client";
 import { useRouter } from "next/navigation";
-
-
+import UserEdit from "../User/UserEdit";
+import { useDisclosure } from "@mantine/hooks";
 
 const columns = [
   { key: "name", label: "Name" },
   { key: "members", label: "Members" },
 ];
 
-export default function TeamUserRegisterPage(props: { event: Event }) {
+export default function TeamUserRegisterPage(props: {
+  event: EventProps;
+  user: User;
+}) {
   const event = props.event;
   const router = useRouter();
-
-  if (event.active) {
-    router.replace(`/${event.id}`);
-  }
+  const [opened, { toggle }] = useDisclosure(false);
   if (event.useTeams) {
     return (
-      
-      <Card>
-        <Card.Section >
-          <p className="text-xl bold">{event.name} Registration</p>
-        </Card.Section >
-        <Divider />
-        <Card.Section className="flex flex-col gap-3">
-          <p>{event.description}</p>
-          <p> Teams will be assigned to provide a fair competition</p>
-        </Card.Section>
+      <Button
+        onClick={() =>
+          modals.open({
+            title: "Sign Up",
 
-        <Card.Section >
-          <Button>Register for Event</Button>
-        </Card.Section >
-      </Card>
+            children: (
+              <Stack align="center">
+                <p className="text-xl bold">{event.name} Registration</p>
+
+                <Divider />
+
+                <p>{event.description}</p>
+                <p> Teams will be auto generated</p>
+
+                <NavLink component="button" onClick={toggle}>Edit User Preferences</NavLink>
+                <Collapse
+                  in={opened}
+                  transitionDuration={10}
+                  transitionTimingFunction="linear"
+                >
+                  <UserEdit user={props.user} />
+                </Collapse>
+                <Button>Register for Event</Button>
+              </Stack>
+            ),
+          })
+        }
+      >
+        Sign Up
+      </Button>
     );
   }
 }

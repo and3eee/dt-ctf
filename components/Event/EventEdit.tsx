@@ -1,19 +1,22 @@
 "use client";
 import { Event } from "@prisma/client";
-import { CreateEvent, EditEvent } from "./EventControl";
+import { CreateEvent, DeleteEvent, EditEvent } from "./EventControl";
 import { useRouter } from "next/navigation";
 import {
   Divider,
   Textarea,
-  Switch,
   Button,
   TextInput,
   Stack,
   Group,
+  Text,
   NumberInput,
+  Checkbox,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { DateTimePicker } from "@mantine/dates";
+import { modals } from "@mantine/modals";
+import { EventProps } from "@/types";
 
 export default function EventEdit(props: {
   event: Event;
@@ -24,24 +27,22 @@ export default function EventEdit(props: {
 
   const form = useForm({ mode: "uncontrolled", initialValues: props.event });
 
-  const updateEvent = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const updateEvent = async (e: Event) => {
+    console.log(e);
 
-    const formData = new FormData(e.currentTarget);
-
-    if (props.createMode) await CreateEvent(formData);
-    else await EditEvent(formData);
+    if (props.createMode) await CreateEvent(e);
+    else await EditEvent(e);
 
     router.refresh();
   };
-
 
   const deleteModal = () =>
     modals.openConfirmModal({
       title: "Please confirm your action",
       children: (
         <Text size="sm">
-          This action is permanent and cannot be reversed. Please ensure that you want to proceed before continuing.
+          This action is permanent and cannot be reversed. Please ensure that
+          you want to proceed before continuing.
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
@@ -53,14 +54,18 @@ export default function EventEdit(props: {
     });
 
   return (
-    <form onSubmit={updateEvent}>
+    <form
+      onSubmit={form.onSubmit((values) => {
+        updateEvent(values);
+      })}
+    >
       <Stack miw="20rem">
         <TextInput
           disabled
           name="id"
-          defaultValue={props.event.id}
           label="Event ID"
           variant="bordered"
+          key={form.key("id")}
           {...form.getInputProps("id")}
         />
 
@@ -70,8 +75,8 @@ export default function EventEdit(props: {
           label="Name"
           name="name"
           placeholder="name"
-          defaultValue={props.event.name}
           required
+          key={form.key("name")}
           {...form.getInputProps("name")}
         />
 
@@ -79,7 +84,6 @@ export default function EventEdit(props: {
           label="Team Size"
           name="teamSize"
           placeholder="Team Size"
-          defaultValue={props.event.teamSize}
           required
           {...form.getInputProps("teamSize")}
         />
@@ -88,7 +92,7 @@ export default function EventEdit(props: {
           label="Prize"
           name="prize"
           placeholder="Prize"
-          defaultValue={props.event.prize ?? ""}
+          key={form.key("prize")}
           {...form.getInputProps("prize")}
           autosize
           maxRows={5}
@@ -98,12 +102,14 @@ export default function EventEdit(props: {
             required
             label="Start Date & Time"
             placeholder="Pick date and time"
+            key={form.key("start")}
             {...form.getInputProps("start")}
           />
           <DateTimePicker
             required
             label="End Date & Time"
             placeholder="Pick date and time"
+            key={form.key("end")}
             {...form.getInputProps("end")}
           />
         </Group>
@@ -111,101 +117,96 @@ export default function EventEdit(props: {
           label="Description"
           name="description"
           placeholder="Description"
-          defaultValue={props.event.description}
           required
           autosize
           maxRows={5}
+          key={form.key("description")}
           {...form.getInputProps("description")}
         />
-        <Switch.Group label="Attendee settings">
+
+
           <Group mt="xs">
-            <Switch
-              value="showTeams"
+            <Checkbox
               label="Show Teams"
               name="showTeams"
-              defaultChecked={props.event.showTeams ?? true}
+              key={form.key("showTeams")}
               {...form.getInputProps("showTeams")}
             >
               Show Teams
-            </Switch>
-            <Switch
-              value="showParticipants"
+            </Checkbox>
+
+            <Checkbox
               label="Show Participants"
               name="showParticipants"
               defaultChecked={props.event.showParticipants ?? false}
+              key={form.key("showParticipants")}
               {...form.getInputProps("showParticipants")}
             >
               Show Participants
-            </Switch>
-
-            <Switch
-              value="useTeams"
+            </Checkbox>
+            <Checkbox
               name="useTeams"
               label="Use Teams"
-              defaultChecked={props.event.useTeams ?? true}
+              key={form.key("useTeams")}
               {...form.getInputProps("useTeams")}
             />
-            <Switch
-              value="useAssignedTeams"
+            <Checkbox
               name="useAssignedTeams"
               label="Use Assigned Teams"
-              defaultChecked={props.event.useAssignedTeams ?? true}
+              key={form.key("useAssignedTeams")}
               {...form.getInputProps("useAssignedTeams")}
             />
           </Group>
-        </Switch.Group>
-        <Switch.Group label="Event Settings">
+
           <Group mt="xs">
-            <Switch
-              value="urls"
+            <Checkbox
               label="Require URLs"
               name="urls"
-              defaultChecked={props.event.requireURL ?? false}
+              key={form.key("requireURL")}
               {...form.getInputProps("requireURL")}
             >
               Require URLs
-            </Switch>
-            <Switch
-              value="screenshot"
+            </Checkbox>
+            <Checkbox
               label="Require Screenshot"
               name="screenshot"
-              defaultChecked={props.event.requireScreenshot ?? false}
+              key={form.key("requireScreenshot")}
               {...form.getInputProps("requireScreenshot")}
             >
               Require Screenshot
-            </Switch>
+            </Checkbox>
 
-            <Switch
-              value="public"
+            <Checkbox
               name="public"
               label="Public"
-              defaultChecked={props.event.public}
+              key={form.key("public")}
               {...form.getInputProps("public")}
             >
               Public
-            </Switch>
+            </Checkbox>
 
-            <Switch
-              value="active"
+            <Checkbox
               name="active"
               label="Active"
-              defaultChecked={props.event.active ?? false}
+              key={form.key("active")}
               {...form.getInputProps("active")}
             >
               Active
-            </Switch>
+            </Checkbox>
           </Group>
-        </Switch.Group>
+  
 
         <Divider />
 
-        <Button
-          type="submit"
-          color="Green"
-          onClick={props.onClick ? props.onClick : undefined}
-        >
+        <Button type="submit" color="Green">
           {props.createMode ? "Create Event" : "Save Changes"}
         </Button>
+
+        {!props.createMode && (
+          <Button type="submit" color="red" onClick={deleteModal}>
+            Delete Event
+          </Button>
+        )}
       </Stack>
     </form>
   );

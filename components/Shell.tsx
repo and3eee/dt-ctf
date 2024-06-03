@@ -50,7 +50,7 @@ export default function Shell(props: { children: any }) {
           navbar={{
             width: 300,
             breakpoint: "sm",
-            collapsed: { mobile: !opened, desktop:opened},
+            collapsed: { mobile: !opened, desktop: !opened},
           }}
           padding="md"
         >

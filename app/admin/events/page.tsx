@@ -4,8 +4,6 @@ import RiddleModal from "@/components/Riddle/RiddleModal";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { Button } from "@nextui-org/button";
-import RiddleList from "@/components/Riddle/RiddleList";
 import EventCard from "@/components/Event/EventCard";
 import EventModal from "@/components/Event/EventModal";
 import { TeamEntry } from "@prisma/client";
@@ -38,7 +36,7 @@ export default async function EventPage() {
         {events.map((event) => {
           let users: string[] = [];
           event.participants.forEach((user) => {
-            users.push(user.name);
+            users.push(user.name!);
           });
           let teams: TeamEntry[] = event.teams;
           return (

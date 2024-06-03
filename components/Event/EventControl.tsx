@@ -2,58 +2,58 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventProps } from "@/types";
-import { TeamEntry } from "@prisma/client";
+import { Event } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function DeleteEvent(input: any) {
+  return await prisma.event.delete({ where: { id: input.id } });
+}
 
-export async function CreateEvent(formData: FormData) {
+export async function CreateEvent(formData: Event) {
   //Ignore ID as its only used in update
 
   const out = await prisma.event.create({
     data: {
-      name: formData.get("name")?.toString() ?? "ERROR WHILE CREATING", //
-      description:
-        formData.get("description")?.toString() ?? "ERROR WHILE CREATING", //
-      start: formData.get("start")?.toString() ?? new Date(), //
-      end: formData.get("end")?.toString() ?? new Date(), //
-      prize: formData.get("prize")?.toString() ?? undefined,
-      requireURL: formData.get("requireURL") == "requireURL", //
-      requireScreenshot:
-        formData.get("requireScreenshot") == "requireScreenshot", //
-      active: formData.get("active") == "active", //
-      useTeams: formData.get("useTeams") == "useTeams", //
-      
-      public: formData.get("public") == "public", //
-      showTeams: formData.get("showTeams") == "showTeams", //
-      showParticipants: formData.get("showParticipants") == "showParticipants", //
+      name: formData.name ?? "ERROR WHILE CREATING", //
+      description: formData.description ?? "ERROR WHILE CREATING", //
+      start: formData.start ?? new Date(), //
+      end: formData.end ?? new Date(), //
+      prize: formData.prize ?? undefined,
+      requireURL: formData.requireURL, //
+      requireScreenshot: formData.requireScreenshot, //
+      active: formData.active, //
+      useTeams: formData.useTeams, //
+
+      public: formData.public, //
+      showTeams: formData.showTeams, //
+      showParticipants: formData.showParticipants, //
     },
   });
 
   return out;
 }
 
-export async function EditEvent(formData: FormData) {
-  if (formData.get("id")?.toString() == "NEW") return CreateEvent(formData);
+export async function EditEvent(formData: Event) {
+  if (formData.id == "NEW") return CreateEvent(formData);
   else {
     //Logic to update a event
 
     const out = await prisma.event.update({
-      where: { id: formData.get("id")?.toString() },
+      where: { id: formData.id },
       data: {
-        name: formData.get("name")?.toString() ?? "ERROR WHILE CREATING", //
-        description:
-          formData.get("description")?.toString() ?? "ERROR WHILE CREATING", //
-        prize: formData.get("prize")?.toString() ?? undefined,
-        requireURL: formData.get("requireURL") == "requireURL", //
-        requireScreenshot:
-          formData.get("requireScreenshot") == "requireScreenshot", //
-        active: formData.get("active") == "active", //
-        useTeams: formData.get("useTeams") == "useTeams", //
-        public: formData.get("public") == "public", //
-        showTeams: formData.get("showTeams") == "showTeams", //
-        showParticipants:
-          formData.get("showParticipants") == "showParticipants", //
+        name: formData.name ?? "ERROR WHILE CREATING", //
+        description: formData.description ?? "ERROR WHILE CREATING", //
+        prize: formData.prize,
+        start: formData.start ?? new Date(), //
+        end: formData.end ?? new Date(), //
+        requireURL: formData.requireURL, //
+        requireScreenshot: formData.requireScreenshot, //
+        active: formData.active, //
+        useTeams: formData.useTeams, //
+        public: formData.public, //
+        showTeams: formData.showTeams, //
+        showParticipants: formData.showParticipants, //
       },
     });
 
@@ -72,7 +72,7 @@ export async function GetTeams(eventID: string) {
   event.teams.forEach((teamEntry) => {
     let temp: string[] = [];
     teamEntry.members.forEach((member) => {
-      temp.push(member.name);
+      temp.push(member.name!);
     });
     teams.set(teamEntry.name, temp);
   });
@@ -80,21 +80,20 @@ export async function GetTeams(eventID: string) {
   return teams;
 }
 
-export async function GetUserTeamID(eventId: string,email:string ){
-
-  const team = await prisma.teamEntry.findFirst({where:{members:{some:{email:email}}}})
+export async function GetUserTeamID(eventId: string, email: string) {
+  const team = await prisma.teamEntry.findFirst({
+    where: { members: { some: { email: email } } },
+  });
   return team;
 }
 
 export async function GetTeamsRaw(eventID: string) {
   const event = await prisma.event.findFirst({
     where: { id: eventID },
-    include: { teams: { include: { members: true ,userEntries:true} } },
+    include: { teams: { include: { members: true, userEntries: true } } },
   });
 
-
-  if(event?.teams)
-  return await event.teams;
+  if (event?.teams) return await event.teams;
 }
 
 export async function SetRiddleSet(eventId: string, ids: string[]) {
@@ -103,21 +102,24 @@ export async function SetRiddleSet(eventId: string, ids: string[]) {
     where: { id: eventId },
     data: { riddles: { set: [] } },
   });
-  const data = ids.map((riddle) => ({ id: riddle }));
+  const data: { id: string; }[] = ids.map((riddle) => ({ id: riddle }));
 
   const out = await prisma.event.update({
     where: { id: eventId },
-    data: { riddles: { connect: data } },
+    data: { riddles: { connect: data! } },
   });
-
-
 }
 
-
-export async function StartEvent(id:string){
-  return await prisma.event.update({where:{id:id},data:{active:true}})
+export async function StartEvent(id: string) {
+  return await prisma.event.update({
+    where: { id: id },
+    data: { active: true },
+  });
 }
 
-export async function StopEvent(id:string){
-  return await prisma.event.update({where:{id:id},data:{active:false}})
+export async function StopEvent(id: string) {
+  return await prisma.event.update({
+    where: { id: id },
+    data: { active: false },
+  });
 }

@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { NextRequest } from "next/server";
 
 export default function EventModal(
-  props: { event: Event | undefined; buttonText?: String; createMode?: boolean },
+  props: { event: any | undefined; buttonText?: String; createMode?: boolean },
   request: NextRequest
 ) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -31,22 +31,24 @@ export default function EventModal(
     createdAt: new Date(),
     updatedAt: new Date(),
   };
+
+
   if (props.createMode)
     return (
       <>
-        <Button color="primary" onClick={open}>
-          {props.buttonText ?? "Edit Event"}
+        <Button  onClick={open}>
+          {props.buttonText ?? "Create Event"}
         </Button>
 
         <Modal opened={opened} onClose={close} size="auto">
-          <EventEdit event={newEvent} onClick={close} />
+          <EventEdit createMode event={newEvent} onClick={close} />
         </Modal>
       </>
     );
   else {
     return (
       <>
-        <Button color="primary" onClick={open}>
+        <Button  onClick={open}>
           {props.buttonText ?? "Edit Event"}
         </Button>
 
