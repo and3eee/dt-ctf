@@ -8,7 +8,6 @@ export async function GetUsers() {
 }
 
 export async function UpdateUser(user: User) {
-    
   return await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -17,6 +16,7 @@ export async function UpdateUser(user: User) {
       skillLevel: user.skillLevel,
       role: user.role,
       bucket: user.bucket,
+      geo: user.geo,
     },
   });
 }

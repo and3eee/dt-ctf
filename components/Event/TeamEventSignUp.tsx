@@ -4,65 +4,59 @@ import { User } from "@prisma/client";
 import TeamModal from "../Team/TeamModal";
 import TeamList from "../Team/TeamList";
 import { useRouter } from "next/navigation";
-import { Text, Button, Card, Divider } from "@mantine/core";
+import { Text, Button, Stack } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
-export interface TeamEventSignUpProps {
+export default function TeamEventSignUp(props: {
   event: EventProps;
   user: User;
   small?: boolean;
-}
-
-const columns = [
-  { key: "name", label: "Name" },
-  { key: "members", label: "Members" },
-];
-
-export default function TeamEventSignUp(props: TeamEventSignUpProps) {
-  const router = useRouter();
-
+}) {
   if (props.event.useTeams) {
     return (
       <Button
         onClick={() =>
           modals.open({
-            title: "Please confirm your action",
-
+            title: "Sign-Up for a Team",
+            size:"xl",
             children: (
-              <Card>
-                <Card.Section>
-                  <p className="text-xl bold">{props.event.name} Sign Up</p>
-                </Card.Section>
-                <Divider />
-                <Card.Section className="flex flex-col gap-3">
-                  <p>{props.event.description}</p>
+              <Stack>
+            
+                <Stack>
+           
 
-                  <p className="text-medium">
+                  <Text>
                     Select a team to join or create a new one.
-                  </p>
+                  </Text>
 
                   {props.event.teams && (
                     <TeamList
                       event={props.event}
-                      small={props.small}
+                
                       user={props.user}
                     />
                   )}
                   {!props.event.active && (
                     <TeamModal
-                     
-                      id={"NEW"}
-                      name={""}
-                      eventId={props.event.id}
+                      onClick={modals.closeAll}
+                      team={{
+                        id: "",
+                        name: "Default Team Name",
+                        eventId: props.event.id,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                      }}
+                      user={props.user}
+                      createMode
                     />
                   )}
-                </Card.Section>
-              </Card>
+                </Stack>
+              </Stack>
             ),
           })
         }
       >
-        Sign Up
+        Teams Sign Up
       </Button>
     );
   }

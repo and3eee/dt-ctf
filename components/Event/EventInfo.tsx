@@ -1,6 +1,6 @@
 "use client";
 
-import { EventProps } from "@/types";
+import { EventProps, TeamProps } from "@/types";
 import { useState } from "react";
 
 import { Event, Riddle, TeamEntry, User } from "@prisma/client";
@@ -22,69 +22,97 @@ import EventCountDown from "./EventCountDown";
 import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
 
-
-interface EventCardProps {
+export default function EventInfo(props: {
   event: EventProps;
-  teams?: TeamEntry[];
   riddles?: Riddle[];
   admin?: boolean;
   user?: User;
-}
-
-export default function EventInfo(props: EventCardProps) {
+}) {
   const event = props.event;
-  const teams = props.teams;
-  const riddles = props.riddles;
+  const teams = props.event.teams;
 
   const now = new Date();
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
 
-  var diff = Math.abs(now.getTime() - props.event.start.getTime());
-  var diffDays = Math.ceil(diff / (1000 * 3600 * 24));
-  var diffHrs = Math.floor(
-    (Math.abs(props.event.start.getTime() - props.event.end.getTime()) %
-      86400000) /
-      3600000
-  ); // hours
-  var diffMins = Math.round(
-    Math.abs(props.event.start.getTime() - props.event.end.getTime()) / 60000
-  ); // minutes
-
-  const router = useRouter();
-
-  function TeamsGroup() {
+  const TeamsGroup = () => {
     if (teams) {
-      const trimmedTeams = teams.slice(0, 10);
+      const trimmedTeams = teams?.slice(0, 20);
       return (
-        <div className="flex flex-row">
-          {trimmedTeams.map((team: TeamEntry) => {
-            if (team.name) {
-              let initials: string = team.name
-                .split(" ")
-                .map((n) => n[0])
-                .join(".");
+        <Stack gap="xs">
+          <Title order={4}>Teams</Title>
+          <Tooltip.Group>
+            <Avatar.Group>
+              {trimmedTeams.map((team: TeamProps) => {
+                if (team.name) {
+                  let initials: string = team.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join(".");
 
-              return (
-                <Tooltip key={team.id} label={team.name}>
-                  <Avatar>{initials}</Avatar>
-                </Tooltip>
-              );
-            }
-          })}
-          {teams?.length > 10 && <Avatar>{`+${teams.length - 10}`}</Avatar>}
-        </div>
+                  let label = (
+                    <Stack gap={0}>
+                      <Text>{team.name}</Text>
+                      {team.members!.map((member: User) => (
+                        <Text>{member.name}</Text>
+                      ))}
+                    </Stack>
+                  );
+
+                  return (
+                    <Tooltip key={team.id} multiline label={label}>
+                      <Avatar>{initials}</Avatar>
+                    </Tooltip>
+                  );
+                }
+              })}
+              {teams?.length > 20 && <Avatar>{`+${teams.length - 20}`}</Avatar>}
+            </Avatar.Group>
+          </Tooltip.Group>
+        </Stack>
       );
     }
-  }
+  };
+
+  const Participants = () => {
+    const participants = event.participants?.slice(0, 20);
+    return (
+      <Stack gap="xs">
+        <Title order={4}>Participants</Title>
+        <Tooltip.Group>
+          <Avatar.Group>
+            {participants.map((user: User) => {
+              if (user.name) {
+                let initials: string = user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join(".");
+
+                return (
+                  <Tooltip key={user.id} multiline label={user.name}>
+                    <Avatar src={user.image}>{initials}</Avatar>
+                  </Tooltip>
+                );
+              }
+            })}
+            {participants?.length > 20 && (
+              <Avatar>{`+${participants.length - 20}`}</Avatar>
+            )}
+          </Avatar.Group>
+        </Tooltip.Group>
+      </Stack>
+    );
+  };
 
   const signUpButton = () => {
     if (props.user) {
-      if (event.useAssignedTeams && !event.teamsGenerated) return <TeamUserRegisterPage event={event} user={props.user}/>;
+      if (event.useAssignedTeams && !event.teamsGenerated)
+        return <TeamUserRegisterPage event={event} user={props.user} />;
       if (event.useTeams || (event.useAssignedTeams && event.teamsGenerated))
-        return <TeamEventSignUp user={props.user} event={event} user={props.user}/>;
+        return <TeamEventSignUp user={props.user} event={event} />;
     } else return "No Sign Up";
   };
+
   if (event.public || props.admin)
     return (
       <Stack>
@@ -132,11 +160,12 @@ export default function EventInfo(props: EventCardProps) {
             )}
             <EventCountDown event={event} />
           </Group>
-          {teams && event.showTeams && teams.length > 0 && (
-            <Group>
-              <h1 className="text-xl">Teams:</h1>
-              <TeamsGroup />
-            </Group>
+
+          {event.showTeams && event.teams && event.teams.length > 0 && (
+            <TeamsGroup />
+          )}
+            {event.showParticipants  && event.participants.length > 0 && (
+            <Participants />
           )}
         </Stack>
 

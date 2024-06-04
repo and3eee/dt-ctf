@@ -11,20 +11,27 @@ import { disconnect } from "process";
 import { OutliningSpanKind } from "typescript";
 
 export async function CreateTeam(team: TeamEntry, user: User) {
-  return await prisma.teamEntry.create({
+
+  const out =  await prisma.teamEntry.create({
     data: {
       name: team.name,
       event: { connect: { id: team.eventId } },
       members: { connect: { id: user.id } },
     },
   });
+  await purgeEmptyTeams(team.eventId);
+  return out;
+
 }
 
 export async function UpdateTeam(team: TeamEntry) {
-  return await prisma.teamEntry.update({
+
+  const out =  await prisma.teamEntry.update({
     where: { id: team.id },
     data: { name: team.name, event: { connect: { id: team.eventId } } },
   });
+  await purgeEmptyTeams(team.eventId);
+  return out;
 }
 
 export async function AddTeamUserEntry(riddleID: number, teamID: string) {

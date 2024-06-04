@@ -151,7 +151,7 @@ export default function EventSideCard(props: {
         <Card.Section >
           {!props.event.active && (
             <Button
-              color="success"
+              color="green"
               className="min-w-full justify-self-end"
               onClick={() => {
                 router.replace(`/${props.event.id}/signup`);
@@ -162,7 +162,7 @@ export default function EventSideCard(props: {
           )}
           {props.event.active && (
             <Button
-              color="success"
+              color="green"
               className="min-w-full justify-self-end"
               onClick={() => {
                 teamRedirect();

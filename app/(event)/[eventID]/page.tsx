@@ -21,8 +21,16 @@ export default async function EventPage({
   params: { eventID: string };
 }) {
   const event = await prisma.event.findFirst({
-    where: { id:{startsWith: params.eventID }},
-    include: { participants: true, teams: { include: {  members: true, userEntries: true } } },
+    where: { id: { startsWith: params.eventID } },
+    include: {
+      participants: true,
+      teams: {
+        include: {
+          members: true,
+          userEntries: { include: { answeredBy: true } },
+        },
+      },
+    },
   });
 
   const session = await auth();
@@ -40,8 +48,11 @@ export default async function EventPage({
 
       if (event.start > now) {
         //Count down and event Car
-        return <Container maw="60%"><EventInfo admin={admin} event={event} user={user!} />
-     </Container>;
+        return (
+          <Container maw="60%">
+            <EventInfo admin={admin} event={event} user={user!} />
+          </Container>
+        );
       }
     }
 

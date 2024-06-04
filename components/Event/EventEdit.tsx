@@ -128,7 +128,7 @@ export default function EventEdit(props: {
           <Group mt="xs">
             <Checkbox
               label="Show Teams"
-              name="showTeams"
+              name="showTeams"  defaultChecked={props.event.showTeams?? false}
               key={form.key("showTeams")}
               {...form.getInputProps("showTeams")}
             >
@@ -147,12 +147,12 @@ export default function EventEdit(props: {
             <Checkbox
               name="useTeams"
               label="Use Teams"
-              key={form.key("useTeams")}
+              key={form.key("useTeams")}  defaultChecked={props.event.useTeams??false}
               {...form.getInputProps("useTeams")}
             />
             <Checkbox
               name="useAssignedTeams"
-              label="Use Assigned Teams"
+              label="Use Assigned Teams"  defaultChecked={props.event.useAssignedTeams ?? false}
               key={form.key("useAssignedTeams")}
               {...form.getInputProps("useAssignedTeams")}
             />
@@ -161,7 +161,7 @@ export default function EventEdit(props: {
           <Group mt="xs">
             <Checkbox
               label="Require URLs"
-              name="urls"
+              name="urls"  defaultChecked={props.event.requireURL ?? false}
               key={form.key("requireURL")}
               {...form.getInputProps("requireURL")}
             >
@@ -169,7 +169,7 @@ export default function EventEdit(props: {
             </Checkbox>
             <Checkbox
               label="Require Screenshot"
-              name="screenshot"
+              name="screenshot"  defaultChecked={props.event.requireScreenshot ?? false}
               key={form.key("requireScreenshot")}
               {...form.getInputProps("requireScreenshot")}
             >
@@ -178,7 +178,7 @@ export default function EventEdit(props: {
 
             <Checkbox
               name="public"
-              label="Public"
+              label="Public"  defaultChecked={props.event.public ?? false}
               key={form.key("public")}
               {...form.getInputProps("public")}
             >
@@ -188,10 +188,20 @@ export default function EventEdit(props: {
             <Checkbox
               name="active"
               label="Active"
+              defaultChecked={props.event.active ?? false}
               key={form.key("active")}
               {...form.getInputProps("active")}
             >
               Active
+            </Checkbox>
+            <Checkbox
+              name="teamsGenerated"
+              label="Teams Generated"
+              defaultChecked={props.event.teamsGenerated}
+              key={form.key("teamsGenerated")}
+              {...form.getInputProps("teamsGenerated")}
+            >
+              Teams Generated
             </Checkbox>
           </Group>
   

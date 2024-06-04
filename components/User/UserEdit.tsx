@@ -40,6 +40,12 @@ export default function UserEdit(props: { user: User; onClick?: () => void; isEv
             {...form.getInputProps("bucket")}
             data={["Agent", "Environment", "DEM", "Platform", "none"]}
           />
+              <Select
+            label="Geo"
+            placeholder="Pick a geo"
+            {...form.getInputProps("geo")}
+            data={["NASA", "EMEA", "APAC", "None"]}
+          />
           <AdminCheck>
             <Select
               label="Role"

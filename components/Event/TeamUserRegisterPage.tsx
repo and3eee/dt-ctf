@@ -2,6 +2,7 @@
 
 import { EventProps } from "@/types";
 import {
+  Badge,
   Button,
   Card,
   Collapse,
@@ -17,6 +18,8 @@ import { Event, User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import UserEdit from "../User/UserEdit";
 import { useDisclosure } from "@mantine/hooks";
+import { RegisterUserForEvent } from "./EventControl";
+import { RiCheckLine } from "react-icons/ri";
 
 const columns = [
   { key: "name", label: "Name" },
@@ -28,8 +31,11 @@ export default function TeamUserRegisterPage(props: {
   user: User;
 }) {
   const event = props.event;
+  const router = useRouter()
 
   if (event.useTeams) {
+    if (event.participants.some((member: User) => props.user.id == member.id))
+      return <Badge size="lg" leftSection={<RiCheckLine/>}>Registered!</Badge>;
     return (
       <Button
         onClick={() =>
@@ -38,11 +44,12 @@ export default function TeamUserRegisterPage(props: {
 
             children: (
               <Stack align="center">
-       
-
-          
-
-                <Text> Teams will be auto generated to balance skill-sets. Adjustments can be made once assigned. Please ensure your account information is up to date for accurate assignments. </Text>
+                <Text>
+                  {" "}
+                  Teams will be auto generated to balance skill-sets.
+                  Adjustments can be made once assigned. Please ensure your
+                  account information is up to date for accurate assignments.{" "}
+                </Text>
 
                 <NavLink label="Edit Account Info">
                   {" "}
@@ -51,7 +58,14 @@ export default function TeamUserRegisterPage(props: {
                   </Card>
                 </NavLink>
 
-                <Button>Register for Event</Button>
+                <Button
+                  onClick={() => {
+                    RegisterUserForEvent(props.event, props.user);
+                    router.refresh();
+                  }}
+                >
+                  Register for Event
+                </Button>
               </Stack>
             ),
           })

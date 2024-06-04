@@ -2,10 +2,16 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventProps } from "@/types";
-import { Event } from "@prisma/client";
+import { Event, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { Noto_Sans_Gunjala_Gondi } from "next/font/google";
 import { NextRequest, NextResponse } from "next/server";
 
+
+export async function RegisterUserForEvent(event: Event, user: User){
+   const resp = await prisma.event.update({where:{id:event.id},data:{participants:{connect:{id:user.id}}}})
+   return resp != undefined
+}
 export async function DeleteEvent(input: any) {
   return await prisma.event.delete({ where: { id: input.id } });
 }
@@ -54,6 +60,7 @@ export async function EditEvent(formData: Event) {
         public: formData.public, //
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
+        teamsGenerated: formData.teamsGenerated
       },
     });
 
@@ -64,20 +71,13 @@ export async function EditEvent(formData: Event) {
 export async function GetTeams(eventID: string) {
   const event = await prisma.event.findFirst({
     where: { id: eventID },
-    include: { teams: { include: { members: true } } },
+    include: { teams: { include: { members: true , userEntries: true},  } },
   });
 
   if (!event) return [];
-  let teams = new Map<string, string[]>();
-  event.teams.forEach((teamEntry) => {
-    let temp: string[] = [];
-    teamEntry.members.forEach((member) => {
-      temp.push(member.name!);
-    });
-    teams.set(teamEntry.name, temp);
-  });
 
-  return teams;
+
+  return event.teams;
 }
 
 export async function GetUserTeamID(eventId: string, email: string) {
