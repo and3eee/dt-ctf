@@ -195,11 +195,11 @@ export default function EventEdit(props: {
               Active
             </Checkbox>
             <Checkbox
-              name="teamsGenerated"
+              name="generatedTeams"
               label="Teams Generated"
-              defaultChecked={props.event.teamsGenerated}
-              key={form.key("teamsGenerated")}
-              {...form.getInputProps("teamsGenerated")}
+              defaultChecked={props.event.generatedTeams}
+              key={form.key("generatedTeams")}
+              {...form.getInputProps("generatedTeams")}
             >
               Teams Generated
             </Checkbox>

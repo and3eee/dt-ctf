@@ -106,9 +106,9 @@ export default function EventInfo(props: {
 
   const signUpButton = () => {
     if (props.user) {
-      if (event.useAssignedTeams && !event.teamsGenerated)
+      if (event.useAssignedTeams && !event.generatedTeams)
         return <TeamUserRegisterPage event={event} user={props.user} />;
-      if (event.useTeams || (event.useAssignedTeams && event.teamsGenerated))
+      if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
         return <TeamEventSignUp user={props.user} event={event} />;
     } else return "No Sign Up";
   };

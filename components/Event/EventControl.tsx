@@ -33,7 +33,7 @@ export async function CreateEvent(formData: Event) {
       active: formData.active, //
       teamSize: formData.teamSize,
       useTeams: formData.useTeams, //
-      teamsGenerated: formData.teamsGenerated,
+      generatedTeams: formData.generatedTeams,
       public: formData.public, //
       showTeams: formData.showTeams, //
       showParticipants: formData.showParticipants, //
@@ -62,7 +62,7 @@ export async function EditEvent(formData: Event) {
         useTeams: formData.useTeams, //
         public: formData.public, //
         teamSize: formData.teamSize, //
-        teamsGenerated: formData.teamsGenerated,
+        generatedTeams: formData.generatedTeams,
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
 

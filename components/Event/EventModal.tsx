@@ -27,7 +27,7 @@ export default function EventModal(
     showTeams: true,
     useTeams: true,
     teamSize: 4,
-    teamsGenerated: false,
+    generatedTeams: false,
     public: false,
     createdAt: new Date(),
     updatedAt: new Date(),
