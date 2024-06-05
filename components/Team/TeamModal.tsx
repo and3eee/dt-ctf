@@ -21,7 +21,7 @@ export default function TeamModal(props: {
       clickOutsideEvents={["mouseup", "touchend"]}
     >
       <Popover.Target>
-        <Button >
+        <Button variant="outline">
           {props.createMode ? "Create New Team" : "Edit Team"}
         </Button>
       </Popover.Target>

@@ -2,15 +2,17 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventProps } from "@/types";
-import { Event, User } from "@prisma/client";
+import { Event, Riddle, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { Noto_Sans_Gunjala_Gondi } from "next/font/google";
 import { NextRequest, NextResponse } from "next/server";
 
-
-export async function RegisterUserForEvent(event: Event, user: User){
-   const resp = await prisma.event.update({where:{id:event.id},data:{participants:{connect:{id:user.id}}}})
-   return resp != undefined
+export async function RegisterUserForEvent(event: Event, user: User) {
+  const resp = await prisma.event.update({
+    where: { id: event.id },
+    data: { participants: { connect: { id: user.id } } },
+  });
+  return resp != undefined;
 }
 export async function DeleteEvent(input: any) {
   return await prisma.event.delete({ where: { id: input.id } });
@@ -29,8 +31,9 @@ export async function CreateEvent(formData: Event) {
       requireURL: formData.requireURL, //
       requireScreenshot: formData.requireScreenshot, //
       active: formData.active, //
+      teamSize: formData.teamSize,
       useTeams: formData.useTeams, //
-
+      teamsGenerated: formData.teamsGenerated,
       public: formData.public, //
       showTeams: formData.showTeams, //
       showParticipants: formData.showParticipants, //
@@ -58,9 +61,11 @@ export async function EditEvent(formData: Event) {
         active: formData.active, //
         useTeams: formData.useTeams, //
         public: formData.public, //
+        teamSize: formData.teamSize, //
+        teamsGenerated: formData.teamsGenerated,
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
-        teamsGenerated: formData.teamsGenerated
+
       },
     });
 
@@ -71,11 +76,10 @@ export async function EditEvent(formData: Event) {
 export async function GetTeams(eventID: string) {
   const event = await prisma.event.findFirst({
     where: { id: eventID },
-    include: { teams: { include: { members: true , userEntries: true},  } },
+    include: { teams: { include: { members: true, userEntries: true } } },
   });
 
   if (!event) return [];
-
 
   return event.teams;
 }
@@ -96,18 +100,19 @@ export async function GetTeamsRaw(eventID: string) {
   if (event?.teams) return await event.teams;
 }
 
-export async function SetRiddleSet(eventId: string, ids: string[]) {
+export async function SetRiddleSet(eventId: string, ids: Riddle[]) {
   //purge first
   await prisma.event.update({
     where: { id: eventId },
     data: { riddles: { set: [] } },
   });
-  const data: { id: string; }[] = ids.map((riddle) => ({ id: riddle }));
+  const data: { id: number }[] = (ids.map((riddle) => ({ id: riddle.id })));
 
   const out = await prisma.event.update({
     where: { id: eventId },
-    data: { riddles: { connect: data! } },
+    data: { riddles: { connect: data! } }, include:{riddles:true}
   });
+  return out; 
 }
 
 export async function StartEvent(id: string) {

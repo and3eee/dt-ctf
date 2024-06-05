@@ -11,8 +11,7 @@ import { disconnect } from "process";
 import { OutliningSpanKind } from "typescript";
 
 export async function CreateTeam(team: TeamEntry, user: User) {
-
-  const out =  await prisma.teamEntry.create({
+  const out = await prisma.teamEntry.create({
     data: {
       name: team.name,
       event: { connect: { id: team.eventId } },
@@ -21,12 +20,10 @@ export async function CreateTeam(team: TeamEntry, user: User) {
   });
   await purgeEmptyTeams(team.eventId);
   return out;
-
 }
 
 export async function UpdateTeam(team: TeamEntry) {
-
-  const out =  await prisma.teamEntry.update({
+  const out = await prisma.teamEntry.update({
     where: { id: team.id },
     data: { name: team.name, event: { connect: { id: team.eventId } } },
   });
@@ -34,20 +31,21 @@ export async function UpdateTeam(team: TeamEntry) {
   return out;
 }
 
-export async function AddTeamUserEntry(riddleID: number, teamID: string) {
-  const session = await auth();
-
-  if (session) {
-    let out = await prisma.userEntry.create({
-      data: {
-        answeredAt: new Date(),
-        riddle: { connect: { id: riddleID } },
-        answeredBy: { connect: { email: session.user!.email! } },
-        teamEntry: { connect: { id: teamID } },
-      },
-    });
-    return out;
-  }
+export async function AddTeamUserEntry(
+  riddleID: number,
+  teamID: string,
+  user: User
+) {
+  let out = await prisma.userEntry.create({
+    data: {
+      answeredAt: new Date(),
+      riddle: { connect: { id: riddleID } },
+      answeredBy: { connect: { email: user.email! } },
+      teamEntry: { connect: { id: teamID } },
+    },
+    include: { answeredBy: true },
+  });
+  return out;
 }
 
 export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {

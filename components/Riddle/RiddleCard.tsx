@@ -1,10 +1,10 @@
 "use client";
-import { RiddleProps } from "@/types";
+import { RiddleProps, UserEntryProps } from "@/types";
 
 import RiddleModal from "./RiddleModal";
 import { useRouter } from "next/navigation";
 import { AddTeamUserEntry, RemoveTeamUserEntry } from "../Team/TeamControl";
-import React from "react";
+import React, { useState } from "react";
 import {
   Tooltip,
   Badge,
@@ -22,30 +22,57 @@ import {
   Stack,
   Grid,
   getGradient,
+  Switch,
 } from "@mantine/core";
-import { Riddle, RiddleResource } from "@prisma/client";
+import { Riddle, RiddleResource, User } from "@prisma/client";
 import { RiDeleteBack2Fill } from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
 import { theme } from "@/theme";
+import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 
 export default function RiddleCard(props: {
-  answered?: boolean;
-  answeredBy?: string;
+  answeredBy: UserEntryProps | undefined;
   number?: number;
   admin?: boolean;
   teamID?: string;
   riddle: any;
   preview?: boolean;
+  user?: User;
 }) {
-  
   const router = useRouter();
-  const [value, setValue] = React.useState("");
-
-  const onClick = () => {
-    if (value == props.riddle.solution && props.teamID) {
-      AddTeamUserEntry(props.riddle.id, props.teamID);
+  const [value, setValue] = useState("");
+  const [solvedBy, setSolvedBy] = useState<UserEntryProps | undefined>(
+    props.answeredBy
+  );
+  const submitEntry = async () => {
+    if (value == props.riddle.solution && props.teamID && props.user) {
+      if (!props.admin) {
+        const reply = await AddTeamUserEntry(
+          props.riddle.id,
+          props.teamID,
+          props.user
+        );
+        if (reply) setSolvedBy(reply);
+      } else {
+        setSolvedBy({
+          id: "temp",
+          riddleId: props.riddle.id,
+          answeredBy: props.user,
+          userId: props.user.id,
+          teamEntryId: props.teamID,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          answeredAt: new Date(),
+        });
+        console.log(solvedBy);
+      }
+    } else {
+      notifications.show({
+        title: "Wrong",
+        message: "That's not the right flag, try again! ",
+      });
     }
-    router.refresh();
   };
 
   const onDelete = async () => {
@@ -59,11 +86,23 @@ export default function RiddleCard(props: {
     if (props.riddle.difficulty) {
       switch (props.riddle.difficulty.toLowerCase()) {
         case "easy":
-          return <Badge variant="light" color="green">Easy</Badge>;
+          return (
+            <Badge variant="light" color="green">
+              Easy
+            </Badge>
+          );
         case "medium":
-          return <Badge variant="light" color="orange">Medium</Badge>;
+          return (
+            <Badge variant="light" color="orange">
+              Medium
+            </Badge>
+          );
         case "hard":
-          return <Badge variant="light" color="red">Hard</Badge>;
+          return (
+            <Badge variant="light" color="red">
+              Hard
+            </Badge>
+          );
         case "expert":
           return (
             <Badge
@@ -81,17 +120,26 @@ export default function RiddleCard(props: {
     if (props.riddle.bucket) {
       switch (props.riddle.bucket.toLowerCase()) {
         case "agent":
-          return <Badge color="red"  variant="light">Agent</Badge>;
+          return (
+            <Badge color="red" variant="light">
+              Agent
+            </Badge>
+          );
         case "environment":
-          return <Badge color="blue"  variant="light">Env</Badge>;
+          return (
+            <Badge color="blue" variant="light">
+              Env
+            </Badge>
+          );
         case "dem":
-          return <Badge color="green" variant="light">DEM</Badge>;
+          return (
+            <Badge color="green" variant="light">
+              DEM
+            </Badge>
+          );
         case "platform":
           return (
-            <Badge
-             color="violet"
-             variant="light"
-            >
+            <Badge color="violet" variant="light">
               Platform
             </Badge>
           );
@@ -108,16 +156,16 @@ export default function RiddleCard(props: {
       .join(".");
   }
   let ansInitials = undefined;
-  if (props.answeredBy) {
-    ansInitials = props.answeredBy
-      .split(" ")
+  if (solvedBy?.answeredBy) {
+    ansInitials = solvedBy.answeredBy
+      .name!.split(" ")
       .map((n) => n[0])
       .join(".");
   }
 
   const ResourceGrid = () => {
     const resources: RiddleResource[] = props.riddle.RiddleResource;
-    
+
     return (
       <Grid>
         <Grid.Col span={12}>
@@ -135,13 +183,14 @@ export default function RiddleCard(props: {
 
   return (
     <Card w="40rem" padding={"lg"}>
-      <Card.Section inheritPadding>
+      <Stack gap="0">
         <Group justify="space-between">
-          {" "}
-          {props.number && <Title order={3}>Riddle: {props.number}</Title>}
+          {props.number != undefined && (
+            <Title order={3}>Riddle: {props.number + 1}</Title>
+          )}
           <Group p="sm" justify="right">
-            {props.answered && props.answeredBy && (
-              <Tooltip label={`Solved by ${props.answeredBy}`}>
+            {solvedBy && solvedBy && (
+              <Tooltip label={`Solved by ${solvedBy}`}>
                 <Avatar color="green">{ansInitials} </Avatar>
               </Tooltip>
             )}
@@ -153,7 +202,7 @@ export default function RiddleCard(props: {
               </Tooltip>
             )}
             {props.riddle.bucket && Bucket()}
-            {(props.admin || props.answered) && (
+            {(props.admin || solvedBy) && (
               <Tooltip color="red" label={"Clear Answer"}>
                 <ActionIcon color="red" onClick={onDelete}>
                   <RiDeleteBack2Fill />
@@ -197,7 +246,7 @@ export default function RiddleCard(props: {
             )}
           </Group>
         )}
-      </Card.Section>
+      </Stack>
 
       <Divider />
       <Card.Section inheritPadding>
@@ -211,7 +260,7 @@ export default function RiddleCard(props: {
                   <Stack>
                     <Title order={5}>Source Location:</Title>
                     <Text>{props.riddle.sourceLocation}</Text>
-                  </Stack>{" "}
+                  </Stack>
                 </Grid.Col>
               )}
 
@@ -246,10 +295,11 @@ export default function RiddleCard(props: {
 
         {props.riddle.showRiddleResource &&
           props.riddle.RiddleResource &&
+          props.riddle.RiddleResource.length > 0 &&
           ResourceGrid()}
       </Card.Section>
 
-      {!props.answered && (
+      {!solvedBy && (
         <Card.Section m="lg" inheritPadding>
           <Group justify="center">
             <TextInput
@@ -260,26 +310,18 @@ export default function RiddleCard(props: {
                 props.riddle.sourcePlaceHolder ?? "Riddle Answer Here...."
               }
             ></TextInput>
-            <Popover position="right" withArrow>
-              <Popover.Target>
-                <Button color="green" onClick={onClick}>
-                  Submit
-                </Button>
-              </Popover.Target>
-              {value !== props.riddle.solution && (
-                <Popover.Dropdown>
-                  <Text>Wrong, try again!</Text>
-                </Popover.Dropdown>
-              )}
-            </Popover>
+
+            <Button color="green" onClick={submitEntry}>
+              Submit
+            </Button>
           </Group>
         </Card.Section>
       )}
-      {props.answered && (
-        <Card.Section className="flex gap-3">
+      {solvedBy && (
+        <Group>
           <Text c="bold">Solution:</Text>
           <Text c="dimmed">{props.riddle.solution}</Text>
-        </Card.Section>
+        </Group>
       )}
     </Card>
   );

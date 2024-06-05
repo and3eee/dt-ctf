@@ -123,7 +123,7 @@ function sortData(
   );
 }
 
-export function TableSort(props: {
+export function ContributorRiddleTable(props: {
   riddles: Riddle[];
   defaultSelected?: Riddle[];
   resources: RiddleResource[];

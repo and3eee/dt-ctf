@@ -80,7 +80,7 @@ export default function EventCard(props: EventCardProps) {
         <Stack>
           <Group justify="space-between">
             <Title>{event.name}</Title>
-            <Group>
+            <Group >
               <Divider orientation="vertical" />
               {props.admin && !event.public && <Badge>Private</Badge>}
               {!event.active && (
@@ -91,12 +91,12 @@ export default function EventCard(props: EventCardProps) {
 
               {(event.active || props.admin) && (
                 <Tooltip label="Event ends at">
-                  <Badge color="warning">{end}</Badge>
+                  <Badge color="indigo">{end}</Badge>
                 </Tooltip>
               )}
               {event.active && (
                 <Tooltip label="Registration Closed">
-                  <Badge color="critical">Event is Live!</Badge>
+                  <Badge variant="gradiant">Event is Live!</Badge>
                 </Tooltip>
               )}
             </Group>

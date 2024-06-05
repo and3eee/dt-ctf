@@ -1,4 +1,4 @@
-import { Event, TeamEntry, User, UserEntry } from "@prisma/client";
+import { Event, Riddle, RiddleResource, TeamEntry, User, UserEntry } from "@prisma/client";
 import { SVGProps } from "react";
 import { BooleanLiteral, StringMappingType } from "typescript";
 
@@ -7,32 +7,22 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 };
 
 export interface EventProps extends Event {
-  teams?: TeamProps[];
+  teams: TeamProps[];
+  riddles: RiddleProps[]
   participants: User[];
 }
 
-export interface RiddleProps {
-  id: number;
-  riddle: string;
-  difficulty?: string;
-  bucket?: string;
-  topic?: string;
-  sourcePlaceHolder?: string;
-  solution: string;
-  author?: string;
-  sourceLocation?: string;
-  sourceDescription?: string;
-  sourceURL?: string;
-  implemented: boolean;
-  validated: boolean;
+export interface RiddleProps extends Riddle{
+  RiddleResource:RiddleResource[];
 }
 
 export interface TeamProps extends TeamEntry {
   members?: User[];
   event?: Event;
-  userEntries?: UserEntry[];
+  userEntries?: UserEntryProps[];
 }
 
 export interface UserEntryProps extends UserEntry {
   answeredBy: User;
 }
+

@@ -29,15 +29,17 @@ const columns = [
 export default function TeamUserRegisterPage(props: {
   event: EventProps;
   user: User;
+  
 }) {
   const event = props.event;
   const router = useRouter()
 
   if (event.useTeams) {
     if (event.participants.some((member: User) => props.user.id == member.id))
-      return <Badge size="lg" leftSection={<RiCheckLine/>}>Registered!</Badge>;
+      return <Badge variant="gradient" size="lg" leftSection={<RiCheckLine/>}>Registered!</Badge>;
     return (
       <Button
+      variant="gradient"
         onClick={() =>
           modals.open({
             title: "Sign Up",

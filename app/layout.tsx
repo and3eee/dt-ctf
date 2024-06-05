@@ -1,7 +1,7 @@
 import "@mantine/core/styles.css";
 import '@mantine/dates/styles.css';
 import "@mantine/charts/styles.css";
-
+import '@mantine/notifications/styles.css';
 import Shell from "@/components/Shell";
 import AuthProvider from "@/components/AuthProvider";
 

@@ -16,6 +16,7 @@
     "@mantine/form": "^7.9.2",
     "@mantine/hooks": "7.9.2",
     "@mantine/modals": "^7.9.2",
+    "@mantine/notifications": "^7.10.1",
     "@prisma/client": "^5.13.0",
     "dayjs": "^1.11.11",
     "next": "^14.2.3",

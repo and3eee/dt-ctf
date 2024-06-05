@@ -54,7 +54,7 @@ export default function EventInfo(props: {
                     <Stack gap={0}>
                       <Text>{team.name}</Text>
                       {team.members!.map((member: User) => (
-                        <Text>{member.name}</Text>
+                        <Text key={member.name}>{member.name}</Text>
                       ))}
                     </Stack>
                   );
@@ -130,12 +130,12 @@ export default function EventInfo(props: {
 
             {(event.active || props.admin) && (
               <Tooltip label="Event ends at">
-                <Badge color="warning">{end}</Badge>
+                <Badge color="indigo">{end}</Badge>
               </Tooltip>
             )}
             {event.active && (
               <Tooltip label="Registration Closed">
-                <Badge color="critical">Event is Live!</Badge>
+                <Badge variant="gradient">Event is Live!</Badge>
               </Tooltip>
             )}
           </Group>

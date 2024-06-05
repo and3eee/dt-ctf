@@ -15,6 +15,7 @@ export default function TeamEventSignUp(props: {
   if (props.event.useTeams) {
     return (
       <Button
+      variant="gradient"
         onClick={() =>
           modals.open({
             title: "Sign-Up for a Team",
