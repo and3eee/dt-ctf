@@ -14,9 +14,11 @@ import {
   Button,
   Title,
   Group,
-  Stack, Text,
+  Stack,
+  Text,
 } from "@mantine/core";
 import { notFound, useRouter } from "next/navigation";
+import EventAdminMenu from "./EventAdminMenu";
 
 interface EventCardProps {
   event: Event;
@@ -80,7 +82,7 @@ export default function EventCard(props: EventCardProps) {
         <Stack>
           <Group justify="space-between">
             <Title>{event.name}</Title>
-            <Group >
+            <Group>
               <Divider orientation="vertical" />
               {props.admin && !event.public && <Badge>Private</Badge>}
               {!event.active && (
@@ -105,10 +107,17 @@ export default function EventCard(props: EventCardProps) {
           <Divider />
 
           <Stack>
+            {event.description && <Text>{event.description}</Text>}
             {event.prize && (
               <Stack gap={0}>
-                <Text size="xs" c="dimmed">Prize:</Text>
-                {event.prize.split("/n").map((input: string) => <Text key={input} size="lg">{input}</Text>)}
+                <Text size="xs" c="dimmed">
+                  Prize:
+                </Text>
+                {event.prize.split("/n").map((input: string) => (
+                  <Text key={input} size="lg">
+                    {input}
+                  </Text>
+                ))}
               </Stack>
             )}
             {teams && event.showTeams && teams.length > 0 && (
@@ -136,17 +145,20 @@ export default function EventCard(props: EventCardProps) {
             <Button
               className="justify-self-end"
               onClick={() => {
-                router.replace(`/${event.id.slice(0,5)}`);
+                router.replace(`/${event.id.slice(0, 5)}`);
               }}
             >
               Goto Event Page
             </Button>
             {props.admin && (
-              <EventModal buttonText={"Edit Event"} event={event} />
+              <Group>
+                <EventModal event={event} />
+                <EventAdminMenu event={event} />{" "}
+              </Group>
             )}
           </Group>
         </Stack>
       </Card>
     );
-    else notFound();
+  else notFound();
 }

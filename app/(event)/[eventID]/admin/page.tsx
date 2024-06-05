@@ -1,7 +1,9 @@
 import { auth } from "@/app/api/auth/[...nextauth]/route";
+import EventAdminMenu from "@/components/Event/EventAdminMenu";
 import EventRiddleList from "@/components/Event/EventRiddleList";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
+import { Stack } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -19,7 +21,7 @@ export default async function EventAdmin({
     const event = await prisma.event.findFirst({
       where: { id: { startsWith: params.eventID } },
       include: {
-        riddles: {include:{RiddleResource:true}},
+        riddles: { include: { RiddleResource: true } },
         participants: true,
         teams: {
           include: {
@@ -28,17 +30,22 @@ export default async function EventAdmin({
           },
         },
       },
-    })
-
+    });
 
     const riddles = await prisma.riddle.findMany();
 
     if (event) {
       return (
-        <div className="flex flex-col gap-5">
+        <Stack justify="center">
           <p className="text-3xl">{event.name} Admin </p>
-          <EventRiddleList user={user} event={event} riddles={riddles} resources={[]} />
-        </div>
+          <EventAdminMenu event={event} />
+          <EventRiddleList
+            user={user}
+            event={event}
+            riddles={riddles}
+            resources={[]}
+          />
+        </Stack>
       );
     }
   }
