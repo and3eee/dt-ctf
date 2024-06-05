@@ -7,6 +7,7 @@ import { User } from "@prisma/client";
 import EventLeaderBoard from "./EventLeaderBoard";
 import EventCountDown from "./EventCountDown";
 import EventTeamStats from "./EventTeamStats";
+import { RiBook2Line } from "react-icons/ri";
 
 export default function EventDrawer(props: {
   event: EventProps;
@@ -25,7 +26,7 @@ export default function EventDrawer(props: {
           <EventLeaderBoard teams={props.event.teams} event={props.event} />
           </Drawer>
     
-          <NavLink label="Event Info" onClick={open}/>
+          <NavLink description="Leaderboard, teams stats and more" leftSection={<RiBook2Line />}      variant="subtle" active label="Event Info" onClick={open}/>
         </>
       );
 
