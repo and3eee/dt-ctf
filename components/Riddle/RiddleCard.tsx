@@ -32,7 +32,7 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 
 export default function RiddleCard(props: {
-  answeredBy: UserEntryProps | undefined;
+  answeredBy?: UserEntryProps ;
   number?: number;
   admin?: boolean;
   teamID?: string;

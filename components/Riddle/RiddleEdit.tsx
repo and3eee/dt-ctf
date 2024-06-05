@@ -105,7 +105,7 @@ export default function RiddleEdit(props: {
       size:"auto",
       children: (
         <Stack>
-          <RiddleCard number={props.riddle.id} riddle={props.riddle} />
+          <RiddleCard answeredBy={undefined} number={props.riddle.id} riddle={props.riddle} />
           <Button fullWidth onClick={() => modals.closeAll()} mt="md">
             Close Preview
           </Button>
