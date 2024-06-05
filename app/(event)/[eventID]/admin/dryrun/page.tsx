@@ -18,7 +18,7 @@ export default async function EventDryRunView({
     where: { id: session?.user?.id },
   });
   if (session?.user && user) {
-    const admin = user.role == "ORGANIZER" || user.role == "ADMIN";
+    const admin = user.role != "USER";
 
     if (!admin) return <>Why are you here? {notFound()}</>;
 

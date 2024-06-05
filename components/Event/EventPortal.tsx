@@ -4,6 +4,7 @@ import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
 import { Grid, Stack, Switch } from "@mantine/core";
 import { useState } from "react";
+import EventDrawer from "./EventDrawer";
 
 export default function EventPortal(props: {
   event: EventProps;
@@ -25,11 +26,10 @@ export default function EventPortal(props: {
     return undefined;
   };
   const [adminMode, toggle] = useState(props.admin);
-
+var pos = 0; 
   if (props.riddles)
     return (
       <Stack>
-       
         {props.admin && (
           <Switch
             label="Admin Mode"
@@ -39,9 +39,11 @@ export default function EventPortal(props: {
             }}
           />
         )}
+        <EventDrawer event={props.event} team={props.team}/>
+
         <Grid>
-          {props.riddles?.map((riddle: RiddleProps) => (
-            <Grid.Col key={riddle.id} span={4}>
+          {props.riddles?.map((riddle: RiddleProps) => 
+          {  return (<Grid.Col key={riddle.id} span="content">
               <RiddleCard
                 admin={adminMode}
                 answeredBy={solvedCheck(riddle.id)}
@@ -50,8 +52,8 @@ export default function EventPortal(props: {
                 user={props.user}
                 number={props.riddles?.indexOf(riddle)}
               />
-            </Grid.Col>
-          ))}
+            </Grid.Col>)}
+          )}
         </Grid>
       </Stack>
     );
