@@ -2,103 +2,98 @@
 
 import { EventProps, TeamProps } from "@/types";
 
-import React from "react";
-import { registerMember } from "./TeamControl";
-import { useSession } from "next-auth/react";
-import AuthCheck from "../Auth/AuthCheck";
-import { useRouter } from "next/navigation";
+import { User, UserEntry } from "@prisma/client";
+import { Avatar, Group, ScrollArea, Table, Text, Tooltip } from "@mantine/core";
 import TeamModal from "./TeamModal";
-import { User } from "next-auth";
-import { FaPen } from "react-icons/fa";
+import JoinTeamButton from "./JoinTeamButton";
+import { useState } from "react";
+import { GetTeams } from "../Event/EventControl";
 
-const columns = [
-  { key: "name", label: "Name" },
-  { key: "members", label: "Members" },
-  { key: "capacity", label: "Space Left" },
-  { key: "actions", label: "Actions" },
-];
-
-export interface TeamListProps extends EventProps {
+export default function TeamList(props: {
+  event: EventProps;
   admin?: boolean;
-  small?:boolean;
-}
+  small?: boolean;
 
-export default function TeamList(event: TeamListProps, user:User) {
-  const router = useRouter();
+  user: User;
+}) {
+  const [teams, setTeams] = useState<TeamProps[]>(props.event.teams ?? []);
 
+  if (!props.event.teams) return <Text> No teams made yet</Text>;
 
-  const renderCell = React.useCallback((team: TeamProps, columnKey: string) => {
-    const cellValue = team.name;
-
-    switch (columnKey) {
-      case "name":
-        if(!event.small)
-        return <p className="min-w-[300px]">{team.name}</p>;
-        else
-        return <p className="min-w-[100px]">{team.name}</p>;
-      case "members":
-        if (!event.teams) return <></>;
-        let temp: string[] = [];
-        team.members?.forEach((member) => temp.push(member.name));
-
-        return (
-          <div className="relative flex items-center gap-2">
-            {temp.join(", ")}
-          </div>
-        );
-      case "capacity":
-        return (
-          <Chip>
-            {team.members?.length}/{event.teamSize}
-          </Chip>
-        );
-      case "actions":
-  
-        const teamUser = (team.members?.find((user) => user.email == user.email))
-        return (
-          <div className="flex gap-2">
-            {!event.admin && team.members && team.members?.length < event.teamSize && (
-              <Button isIconOnly
-                onPress={async () => {
-                  await registerMember(team.id);
-                  router.refresh();
-                }}
-              >
-                Join
-              </Button>
-            )}
-            {event.admin && (
-              <TeamModal buttonText={"Edit"} id={team.id} name={team.name} eventId={team.eventId} />
-            )}
-            {(event.admin || (teamUser && event.active)) && (<Button onPress={() =>{router.push(`${team.id}`)}}>Go to page</Button>)}
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
-
-  if (event.teams) {
+  const teamCap = (team: TeamProps) => {
     return (
-      <div><AuthCheck>
-        <Table aria-label="Teams" >
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={event.teams}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        </AuthCheck>
-      </div>
+      <Text>
+        {team.members?.length ?? 0} / {props.event.teamSize}
+      </Text>
     );
-  }
+  };
+
+  const refreshTeams = async () => {
+    const newTeams = await GetTeams(props.event.id);
+    setTeams(newTeams);
+  };
+
+  const teamMembers = (team: TeamProps) => {
+    return (
+      <Tooltip.Group openDelay={300} closeDelay={100}>
+        <Avatar.Group>
+          {team.members?.map((user: User) => (
+            <Tooltip label={user.name!} withArrow>
+              <Avatar src={user.image}>
+                {user.name!.split(" ").map((word: string) => word.charAt(0))}
+              </Avatar>
+            </Tooltip>
+          ))}
+        </Avatar.Group>{" "}
+      </Tooltip.Group>
+    );
+  };
+
+  const edit = (team: TeamProps) => {
+    const isMember = team.members?.some(
+      (member: User) => member.id == props.user.id
+    );
+    return (
+      <Group>
+        {(isMember || props.admin) && (
+          <TeamModal team={team} user={props.user} />
+        )}
+        {team.members &&
+          team.members.length < props.event.teamSize &&
+          !isMember && (
+            <JoinTeamButton
+              onClick={refreshTeams}
+              team={team}
+              user={props.user}
+            />
+          )}
+      </Group>
+    );
+  };
+
+  const rows = teams.map((team: TeamProps) => (
+    <Table.Tr key={team.id}>
+      <Table.Td>{team.name}</Table.Td>
+
+      <Table.Td>{teamMembers(team)}</Table.Td>
+      <Table.Td>{teamCap(team)}</Table.Td>
+      <Table.Td>{edit(team)}</Table.Td>
+    </Table.Tr>
+  ));
+
+  return (
+    <ScrollArea mih={200} mah={400}>
+      <Table >
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Team Name</Table.Th>
+            <Table.Th>Members</Table.Th>
+            <Table.Th>Capacity</Table.Th>
+            <Table.Th></Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>{rows}</Table.Tbody>
+      </Table>
+    </ScrollArea>
+  );
 }

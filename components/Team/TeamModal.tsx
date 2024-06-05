@@ -2,37 +2,38 @@
 
 import TeamEdit from "./TeamEdit";
 
-import { NextRequest } from "next/server";
+import { TeamEntry, User } from "@prisma/client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { TeamEntry } from "@prisma/client";
-import { TeamProps } from "@/types";
-import { useDisclosure } from "@mantine/hooks";
-import { Button, Modal, ModalContent } from "@mantine/core";
-interface TeamModalProps extends TeamProps {
-  buttonText: string;
-}
+import { Button, ModalContent, Popover } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
-export default function TeamModal(props: TeamModalProps, request: NextRequest) {
-  const [opened, { open, close }] = useDisclosure(false);
-
+export default function TeamModal(props: {
+  team: TeamEntry;
+  user: User;
+  createMode?: boolean;
+  onClick?: ()=> void
+}) {
+  const router = useRouter()
   return (
-    <>
-      <Button color="primary" onClick={open}>
-        {props.buttonText}
-      </Button>
-
-      <Modal opened={opened} onClose={close} size="3xl">
-        <ModalContent>
-          <TeamEdit
-            onClick={close}
-            id={props.id}
-            name={props.name}
-            eventId={props.eventId}
-            event={props.event}
-          />
-        </ModalContent>
-      </Modal>
-    </>
+    <Popover
+      width={200}
+      position="bottom"
+      clickOutsideEvents={["mouseup", "touchend"]}
+    >
+      <Popover.Target>
+        <Button variant="outline">
+          {props.createMode ? "Create New Team" : "Edit Team"}
+        </Button>
+      </Popover.Target>
+      <Popover.Dropdown>
+        <TeamEdit
+          onClick={() => {if(props.onClick) props.onClick(); else router.refresh();}} 
+          team={props.team}
+          createMode={props.createMode}
+          user={props.user}
+          
+        />
+      </Popover.Dropdown>
+    </Popover>
   );
 }

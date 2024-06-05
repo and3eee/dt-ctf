@@ -105,7 +105,7 @@ export default function RiddleEdit(props: {
       size:"auto",
       children: (
         <Stack>
-          <RiddleCard number={props.riddle.id} riddle={props.riddle} />
+          <RiddleCard answeredBy={undefined} number={props.riddle.id} riddle={props.riddle} />
           <Button fullWidth onClick={() => modals.closeAll()} mt="md">
             Close Preview
           </Button>
@@ -154,7 +154,7 @@ export default function RiddleEdit(props: {
   const submissionHandler = async (values: typeof form.values) => {
     if (!form.isValid()) return;
     const riddle = values;
-    console.log(riddle.showRiddleResource)
+    
     if (riddle.id < 0) {
       const reply = await CreateRiddle(riddle, riddle.RiddleResource);
       if (props.onClick) props.onClick();
@@ -167,7 +167,7 @@ export default function RiddleEdit(props: {
     }
   };
 
-  console.log(form.errors);
+  
 
   return (
     <Container>

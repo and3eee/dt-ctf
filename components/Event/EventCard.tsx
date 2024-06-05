@@ -5,8 +5,20 @@ import { useState } from "react";
 
 import { Event, Riddle, TeamEntry } from "@prisma/client";
 import EventModal from "./EventModal";
-import { Tooltip, Avatar, Card, Divider, Chip, Button } from "@mantine/core";
-import { useRouter } from "next/router";
+import {
+  Tooltip,
+  Avatar,
+  Card,
+  Divider,
+  Badge,
+  Button,
+  Title,
+  Group,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { notFound, useRouter } from "next/navigation";
+import EventAdminMenu from "./EventAdminMenu";
 
 interface EventCardProps {
   event: Event;
@@ -19,8 +31,7 @@ export default function EventCard(props: EventCardProps) {
   const event = props.event;
   const teams = props.teams;
   const riddles = props.riddles;
-  const [url, setURL] = useState(event.requireURL);
-  const [screenshot, setScreenshot] = useState(event.requireScreenshot);
+
   const now = new Date();
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
@@ -51,11 +62,9 @@ export default function EventCard(props: EventCardProps) {
                 .join(".");
 
               return (
-                <div className="isBordered" key={team.id}>
-                  <Tooltip label={team.name}>
-                    <Avatar color="primary">{initials}</Avatar>
-                  </Tooltip>
-                </div>
+                <Tooltip key={team.id} label={team.name}>
+                  <Avatar>{initials}</Avatar>
+                </Tooltip>
               );
             }
           })}
@@ -69,84 +78,62 @@ export default function EventCard(props: EventCardProps) {
 
   if (event.public || props.admin)
     return (
-      <Card
-        withBorder
-        shadow="sm"
-      >
-        <Card.Section className="flex gap-3">
-          <h1 className="flex-grow text-large font-medium mt-2">
-            {event.name}
-          </h1>
-          <Divider orientation="vertical" />
-          {props.admin && !event.public && <Chip color="primary">Private</Chip>}
-          {!event.active && (
-            <Tooltip label="Event starts at">
-              <Chip color="success">{start}</Chip>
-            </Tooltip>
-          )}
+      <Card withBorder shadow="md" maw="50rem">
+        <Stack>
+          <Group justify="space-between">
+            <Title>{event.name}</Title>
+            <Group>
+              <Divider orientation="vertical" />
+              {props.admin && !event.public && <Badge>Private</Badge>}
+              {!event.active && (
+                <Tooltip label="Event starts at">
+                  <Badge color="green">{start}</Badge>
+                </Tooltip>
+              )}
 
-          {(event.active || props.admin) && (
-            <Tooltip label="Event ends at">
-              <Chip color="warning">{end}</Chip>
-            </Tooltip>
-          )}
-          {event.active && (
-            <Tooltip label="Registration Closed">
-              <Chip color="critical">Event is Live!</Chip>
-            </Tooltip>
-          )}
-        </Card.Section >
-        <Divider />
-        <Card.Section  className=" gap-y-20 ">
-          <div className="flex flex-row gap-5">
-            <p className="basis-2/3">{event.description}</p>
-            <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-green-500 to-blue-500">
-              <Card.Section  className="justify-center items-center pb-0">
-            
-              </Card.Section >
-              <Card.Section  className="justify-center items-center pt-0">
-                <Chip>
-                  <p>Duration</p>
-                </Chip>
-              </Card.Section >
-            </Card>
+              {(event.active || props.admin) && (
+                <Tooltip label="Event ends at">
+                  <Badge color="indigo">{end}</Badge>
+                </Tooltip>
+              )}
+              {event.active && (
+                <Tooltip label="Registration Closed">
+                  <Badge variant="gradiant">Event is Live!</Badge>
+                </Tooltip>
+              )}
+            </Group>
+          </Group>
 
-            {riddles && (
-              <Card className="w-[120px] h-[120px] border-none bg-gradient-to-br from-blue-500 to-cyan-500">
-                <Card.Section  className="justify-center items-center pb-0">
-                  
-                </Card.Section >
-                <Card.Section  className="justify-center items-center pt-0">
-                  <Chip>
-                    <p>Riddles</p>
-                  </Chip>
-                </Card.Section >
-              </Card>
-            )}
-          </div>
+          <Divider />
 
-          <div className="grid gap-4 grid-cols-3">
+          <Stack>
+            {event.description && <Text>{event.description}</Text>}
             {event.prize && (
-              <div className="flex gap-3">
-                <h1 className="text-xl">Prize:</h1>
-                <p>{event.prize}</p>
-              </div>
+              <Stack gap={0}>
+                <Text size="xs" c="dimmed">
+                  Prize:
+                </Text>
+                {event.prize.split("/n").map((input: string) => (
+                  <Text key={input} size="lg">
+                    {input}
+                  </Text>
+                ))}
+              </Stack>
             )}
             {teams && event.showTeams && teams.length > 0 && (
-              <div className="flex flex-row gap-3">
+              <Group>
                 <h1 className="text-xl">Teams:</h1>
                 <TeamsGroup />
-              </div>
+              </Group>
             )}
-          </div>
-        </Card.Section >
+          </Stack>
 
-        <>
           <Divider />
-          <Card.Section  className="flex flex-row-reverse gap-5">
+
+          <Group>
             {((now < event.start && !event.active) || props.admin) && (
               <Button
-                color="success"
+                color="green"
                 className="justify-self-end"
                 onClick={() => {
                   router.replace(`/${event.id}/signup`);
@@ -156,36 +143,22 @@ export default function EventCard(props: EventCardProps) {
               </Button>
             )}
             <Button
-              color="primary"
               className="justify-self-end"
               onClick={() => {
-                router.replace(`/${event.id}`);
+                router.replace(`/${event.id.slice(0, 5)}`);
               }}
             >
               Goto Event Page
             </Button>
             {props.admin && (
-              <EventModal
-                buttonText={"Edit Event"}
-                id={event.id}
-                name={event.name}
-                start={event.start}
-                end={event.end}
-                description={event.description}
-                requireURL={event.requireURL ?? false}
-                requireScreenshot={event.requireScreenshot ?? false}
-                active={event.active ?? false}
-                participants={[]}
-                riddleCount={riddles?.length ?? 0}
-                showTeams={event.showTeams ?? false}
-                showParticipants={event.showParticipants ?? false}
-                public={event.public ?? false}
-                useTeams={event.useTeams ?? true}
-                teamSize={event.teamSize}
-              />
+              <Group>
+                <EventModal event={event} />
+                <EventAdminMenu event={event} />{" "}
+              </Group>
             )}
-          </Card.Section >
-        </>
+          </Group>
+        </Stack>
       </Card>
     );
+  else notFound();
 }

@@ -14,7 +14,7 @@ import { User } from "@prisma/client";
 import { UpdateUser } from "./UserControl";
 import AdminCheck from "../Auth/AdminCheck";
 
-export default function UserEdit(props: { user: User; onClick?: () => void }) {
+export default function UserEdit(props: { user: User; onClick?: () => void; isEventLinked? :boolean }) {
   const form = useForm<User>({
     mode: "uncontrolled",
     initialValues: props.user,
@@ -25,19 +25,26 @@ export default function UserEdit(props: { user: User; onClick?: () => void }) {
     if (props.onClick) props.onClick();
   };
 
+
   return (
     <form onSubmit={form.onSubmit(submissionHandler)}>
       <Stack>
-        <Group grow>
+        {!props.isEventLinked && <Group grow>
           <TextInput label="Name" {...form.getInputProps("name")} />
           <TextInput disabled label="Email" {...form.getInputProps("email")} />
-        </Group>
+        </Group>}
         <Group grow>
           <Select
             label="Bucket"
             placeholder="Pick a bucket"
             {...form.getInputProps("bucket")}
             data={["Agent", "Environment", "DEM", "Platform", "none"]}
+          />
+              <Select
+            label="Geo"
+            placeholder="Pick a geo"
+            {...form.getInputProps("geo")}
+            data={["NASA", "EMEA", "APAC", "None"]}
           />
           <AdminCheck>
             <Select

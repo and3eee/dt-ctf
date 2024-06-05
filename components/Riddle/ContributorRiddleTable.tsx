@@ -16,11 +16,14 @@ import {
   Button,
   Paper,
   Title,
+  ActionIcon,
+  Stack,
 } from "@mantine/core";
 import {
   RiArrowDownFill,
   RiArrowUpFill,
   RiCheckboxBlankCircleLine,
+  RiEye2Fill,
   RiRadioButtonLine,
   RiSearch2Fill,
 } from "react-icons/ri";
@@ -31,6 +34,10 @@ import { SetRiddleSet } from "../Event/EventControl";
 import { GetRiddles } from "./RiddleControl";
 import SpoilerText from "../SpoilerText";
 import { useListState } from "@mantine/hooks";
+import ValidateButton from "./ValidateButton";
+import { modals } from "@mantine/modals";
+import RiddleCard from "./RiddleCard";
+import { RiddleProps } from "@/types";
 
 interface ThProps {
   children: React.ReactNode;
@@ -122,8 +129,21 @@ function sortData(
     payload.search
   );
 }
+const previewModal = (riddle: RiddleProps | Riddle) =>
+  modals.open({
+    title: "Riddle Preview",
+    size: "auto",
+    children: (
+      <Stack>
+        <RiddleCard answeredBy={undefined} number={riddle.id} riddle={riddle} />
+        <Button fullWidth onClick={() => modals.closeAll()} mt="md">
+          Close Preview
+        </Button>
+      </Stack>
+    ),
+  });
 
-export function TableSort(props: {
+export function ContributorRiddleTable(props: {
   riddles: Riddle[];
   defaultSelected?: Riddle[];
   resources: RiddleResource[];
@@ -176,6 +196,18 @@ export function TableSort(props: {
       );
     });
   };
+
+  const UpdateValidation = (riddleIn: Riddle) => {
+    const mutated = values.map((riddle: Riddle) => {
+      if (riddle.id == riddleIn.id) {
+        riddle.validated = true;
+        return riddle;
+      }else return riddle;
+    });
+
+    handlers.setState(mutated);
+  };
+
   const admin = session.user.role == "ADMIN";
   const contributor = session.user.role == "FLAGMASTER";
 
@@ -196,9 +228,14 @@ export function TableSort(props: {
           <SpoilerText>{row.solution}</SpoilerText>
         </Table.Td>
       )}
-      {admin && (
+      {(admin || contributor) && (
         <Table.Td>
           <Text lineClamp={3}>{row.sourceLocation}</Text>
+        </Table.Td>
+      )}
+            {(admin || contributor) && (
+        <Table.Td>
+          <Text lineClamp={3}>{row.sourceDescription}</Text>
         </Table.Td>
       )}
       {admin && (
@@ -207,14 +244,35 @@ export function TableSort(props: {
         </Table.Td>
       )}
       <Table.Td>
-        {(admin || (contributor && row.author == session.user.name)) && (
-          <RiddleModal
-            resources={props.resources}
-            buttonText={"Edit"}
-            riddle={row}
-            onClose={refreshList}
-          />
-        )}
+        {" "}
+        <Group>
+          {(admin || (contributor && row.author == session.user.name)) && (
+            <RiddleModal
+              resources={props.resources}
+              buttonText={"Edit"}
+              riddle={row}
+              onClose={refreshList}
+            />
+          )}{" "}
+          {(admin || contributor) && (
+            <ValidateButton
+              riddle={row}
+              onValidate={() => UpdateValidation(row)}
+            />
+          )}{" "}
+          {(admin || contributor) && (
+            <Tooltip label="Preview Riddle">
+              <ActionIcon
+                size="lg"
+                variant="filled"
+                color="cyan"
+                onClick={() => previewModal(row)}
+              >
+                <RiEye2Fill />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Group>
       </Table.Td>
     </Table.Tr>,
   ]);
@@ -241,7 +299,6 @@ export function TableSort(props: {
           miw={700}
           layout="fixed"
           highlightOnHover
-          
         >
           <Table.Tbody>
             <Table.Tr>
@@ -298,8 +355,8 @@ export function TableSort(props: {
 
               {admin && <Table.Th>Solution</Table.Th>}
 
-              {admin && <Table.Th>Source Location</Table.Th>}
-
+              {(admin || contributor) && <Table.Th>Source Location</Table.Th>}
+              {(admin || contributor) && <Table.Th>Source Description</Table.Th>}
               {admin && <Table.Th>Source URL</Table.Th>}
               {(admin || contributor) && <Table.Th>Actions</Table.Th>}
             </Table.Tr>

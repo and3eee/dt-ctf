@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
-import { TableSort } from "@/components/Riddle/TableSort";
+import { ContributorRiddleTable } from "@/components/Riddle/ContributorRiddleTable";
 import RiddleEdit from "@/components/Riddle/RiddleEdit";
 import { Riddle } from "@prisma/client";
 import ContributorCheck from "@/components/Auth/ContributorCheck";
@@ -35,7 +35,7 @@ export default async function RiddlePage() {
               buttonText={"Create New Riddle"}
               createNew
             />
-            <TableSort riddles={riddles} resources={resources} />
+            <ContributorRiddleTable riddles={riddles} resources={resources} />
           </Stack>
         </Center>
       </ContributorCheck>

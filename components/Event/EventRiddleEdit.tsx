@@ -1,7 +1,7 @@
 "use client";
 
 import { Event, Riddle } from "@prisma/client";
-import RiddleList from "../Riddle/RiddleList";
+
 
 
 export default function EventRiddleEdit(props:{event: Event,riddles:Riddle[],defaultSel:Riddle[]}){
@@ -9,6 +9,6 @@ export default function EventRiddleEdit(props:{event: Event,riddles:Riddle[],def
     const riddles = props.riddles;
 
 
-    return(<div><RiddleList riddles={riddles} defaultSelected={props.defaultSel} admin eventID={event.id}/></div>)
+    return(<div></div>)
     
 }

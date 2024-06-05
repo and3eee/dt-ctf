@@ -32,7 +32,7 @@ export async function CreateRiddle(formData: any, resources?: string[]) {
       author: formData.author?.toString(),
       implemented: formData.implemented, //
       validated: formData.validated, //
-      showRiddleResource: formData.showRiddleResource
+      showRiddleResource: formData.showRiddleResource,
     },
   });
   if (resources) await UpdateResourceLinks(out, resources);
@@ -54,7 +54,8 @@ export async function UpdateResourceLinks(riddle: any, resources: string[]) {
   });
   const updateMessage = await prisma.riddle.update({
     where: { id: riddle.id },
-    data: { RiddleResource: { connect: ids } }, include:{ RiddleResource:true}
+    data: { RiddleResource: { connect: ids } },
+    include: { RiddleResource: true },
   });
 
   return updateMessage;
@@ -104,7 +105,7 @@ export async function EditRiddle(formData: any) {
         author: formData.author?.toString(),
         implemented: formData.implemented, //
         validated: formData.validated, //
-        showRiddleResource: formData.showRiddleResource
+        showRiddleResource: formData.showRiddleResource,
       },
     });
 
@@ -119,7 +120,13 @@ export async function GetRiddles(includeResources?: boolean) {
   return out;
 }
 
+export async function DeleteRiddle(riddle: Riddle) {
+  return await prisma.riddle.delete({ where: { id: riddle.id } });
+}
 
-export async function DeleteRiddle(riddle:Riddle){
-  return await prisma.riddle.delete({where:{id:riddle.id}})
+export async function ValidateRiddle(riddle: Riddle) {
+  return await prisma.riddle.update({
+    where: { id: riddle.id },
+    data: { validated: true },
+  });
 }

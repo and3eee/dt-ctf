@@ -31,7 +31,7 @@ export default function ThemeSwitch(props: { trigger?: () => void }) {
         radius={"xl"}
         aria-label="Toggle color scheme"
       >
-        {computedColorScheme == "light" && <RiSunFill color={"orange"} />}
+        {computedColorScheme == "light" && <RiSunFill color={"gradient"} />}
 
         {computedColorScheme == "dark" && <RiMoonClearFill color={"cyan"} />}
       </ActionIcon>

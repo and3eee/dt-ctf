@@ -1,78 +1,71 @@
 "use client";
 
-
-import { useSession } from "next-auth/react";
 import React from "react";
 6;
-import { EditTeam } from "./TeamControl";
+import { CreateTeam, UpdateTeam } from "./TeamControl";
 import { NextRequest } from "next/server";
 import { useRouter } from "next/navigation";
 import { TeamProps } from "@/types";
-import { Card, Input, Divider, Textarea, Button, TextInput } from "@mantine/core";
+import {
+  Card,
+  Input,
+  Divider,
+  Textarea,
+  Button,
+  TextInput,
+  Group,
+  Stack,
+} from "@mantine/core";
+import { TeamEntry, User } from "@prisma/client";
+import { useForm } from "@mantine/form";
 
-
-interface TeamEditProps extends TeamProps {
+export default function TeamEdit(props: {
   onClick: () => void;
   admin?: boolean;
-}
-
-export default function TeamEdit(props: TeamEditProps, request: NextRequest) {
+  team: TeamEntry;
+  createMode?: boolean;
+  user: User;
+}) {
   const router = useRouter();
 
-  const { data: session, status } = useSession();
+  const form = useForm({
+    mode: "uncontrolled",
+    initialValues: props.team,
+  });
 
-  const updateTeam = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const updateTeam = async (values: TeamEntry) => {
+    if (props.createMode) {
+    } else {
+    }
 
-    const formData = new FormData(e.currentTarget);
-
-    const email = await session?.user?.email;
-    if (email) await EditTeam(formData, email);
-    else await EditTeam(formData);
+    const email = await props.user?.email;
+    if (email) await CreateTeam(values, props.user);
+    else await UpdateTeam(values);
+  
     router.refresh();
   };
-  return (
-    <form onSubmit={updateTeam}>
-      <Card>
-        <Card.Section >
-          <TextInput
-            
-            name="id"
-            defaultValue={props.id}
-            label="Team ID"
-            variant="bordered"
-          />
-          <TextInput
-            label="Event ID"
-            className="m-1"
-            defaultValue={props.eventId}
-            name="eventID"
-            
-          />
-        </Card.Section >
-        <Divider />
-        <div
-          className="grid grow
-         grid-flow-row grid-cols-3 auto-rows-max gap-5 m-5"
-        >
-          <Textarea
-            label="Team Name"
-            className="m-1 col-span-2 "
-            placeholder="Team Placeholder"
-            name="name"
-            
-            defaultValue={props.name}
-            required
-          />
-        </div>
 
-        <Divider />
-        <Card.Section >
-          <Button type="submit" color="success" onClick={props.onClick}>
-            Submit
-          </Button>
-        </Card.Section >
-      </Card>
+  return (
+    <form
+      onSubmit={form.onSubmit((values) => {
+        updateTeam(values);
+      })}
+    >
+      <Stack align="center">
+        <TextInput
+          label="Team Name"
+          className="m-1 col-span-2 "
+          placeholder="Team Placeholder"
+          key={form.key("name")}
+          {...form.getInputProps("name")}
+          defaultValue={props.team.name}
+          required
+        />
+
+        <Button type="submit" color="green" onClick={props.onClick}>
+          Submit
+        </Button>
+      </Stack>
     </form>
   );
 }

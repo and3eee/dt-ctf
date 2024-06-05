@@ -16,20 +16,12 @@ const myColor: MantineColorsTuple = [
 ];
 
 export const theme = createTheme({
-  colors: {
-    blue: [
-      "#fff5e1",
-      "#ffeacc",
-      "#ffd29b",
-      "#ffb964",
-      "#ffa438",
-      "#ff971b",
-      "#ff9009",
-      "#e37d00",
-      "#ca6e00",
-      "#b05d00",
-    ],
-  },
+defaultGradient: {
+  from: 'grape.6',
+  to: 'indigo.6',
+  deg: 110,
+},
+primaryColor: "violet", primaryShade: 8,
   defaultRadius:"md"
 });
 

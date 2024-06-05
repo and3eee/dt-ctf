@@ -1,6 +1,9 @@
-
+import { auth } from "@/app/api/auth/[...nextauth]/route";
+import EventAdminMenu from "@/components/Event/EventAdminMenu";
+import EventRiddleList from "@/components/Event/EventRiddleList";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
+import { Stack } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -10,40 +13,40 @@ export default async function EventAdmin({
 }: {
   params: { eventID: string };
 }) {
-  const event = await prisma.event.findFirst({
-    where: { id: params.eventID },
-    include: { teams: { include: { members: true } }, riddles: true },
-  });
+  const session = await auth();
+  if (session?.user) {
+    const user = await prisma.user.findFirstOrThrow({
+      where: { id: session?.user.id },
+    });
+    const event = await prisma.event.findFirst({
+      where: { id: { startsWith: params.eventID } },
+      include: {
+        riddles: { include: { RiddleResource: true } },
+        participants: true,
+        teams: {
+          include: {
+            members: true,
+            userEntries: { include: { answeredBy: true } },
+          },
+        },
+      },
+    });
 
-  const riddles = await prisma.riddle.findMany();
+    const riddles = await prisma.riddle.findMany();
 
-  if (event) {
-    return (
-      <div className="flex flex-col gap-5">
-        <p className="text-3xl">{event.name} Admin </p>
-        <p className="text-xl">Riddles</p>
-      
-        <p className="text-xl">Teams</p>
-        <TeamList
-          id={event.id}
-          name={event.name}
-          start={event.start}
-          end={event.end}
-          description={event.description ?? false}
-          requireURL={event.requireURL ?? false}
-          requireScreenshot={event.requireScreenshot ?? false}
-          active={event.requireScreenshot ?? false}
-          participants={[]}
-          riddleCount={0}
-          showTeams={event.showTeams ?? false}
-          showParticipants={event.showParticipants ?? false}
-          public={event.public ?? false}
-          useTeams={event.useTeams ?? false}
-          teams={event.teams}
-          teamSize={event.teamSize}
-          admin={true}
-        />
-      </div>
-    );
+    if (event) {
+      return (
+        <Stack justify="center">
+          <p className="text-3xl">{event.name} Admin </p>
+          <EventAdminMenu event={event} />
+          <EventRiddleList
+            user={user}
+            event={event}
+            riddles={riddles}
+            resources={[]}
+          />
+        </Stack>
+      );
+    }
   }
 }
