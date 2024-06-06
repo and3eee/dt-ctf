@@ -10,31 +10,19 @@ import { GetFullUser } from "./UserControl";
 import { useState, useEffect } from "react";
 
 export default function UserModal(props: {
-
+  user: User;
   onResolve?: () => void;
 }) {
 
-  const {data: session} = useSession();
-  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  
 
-  useEffect(() => {
-    const updateUser = async () => {
-
-        const full = await GetFullUser(session!.user!.id!);
-        if (full) setFullUser(full);
-      
-    };
-    updateUser();
-  }, []);
   
   const [opened, { open, close }] = useDisclosure(false);
 
-  if(fullUser)
+
   return (
     <>
       <Modal opened={opened} onClose={close} title="User Editor">
-        <UserEdit user={fullUser} onClick={props.onResolve} />
+        <UserEdit user={props.user} onClick={props.onResolve} />
       </Modal>
       <Button maw={"8rem"} onClick={open}>Edit</Button>
     </>

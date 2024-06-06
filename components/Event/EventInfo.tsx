@@ -23,23 +23,15 @@ import EventCountDown from "./EventCountDown";
 import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
 import { useSession } from "next-auth/react";
-import { GetFullUser } from "../User/UserControl";
+
 
 export default function EventInfo(props: {
   event: EventProps;
   riddles?: Riddle[];
   admin?: boolean;
+user: User;
 }) {
-  const { data: session } = useSession();
-  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
 
-  useEffect(() => {
-    const updateUser = async () => {
-      const full = await GetFullUser(session!.user!.id!);
-      setFullUser(full!);
-    };
-    updateUser();
-  }, []);
 
   const event = props.event;
   const teams = props.event.teams;
@@ -119,16 +111,16 @@ export default function EventInfo(props: {
   };
 
   const signUpButton = () => {
-    if (fullUser) {
-      console.log(fullUser)
+    if (props.user) {
+      console.log(props.user)
       if (event.useAssignedTeams && !event.generatedTeams)
-        return <TeamUserRegisterPage event={event} user={fullUser} />;
+        return <TeamUserRegisterPage event={event} user={props.user} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
-        return <TeamEventSignUp user={fullUser} event={event} />;
+        return <TeamEventSignUp user={props.user} event={event} />;
     } else return "No Sign Up";
   };
 
-  const admin = fullUser?.role != "USER"
+  const admin = props.user?.role != "USER"
 
   if (event.public || props.admin)
     return (
