@@ -58,7 +58,7 @@ model User {
 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  geo         String
+  geo         String? @default("Unassigned")
   role        Role        @default(USER)
   TeamEntry   TeamEntry?  @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
