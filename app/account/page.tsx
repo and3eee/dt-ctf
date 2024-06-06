@@ -1,4 +1,4 @@
-"use server"
+
 import AuthCheck from "@/components/Auth/AuthCheck";
 import { auth } from "../api/auth/[...nextauth]/route";
 import UserModal from "@/components/User/UserModal";
