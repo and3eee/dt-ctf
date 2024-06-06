@@ -48,6 +48,7 @@ export default function EventInfo(props: {
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
 
+
   const TeamsGroup = () => {
     if (teams) {
       const trimmedTeams = teams?.slice(0, 20);
@@ -119,12 +120,15 @@ export default function EventInfo(props: {
 
   const signUpButton = () => {
     if (fullUser) {
+      console.log(fullUser)
       if (event.useAssignedTeams && !event.generatedTeams)
         return <TeamUserRegisterPage event={event} user={fullUser} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
         return <TeamEventSignUp user={fullUser} event={event} />;
     } else return "No Sign Up";
   };
+
+  const admin = fullUser?.role != "USER"
 
   if (event.public || props.admin)
     return (

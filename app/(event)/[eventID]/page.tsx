@@ -23,65 +23,52 @@ export default async function EventPage({
 }: {
   params: { eventID: string };
 }) {
-  const session = await auth();
-  const user = await prisma.user.findFirst({
-    where: { id: session?.user?.id },
-  });
-  if (session?.user && user) {
-    const admin = user.role == "ORGANIZER" || user.role == "ADMIN";
-
-    const event = await prisma.event.findFirst({
-      where: { id: { startsWith: params.eventID } },
-      include: {
-        riddles: { include: { RiddleResource: true } },
-        participants: true,
-        teams: {
-          include: {
-            members: true,
-            userEntries: { include: { answeredBy: true } },
-          },
+  const event = await prisma.event.findFirst({
+    where: { id: { startsWith: params.eventID } },
+    include: {
+      riddles: { include: { RiddleResource: true } },
+      participants: true,
+      teams: {
+        include: {
+          members: true,
+          userEntries: { include: { answeredBy: true } },
         },
       },
-    });
+    },
+  });
 
-    const riddles = await prisma.riddle.findMany();
 
-    const now = new Date();
-    if (event && session) {
-      if (event?.public || admin) {
-        if (event.active) {
-          //Show Team list and so
-          return (
-            <AuthCheck>
-              <EventPortal
-                event={event}
-                riddles={event.riddles}
-                team={
-                  event.teams.filter((team: TeamProps) =>
-                    team.members?.some((userRun: User) => user.id == userRun.id)
-                  )[0]
-                }
-              />
-            </AuthCheck>
-          );
-        }
-
-        if (event.start > now) {
-          //Count down and event Car
-          return (
-            <AuthCheck>
-              <Container maw="60%">
-                <EventInfo admin={admin} event={event} />
-              </Container>
-            </AuthCheck>
-          );
-        }
+  const now = new Date();
+  if (event) {
+    if (event?.public) {
+      if (event.active) {
+        //Show Team list and so
+        return (
+          <AuthCheck>
+            <EventPortal
+              event={event}
+              riddles={event.riddles}
+             
+            />
+          </AuthCheck>
+        );
       }
 
-      return <div></div>;
-    } else {
-      if (!event) return notFound();
-      return <div>Sign in to see event info.</div>;
+      if (event.start > now) {
+        //Count down and event Car
+        return (
+          <AuthCheck>
+            <Container maw="60%">
+              <EventInfo event={event} />
+            </Container>
+          </AuthCheck>
+        );
+      }
     }
+
+    return <div></div>;
+  } else {
+    if (!event) return notFound();
+    return <div>Sign in to see event info.</div>;
   }
 }

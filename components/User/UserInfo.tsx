@@ -12,17 +12,20 @@ export default function UserInfo() {
   const [fullUser, setFullUser] = useState<User | undefined>(undefined);
 
   useEffect(() => {
+   
     const updateUser = async () => {
       const full = await GetFullUser(session!.user!.id!);
-      if (full) setFullUser(full);
+     setFullUser(full!);
     };
+
     updateUser();
+    console.log(fullUser)
   }, []);
 
   if(fullUser)
   return (
-    <Stack>
-      <Group grow>
+    <Stack justify="center" >
+      <Group grow maw="60%">
         <Stack gap="0">
           <Text c="dimmed">Name</Text>
           <Text>{fullUser.name}</Text>
