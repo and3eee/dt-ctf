@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { EventProps, RiddleProps, TeamProps, UserEntryProps } from "@/types";
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
@@ -20,7 +20,7 @@ export default function EventPortal(props: {
   useEffect(() => {
     const updateUser = async () => {
       const full = await GetFullUser(session!.user!.id!);
-      if (full) setFullUser(full);
+    setFullUser(full!);
     };
     updateUser();
   }, []);
@@ -38,7 +38,7 @@ export default function EventPortal(props: {
     return undefined;
   };
   const [adminMode, toggle] = useState(props.admin);
-  var pos = 0;
+
   if (props.riddles)
     return (
       <Stack>

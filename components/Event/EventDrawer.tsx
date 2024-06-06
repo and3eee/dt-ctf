@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { EventProps, TeamProps } from "@/types";
 import { Drawer, Group, NavLink } from "@mantine/core";

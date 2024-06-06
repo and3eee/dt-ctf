@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { EventProps } from "@/types";
 import { Center, RingProgress, Stack, Title } from "@mantine/core";
 import { Event } from "@prisma/client";

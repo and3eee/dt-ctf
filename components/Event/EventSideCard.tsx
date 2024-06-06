@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 
 import { Event, Riddle, TeamEntry, UserEntry } from "@prisma/client";

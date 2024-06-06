@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { RiddleProps, UserEntryProps } from "@/types";
 
 import RiddleModal from "./RiddleModal";

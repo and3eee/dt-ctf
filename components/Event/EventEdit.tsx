@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { Event } from "@prisma/client";
 import { CreateEvent, DeleteEvent, EditEvent } from "./EventControl";
 import { useRouter } from "next/navigation";

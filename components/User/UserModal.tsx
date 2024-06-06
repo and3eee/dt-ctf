@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Button, Loader, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";

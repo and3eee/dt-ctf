@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { TeamProps } from "@/types";
 import { User } from "@prisma/client";
 import { registerMember } from "./TeamControl";

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { EventProps, TeamProps } from "@/types";
 import { useEffect, useState } from "react";
@@ -36,7 +36,7 @@ export default function EventInfo(props: {
   useEffect(() => {
     const updateUser = async () => {
       const full = await GetFullUser(session!.user!.id!);
-      if (full) setFullUser(full);
+      setFullUser(full!);
     };
     updateUser();
   }, []);

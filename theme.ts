@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { MantineColorsTuple, createTheme } from "@mantine/core";
 

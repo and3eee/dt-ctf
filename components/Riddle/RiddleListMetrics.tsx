@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Riddle } from "@prisma/client";
 import CounterMetricWheel from "../General/CounterMetricWheel";

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Button } from "@mantine/core";
 import { Riddle } from "@prisma/client";

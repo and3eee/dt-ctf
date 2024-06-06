@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { EventProps } from "@/types";
 import { User } from "@prisma/client";
 import TeamModal from "../Team/TeamModal";

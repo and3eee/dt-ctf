@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Group, Stack, Title, Text, Loader } from "@mantine/core";
 import { User, UserEntry } from "@prisma/client";

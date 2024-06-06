@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { DonutChart } from "@mantine/charts";
 import { Stack, Title } from "@mantine/core";
