@@ -18,6 +18,7 @@ export default async function EventAdmin({
     const user = await prisma.user.findFirstOrThrow({
       where: { id: session?.user.id },
     });
+    
     const event = await prisma.event.findFirst({
       where: { id: { startsWith: params.eventID } },
       include: {

@@ -75,6 +75,9 @@ export default async function EventPage({
       }
 
       return <div></div>;
+    }else{
+      if(!event) return notFound();
+      return <div>Sign in to see event info.</div>
     }
   }
 }
