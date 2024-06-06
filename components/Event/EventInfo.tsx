@@ -29,24 +29,18 @@ export default function EventInfo(props: {
   event: EventProps;
   riddles?: Riddle[];
   admin?: boolean;
-
 }) {
-
-
-  const session = useSession();
+  const { data: session } = useSession();
   const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  if (session.status == "loading" || !fullUser) return <Loader />;
 
   useEffect(() => {
     const updateUser = async () => {
-      if (session.status == "authenticated") {
-        const full = await GetFullUser(session.data.user!.id!);
-        if (full) setFullUser(full);
-      }
+      const full = await GetFullUser(session!.user!.id!);
+      if (full) setFullUser(full);
     };
     updateUser();
   }, []);
-  
+
   const event = props.event;
   const teams = props.event.teams;
 
@@ -183,7 +177,7 @@ export default function EventInfo(props: {
           {event.showTeams && event.teams && event.teams.length > 0 && (
             <TeamsGroup />
           )}
-            {event.showParticipants  && event.participants.length > 0 && (
+          {event.showParticipants && event.participants.length > 0 && (
             <Participants />
           )}
         </Stack>

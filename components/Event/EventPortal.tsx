@@ -13,21 +13,14 @@ export default function EventPortal(props: {
   riddles?: RiddleProps[];
   admin?: boolean;
   team: TeamProps;
-
 }) {
-
-
-
-  const session = useSession();
+  const { data: session } = useSession();
   const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  if (session.status == "loading" || !fullUser) return <Loader />;
 
   useEffect(() => {
     const updateUser = async () => {
-      if (session.status == "authenticated") {
-        const full = await GetFullUser(session.data.user!.id!);
-        if (full) setFullUser(full);
-      }
+      const full = await GetFullUser(session!.user!.id!);
+      if (full) setFullUser(full);
     };
     updateUser();
   }, []);
@@ -45,7 +38,7 @@ export default function EventPortal(props: {
     return undefined;
   };
   const [adminMode, toggle] = useState(props.admin);
-var pos = 0; 
+  var pos = 0;
   if (props.riddles)
     return (
       <Stack>
@@ -58,21 +51,23 @@ var pos = 0;
             }}
           />
         )}
-        <EventDrawer event={props.event} team={props.team}/>
+        <EventDrawer event={props.event} team={props.team} />
 
         <Grid>
-          {props.riddles?.map((riddle: RiddleProps) => 
-          {  return (<Grid.Col key={riddle.id} span="content">
-              <RiddleCard
-                admin={adminMode}
-                answeredBy={solvedCheck(riddle.id)}
-                riddle={riddle}
-                teamID="0"
-                user={fullUser}
-                number={props.riddles?.indexOf(riddle)}
-              />
-            </Grid.Col>)}
-          )}
+          {props.riddles?.map((riddle: RiddleProps) => {
+            return (
+              <Grid.Col key={riddle.id} span="content">
+                <RiddleCard
+                  admin={adminMode}
+                  answeredBy={solvedCheck(riddle.id)}
+                  riddle={riddle}
+                  teamID="0"
+                  user={fullUser}
+                  number={props.riddles?.indexOf(riddle)}
+                />
+              </Grid.Col>
+            );
+          })}
         </Grid>
       </Stack>
     );

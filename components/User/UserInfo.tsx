@@ -8,20 +8,18 @@ import { GetFullUser } from "./UserControl";
 import { notFound } from "next/navigation";
 
 export default function UserInfo() {
-  const session = useSession();
+  const { data: session } = useSession();
   const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  if (session.status == "loading" || !fullUser) return <Loader />;
 
   useEffect(() => {
     const updateUser = async () => {
-      if (session.status == "authenticated") {
-        const full = await GetFullUser(session.data.user!.id!);
-        if (full) setFullUser(full);
-      }
+      const full = await GetFullUser(session!.user!.id!);
+      if (full) setFullUser(full);
     };
     updateUser();
   }, []);
 
+  if(fullUser)
   return (
     <Stack>
       <Group grow>

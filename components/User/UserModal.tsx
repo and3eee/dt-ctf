@@ -14,22 +14,23 @@ export default function UserModal(props: {
   onResolve?: () => void;
 }) {
 
-  const session = useSession();
+  const {data: session} = useSession();
   const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  if (session.status == "loading" || !fullUser) return <Loader />;
+  
 
   useEffect(() => {
     const updateUser = async () => {
-      if (session.status == "authenticated") {
-        const full = await GetFullUser(session.data.user!.id!);
+
+        const full = await GetFullUser(session!.user!.id!);
         if (full) setFullUser(full);
-      }
+      
     };
     updateUser();
   }, []);
   
   const [opened, { open, close }] = useDisclosure(false);
 
+  if(fullUser)
   return (
     <>
       <Modal opened={opened} onClose={close} title="User Editor">

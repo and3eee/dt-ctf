@@ -2,6 +2,7 @@
 
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import Error from "@/app/error";
+import AuthCheck from "@/components/Auth/AuthCheck";
 import { GetUserTeamID } from "@/components/Event/EventControl";
 import EventCountDown from "@/components/Event/EventCountDown";
 import EventInfo from "@/components/Event/EventInfo";
@@ -51,33 +52,36 @@ export default async function EventPage({
         if (event.active) {
           //Show Team list and so
           return (
-            <EventPortal
-              user={user}
-              event={event}
-              riddles={event.riddles}
-              team={
-                event.teams.filter((team: TeamProps) =>
-                  team.members?.some((userRun: User) => user.id == userRun.id)
-                )[0]
-              }
-            />
+            <AuthCheck>
+              <EventPortal
+                event={event}
+                riddles={event.riddles}
+                team={
+                  event.teams.filter((team: TeamProps) =>
+                    team.members?.some((userRun: User) => user.id == userRun.id)
+                  )[0]
+                }
+              />
+            </AuthCheck>
           );
         }
 
         if (event.start > now) {
           //Count down and event Car
           return (
-            <Container maw="60%">
-              <EventInfo admin={admin} event={event} user={user!} />
-            </Container>
+            <AuthCheck>
+              <Container maw="60%">
+                <EventInfo admin={admin} event={event} />
+              </Container>
+            </AuthCheck>
           );
         }
       }
 
       return <div></div>;
-    }else{
-      if(!event) return notFound();
-      return <div>Sign in to see event info.</div>
+    } else {
+      if (!event) return notFound();
+      return <div>Sign in to see event info.</div>;
     }
   }
 }

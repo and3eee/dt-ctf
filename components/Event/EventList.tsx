@@ -23,28 +23,26 @@ export default async function EventList(props: { admin?: boolean }) {
   });
 
   return (
-    <AuthCheck>
-      <Stack justify="center" gap="xl">
-        {props.admin && (
-          <EventModal
-            buttonText={"Create New Event"}
-            createMode
-            event={undefined}
-          />
-        )}
+    <Stack justify="center" gap="xl">
+      {props.admin && (
+        <EventModal
+          buttonText={"Create New Event"}
+          createMode
+          event={undefined}
+        />
+      )}
 
-        {events.map((event) => {
-          if (event.public || props.admin)
-            return (
-              <EventCard
-                key={event.id}
-                event={event}
-                teams={event.teams}
-                riddles={event.riddles}
-              />
-            );
-        })}
-      </Stack>
-    </AuthCheck>
+      {events.map((event) => {
+        if (event.public || props.admin)
+          return (
+            <EventCard
+              key={event.id}
+              event={event}
+              teams={event.teams}
+              riddles={event.riddles}
+            />
+          );
+      })}
+    </Stack>
   );
 }
