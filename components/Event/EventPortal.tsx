@@ -2,17 +2,36 @@
 import { EventProps, RiddleProps, TeamProps, UserEntryProps } from "@/types";
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
-import { Grid, Stack, Switch } from "@mantine/core";
-import { useState } from "react";
+import { Grid, Loader, Stack, Switch } from "@mantine/core";
+import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
+import { useSession } from "next-auth/react";
+import { GetFullUser } from "../User/UserControl";
 
 export default function EventPortal(props: {
   event: EventProps;
   riddles?: RiddleProps[];
   admin?: boolean;
   team: TeamProps;
-  user?: User;
+
 }) {
+
+
+
+  const session = useSession();
+  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
+  if (session.status == "loading" || !fullUser) return <Loader />;
+
+  useEffect(() => {
+    const updateUser = async () => {
+      if (session.status == "authenticated") {
+        const full = await GetFullUser(session.data.user!.id!);
+        if (full) setFullUser(full);
+      }
+    };
+    updateUser();
+  }, []);
+
   const solvedCheck = (riddleID: number) => {
     if (
       props.team.userEntries &&
@@ -49,7 +68,7 @@ var pos = 0;
                 answeredBy={solvedCheck(riddle.id)}
                 riddle={riddle}
                 teamID="0"
-                user={props.user}
+                user={fullUser}
                 number={props.riddles?.indexOf(riddle)}
               />
             </Grid.Col>)}

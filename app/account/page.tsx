@@ -12,16 +12,12 @@ export const revalidate = 30;
 
 
 export default async function AccountPage() {
-  const session = await auth();
-  const user = await prisma.user.findFirst({
-    where: { id: session?.user?.id },
-  });
-  if (user) {
+
     return (
       <Stack>
-        <UserInfo user={user}/>
-        <UserModal user={user} />
+        <UserInfo/>
+        <UserModal />
       </Stack>
     );
-  }
+  
 }

@@ -7,6 +7,8 @@ export async function GetUsers() {
   return await prisma.user.findMany();
 }
 
+export async function GetFullUser(userID: string){return await prisma.user.findFirst({where:{id:userID}})}
+
 export async function UpdateUser(user: User) {
   return await prisma.user.update({
     where: { id: user.id },

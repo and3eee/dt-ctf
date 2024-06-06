@@ -1,7 +1,7 @@
 "use client";
 
 import { EventProps, TeamProps } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Event, Riddle, TeamEntry, User } from "@prisma/client";
 import EventModal from "./EventModal";
@@ -16,18 +16,37 @@ import {
   Group,
   Stack,
   Text,
+  Loader,
 } from "@mantine/core";
 import { notFound, useRouter } from "next/navigation";
 import EventCountDown from "./EventCountDown";
 import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
+import { useSession } from "next-auth/react";
+import { GetFullUser } from "../User/UserControl";
 
 export default function EventInfo(props: {
   event: EventProps;
   riddles?: Riddle[];
   admin?: boolean;
-  user?: User;
+
 }) {
+
+
+  const session = useSession();
+  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
+  if (session.status == "loading" || !fullUser) return <Loader />;
+
+  useEffect(() => {
+    const updateUser = async () => {
+      if (session.status == "authenticated") {
+        const full = await GetFullUser(session.data.user!.id!);
+        if (full) setFullUser(full);
+      }
+    };
+    updateUser();
+  }, []);
+  
   const event = props.event;
   const teams = props.event.teams;
 
@@ -105,11 +124,11 @@ export default function EventInfo(props: {
   };
 
   const signUpButton = () => {
-    if (props.user) {
+    if (fullUser) {
       if (event.useAssignedTeams && !event.generatedTeams)
-        return <TeamUserRegisterPage event={event} user={props.user} />;
+        return <TeamUserRegisterPage event={event} user={fullUser} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
-        return <TeamEventSignUp user={props.user} event={event} />;
+        return <TeamEventSignUp user={fullUser} event={event} />;
     } else return "No Sign Up";
   };
 
