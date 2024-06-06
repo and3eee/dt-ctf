@@ -5,6 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import AzureAd from "next-auth/providers/azure-ad";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 600;
+
+
 // we use the common tenant to accept any Microsoft account
 const microsoftTenantId = process.env.AUTH_AZURE_AD_TENANT_ID;
 const microsoftConfig = AzureAd({
