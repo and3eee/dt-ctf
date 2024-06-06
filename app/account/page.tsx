@@ -7,18 +7,20 @@ import UserInfo from "@/components/User/UserInfo";
 
 export const dynamic = "force-dynamic";
 
-
 export default async function AccountPage() {
+  const session = await auth();
+  if (session?.user) {
+    const user = await prisma.user.findFirst({
+      where: { id: session.user!.id },
+    });
 
-  const session = await auth()
-  
-  
-  return (
-    <AuthCheck>
-      <Stack>
-        <UserInfo user={session!.user!} />
-        <UserModal user={session!.user!}/>
-      </Stack>
-    </AuthCheck>
-  );
+    return (
+      <AuthCheck>
+        <Stack>
+          <UserInfo user={user!} />
+          <UserModal user={user!} />
+        </Stack>
+      </AuthCheck>
+    );
+  }
 }

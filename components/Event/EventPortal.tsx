@@ -6,34 +6,21 @@ import { Grid, Loader, Stack, Switch } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
 import { useSession } from "next-auth/react";
-import { GetFullUser } from "../User/UserControl";
+
 
 export default function EventPortal(props: {
   event: EventProps;
   riddles?: RiddleProps[];
   admin?: boolean;
+  user: User;
 }) {
-  const { data: session } = useSession();
-  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
-  const [team, setTeam] = useState<TeamProps>();
-
-  useEffect(() => {
-    const updateUser = async () => {
-      const full = await GetFullUser(session!.user!.id!);
-      setFullUser(full!);
-      setTeam(
-        props.event.teams.filter((team: TeamProps) =>
-          team.members!.some((member: User) => member.id == fullUser!.id)
-        )[0]
-      );
-    };
-    updateUser();
-  }, []);
-
+  const team = props.event.teams.filter((team: TeamProps) =>
+    team.members!.some((member: User) => member.id == props.user!.id)
+  )[0];
 
   const [adminMode, toggle] = useState(props.admin);
 
-  if (props.riddles && fullUser && team){
+  if (props.riddles && props.user && team) {
     const solvedCheck = (riddleID: number) => {
       if (
         team.userEntries &&
@@ -68,7 +55,7 @@ export default function EventPortal(props: {
                   answeredBy={solvedCheck(riddle.id)}
                   riddle={riddle}
                   teamID="0"
-                  user={fullUser}
+                  user={props.user}
                   number={props.riddles?.indexOf(riddle)}
                 />
               </Grid.Col>
@@ -76,5 +63,6 @@ export default function EventPortal(props: {
           })}
         </Grid>
       </Stack>
-    );}
+    );
+  }
 }
