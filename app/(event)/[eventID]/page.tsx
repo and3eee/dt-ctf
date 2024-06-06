@@ -16,7 +16,7 @@ import { TeamEntry, User } from "@prisma/client";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 30;
+
 
 export default async function EventPage({
   params,

@@ -2,46 +2,29 @@
 
 import { Group, Stack, Title, Text, Loader } from "@mantine/core";
 import { User, UserEntry } from "@prisma/client";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { GetFullUser } from "./UserControl";
-import { notFound } from "next/navigation";
 
-export default function UserInfo() {
-  const { data: session } = useSession();
-  const [fullUser, setFullUser] = useState<User | undefined>(undefined);
 
-  useEffect(() => {
-   
-    const updateUser = async () => {
-      const full = await GetFullUser(session!.user!.id!);
-     setFullUser(full!);
-    };
+export default function UserInfo(props:{user:User}) {
 
-    updateUser();
-    console.log(fullUser)
-  }, []);
-
-  if(fullUser)
   return (
     <Stack justify="center" >
       <Group grow maw="60%">
         <Stack gap="0">
           <Text c="dimmed">Name</Text>
-          <Text>{fullUser.name}</Text>
+          <Text>{props.user.name}</Text>
         </Stack>
         <Stack gap="0">
           <Text c="dimmed">Email</Text>
-          <Text>{fullUser.email}</Text>
+          <Text>{props.user.email}</Text>
         </Stack>
         <Stack gap="0">
           <Text c="dimmed">Bucket</Text>
-          <Text>{fullUser.bucket}</Text>
+          <Text>{props.user.bucket}</Text>
         </Stack>
         <Stack gap="0">
           <Text c="dimmed">Skill Level</Text>
 
-          <Text>{fullUser.skillLevel}</Text>
+          <Text>{props.user.skillLevel}</Text>
         </Stack>
       </Group>
     </Stack>

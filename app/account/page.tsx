@@ -6,13 +6,17 @@ import { prisma } from "@/lib/prisma";
 import UserInfo from "@/components/User/UserInfo";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 30;
+
 
 export default async function AccountPage() {
+
+  const session = await auth()
+  console.log(session?.user)
+  
   return (
     <AuthCheck>
       <Stack>
-        <UserInfo />
+        <UserInfo user={session!.user} />
         <UserModal />
       </Stack>
     </AuthCheck>

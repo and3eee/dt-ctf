@@ -17,7 +17,7 @@ import RiddleListMetrics from "@/components/Riddle/RiddleListMetrics";
 import { Center, Container, Stack } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 30;
+
 
 export default async function RiddlePage() {
   const riddles = await GetRiddles(true);
