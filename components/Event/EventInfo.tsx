@@ -112,7 +112,7 @@ user: User;
 
   const signUpButton = () => {
     if (props.user) {
-      console.log(props.user)
+      
       if (event.useAssignedTeams && !event.generatedTeams)
         return <TeamUserRegisterPage event={event} user={props.user} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
