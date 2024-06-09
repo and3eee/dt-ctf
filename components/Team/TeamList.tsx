@@ -38,7 +38,7 @@ export default function TeamList(props: {
       <Tooltip.Group openDelay={300} closeDelay={100}>
         <Avatar.Group>
           {team.members?.map((user: User) => (
-            <Tooltip label={user.name!} withArrow>
+            <Tooltip key={user.name} label={user.name!} withArrow>
               <Avatar src={user.image}>
                 {user.name!.split(" ").map((word: string) => word.charAt(0))}
               </Avatar>

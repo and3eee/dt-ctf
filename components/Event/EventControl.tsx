@@ -1,11 +1,12 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { EventProps } from "@/types";
-import { Event, Riddle, User } from "@prisma/client";
+import { EventProps, TeamProps } from "@/types";
+import { Event, Riddle, TeamEntry, User } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { Noto_Sans_Gunjala_Gondi } from "next/font/google";
 import { NextRequest, NextResponse } from "next/server";
+import { purgeEmptyTeams } from "../Team/TeamControl";
 
 export async function RegisterUserForEvent(event: Event, user: User) {
   const resp = await prisma.event.update({
@@ -65,7 +66,6 @@ export async function EditEvent(formData: Event) {
         generatedTeams: formData.generatedTeams,
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
-
       },
     });
 
@@ -76,7 +76,14 @@ export async function EditEvent(formData: Event) {
 export async function GetTeams(eventID: string) {
   const event = await prisma.event.findFirst({
     where: { id: eventID },
-    include: { teams: { include: { members: true, userEntries: true } } },
+    include: {
+      teams: {
+        include: {
+          members: true,
+          userEntries: { include: { answeredBy: true } },
+        },
+      },
+    },
   });
 
   if (!event) return [];
@@ -106,13 +113,14 @@ export async function SetRiddleSet(eventId: string, ids: Riddle[]) {
     where: { id: eventId },
     data: { riddles: { set: [] } },
   });
-  const data: { id: number }[] = (ids.map((riddle) => ({ id: riddle.id })));
+  const data: { id: number }[] = ids.map((riddle) => ({ id: riddle.id }));
 
   const out = await prisma.event.update({
     where: { id: eventId },
-    data: { riddles: { connect: data! } }, include:{riddles:true}
+    data: { riddles: { connect: data! } },
+    include: { riddles: true },
   });
-  return out; 
+  return out;
 }
 
 export async function StartEvent(id: string) {
@@ -127,4 +135,146 @@ export async function StopEvent(id: string) {
     where: { id: id },
     data: { active: false },
   });
+}
+
+export async function SaveEventTeams(
+  event: EventProps,
+  generatedTeams: TeamProps[]
+) {
+  var out: TeamEntry[] = [];
+
+  generatedTeams.forEach(async (team: TeamProps) => {
+    out.push(
+      await prisma.teamEntry.create({
+        data: {
+          name: team.name,
+          event: { connect: { id: event.id } },
+          members: {
+            connect: team.members!.map((member: User) => {
+              return {
+                id: member.id,
+              };
+            }),
+          },
+        },
+      })
+    );
+  });
+  purgeEmptyTeams(event.id);
+  return out;
+}
+
+export async function PreGenerateTeams(event: EventProps) {
+  var out: TeamProps[] = [];
+  //first divide by bucket
+  var NASA = event.participants.filter((member: User) => member.geo == "NASA");
+  var EMEA = event.participants.filter((member: User) => member.geo == "EMEA");
+  var APAC = event.participants.filter((member: User) => member.geo == "APAC");
+
+  if (NASA.length > 0)
+    out = out.concat(await GenerateTeamsFromGroup(NASA, "NASA "));
+  if (EMEA.length > 0)
+    out = out.concat(await GenerateTeamsFromGroup(EMEA, "EMEA "));
+  if (APAC.length > 0)
+    out = out.concat(await GenerateTeamsFromGroup(APAC, "APAC "));
+
+  return out;
+}
+
+async function GenerateTeamsFromGroup(
+  members: User[],
+  tag?: string,
+  teamSize?: number
+) {
+  var scoreGoal =
+    members
+      .map((member: User) => member.skillLevel ?? 5)
+      .reduce((a, b) => a + b) / members.length;
+  var out: TeamProps[] = [];
+
+  //Split by bucket
+  var agent = members.filter((member: User) => member.bucket == "Agent");
+  var env = members.filter((member: User) => member.bucket == "Environment");
+  var dem = members.filter((member: User) => member.bucket == "DEM");
+  var platform = members.filter((member: User) => member.bucket == "Platform");
+
+  while (
+    agent.length > 0 ||
+    dem.length > 0 ||
+    env.length > 0 ||
+    platform.length > 0
+  ) {
+    var memberHold: User[] = [];
+    var teamScore = 0;
+    if (agent.length > 0) {
+      const temp = agent.pop()!;
+      memberHold.push(temp);
+      teamScore += temp.skillLevel ?? 5;
+    }
+    if (env.length > 0) {
+      const envIndex = await IndexOfClosetScore(env, scoreGoal - teamScore / 2);
+      const temp = env.at(envIndex);
+      teamScore += temp!.skillLevel ?? 5;
+      memberHold.push(temp!);
+      env.slice(envIndex, 1);
+    }
+    if (dem.length > 0) {
+      const demIndex = await IndexOfClosetScore(dem, scoreGoal - teamScore / 2);
+      const temp = dem.at(demIndex);
+      teamScore += temp!.skillLevel ?? 5;
+      memberHold.push(temp!);
+      dem.slice(demIndex, 1);
+    }
+    if (platform.length > 0 && memberHold.length < (teamSize ?? 3)) {
+      const plaftormIndex = await IndexOfClosetScore(
+        platform,
+        scoreGoal - teamScore / 2
+      );
+      const temp = platform.at(plaftormIndex);
+      teamScore += temp!.skillLevel ?? 5;
+      memberHold.push(temp!);
+      platform.slice(plaftormIndex, 1);
+    }
+
+    out.push({
+      name: (tag ?? "") + "Team " + (out.length + 1),
+      id: "-1",
+      eventId: "-1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      members: memberHold,
+    });
+  }
+
+  return out;
+}
+
+async function IndexOfClosetScore(members: User[], target: number) {
+  var error = 0;
+  var lastRun: User[] = [];
+  var index;
+  do {
+    var run = members.filter(
+      (member: User) =>
+        (member.skillLevel ?? 5 <= error + target) ||
+        (member.skillLevel ?? 5 >= error - target)
+    );
+    if (run.length > 1) {
+      error += 1;
+    }
+    //previous error run was best case, select from there
+    if (lastRun.length > 0 && lastRun.length < run.length) {
+      index = members.indexOf(lastRun[getRandomInt(lastRun.length - 1)]);
+    }
+
+    if (run.length == 1) index = members.indexOf(run[0]);
+
+    lastRun = run;
+  } while (!index);
+
+  return index;
+}
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { RiddleProps, UserEntryProps } from "@/types";
 
 import RiddleModal from "./RiddleModal";
@@ -23,16 +23,18 @@ import {
   Grid,
   getGradient,
   Switch,
+  Spoiler,
 } from "@mantine/core";
 import { Riddle, RiddleResource, User } from "@prisma/client";
-import { RiDeleteBack2Fill } from "react-icons/ri";
+import { RiCheckFill, RiCloseLargeFill, RiDeleteBack2Fill, RiErrorWarningLine } from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
 import { theme } from "@/theme";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import SpoilerText from "../SpoilerText";
 
 export default function RiddleCard(props: {
-  answeredBy?: UserEntryProps ;
+  answeredBy?: UserEntryProps;
   number?: number;
   admin?: boolean;
   teamID?: string;
@@ -65,10 +67,11 @@ export default function RiddleCard(props: {
           updatedAt: new Date(),
           answeredAt: new Date(),
         });
-        
       }
     } else {
       notifications.show({
+        icon: <RiCloseLargeFill/>,
+        color: "red",
         title: "Wrong",
         message: "That's not the right flag, try again! ",
       });
@@ -79,7 +82,9 @@ export default function RiddleCard(props: {
     if (props.teamID) {
       const res = await RemoveTeamUserEntry(props.riddle.id, props.teamID);
     }
-    router.refresh();
+    setValue("")
+    setSolvedBy(undefined)
+
   };
 
   function Difficulty() {
@@ -169,7 +174,6 @@ export default function RiddleCard(props: {
     return (
       <Grid>
         <Grid.Col span={12}>
-          <Divider />
           <Title order={4}>Related Resource(s)</Title>
         </Grid.Col>
         {resources.map((resource: RiddleResource) => (
@@ -182,74 +186,74 @@ export default function RiddleCard(props: {
   };
 
   return (
-    <Card w="40rem" padding={"lg"}>
-      <Stack gap="0">
-        <Group justify="space-between">
-          {props.number != undefined && (
-            <Title order={3}>Riddle: {props.number + 1}</Title>
+    <Card w="40rem" padding={"lg"} >
+      <Card.Section  inheritPadding withBorder>
+        <Stack gap="0">
+          <Group justify="space-between">
+            {props.number != undefined && (
+              <Title order={3}>Riddle: {props.number + 1}</Title>
+            )}
+            <Group p="sm" justify="right">
+              {solvedBy && solvedBy && (
+                <Tooltip label={`Solved by ${solvedBy.answeredBy.name}`}>
+                  <Avatar color="green">{ansInitials} </Avatar>
+                </Tooltip>
+              )}
+
+              <Difficulty />
+              {props.riddle.topic && (
+                <Tooltip label={`Topic`}>
+                  <Badge>{props.riddle.topic}</Badge>
+                </Tooltip>
+              )}
+              {props.riddle.bucket && Bucket()}
+              {(props.admin || solvedBy) && (
+                <Tooltip color="red" label={"Clear Answer"}>
+                  <ActionIcon color="red" onClick={onDelete}>
+                    <RiDeleteBack2Fill />
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </Group>
+          </Group>
+
+          {props.admin && (
+            <Group p="sm" justify="right">
+              <Text>Admin Context: </Text>
+              {props.riddle.implemented && (
+                <Tooltip label={`Status`}>
+                  <Badge color="green">Implemented</Badge>
+                </Tooltip>
+              )}
+              {!props.riddle.implemented && (
+                <Tooltip label={`Status`}>
+                  <Badge color="red">Not Implemented</Badge>
+                </Tooltip>
+              )}
+              {!props.riddle.validated && (
+                <Tooltip label={`Status`}>
+                  <Badge color="orange">Not validated</Badge>
+                </Tooltip>
+              )}
+              {props.riddle.validated && (
+                <Tooltip label={`Status`}>
+                  <Badge color="green">Validated</Badge>
+                </Tooltip>
+              )}
+              {props.riddle.author && authInitials && (
+                <Tooltip label={`Author: ${props.riddle.author}`}>
+                  <Avatar color="green">{authInitials} </Avatar>
+                </Tooltip>
+              )}
+
+              {!props.preview && (
+                <RiddleModal buttonText={"Edit"} riddle={props.riddle} />
+              )}
+            </Group>
           )}
-          <Group p="sm" justify="right">
-            {solvedBy && solvedBy && (
-              <Tooltip label={`Solved by ${solvedBy}`}>
-                <Avatar color="green">{ansInitials} </Avatar>
-              </Tooltip>
-            )}
-
-            <Difficulty />
-            {props.riddle.topic && (
-              <Tooltip label={`Topic`}>
-                <Badge>{props.riddle.topic}</Badge>
-              </Tooltip>
-            )}
-            {props.riddle.bucket && Bucket()}
-            {(props.admin || solvedBy) && (
-              <Tooltip color="red" label={"Clear Answer"}>
-                <ActionIcon color="red" onClick={onDelete}>
-                  <RiDeleteBack2Fill />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </Group>
-        </Group>
-
-        {props.admin && (
-          <Group p="sm" justify="right">
-            <Text>Admin Context: </Text>
-            {props.riddle.implemented && (
-              <Tooltip label={`Status`}>
-                <Badge color="green">Implemented</Badge>
-              </Tooltip>
-            )}
-            {!props.riddle.implemented && (
-              <Tooltip label={`Status`}>
-                <Badge color="red">Not Implemented</Badge>
-              </Tooltip>
-            )}
-            {!props.riddle.validated && (
-              <Tooltip label={`Status`}>
-                <Badge color="orange">Not validated</Badge>
-              </Tooltip>
-            )}
-            {props.riddle.validated && (
-              <Tooltip label={`Status`}>
-                <Badge color="green">Validated</Badge>
-              </Tooltip>
-            )}
-            {props.riddle.author && authInitials && (
-              <Tooltip label={`Author: ${props.riddle.author}`}>
-                <Avatar color="green">{authInitials} </Avatar>
-              </Tooltip>
-            )}
-
-            {!props.preview && (
-              <RiddleModal buttonText={"Edit"} riddle={props.riddle} />
-            )}
-          </Group>
-        )}
-      </Stack>
-
-      <Divider />
-      <Card.Section inheritPadding>
+        </Stack>
+      </Card.Section>
+      <Card.Section withBorder inheritPadding>
         <Stack gap="xl" py={"1rem"} align="center">
           <Text size="md">{props.riddle.riddle}</Text>
 
@@ -298,9 +302,8 @@ export default function RiddleCard(props: {
           props.riddle.RiddleResource.length > 0 &&
           ResourceGrid()}
       </Card.Section>
-
-      {!solvedBy && (
-        <Card.Section m="lg" inheritPadding>
+      <Card.Section withBorder m="lg" inheritPadding>
+        {!solvedBy && (
           <Group justify="center">
             <TextInput
               c="Answer"
@@ -315,14 +318,16 @@ export default function RiddleCard(props: {
               Submit
             </Button>
           </Group>
-        </Card.Section>
-      )}
-      {solvedBy && (
-        <Group>
-          <Text c="bold">Solution:</Text>
-          <Text c="dimmed">{props.riddle.solution}</Text>
-        </Group>
-      )}
+        )}
+        {solvedBy && (
+          <Group>
+            <Text c="bold">Solution:</Text>
+            <Text c="dimmed">
+              <SpoilerText>{props.riddle.solution}</SpoilerText>
+            </Text>
+          </Group>
+        )}
+      </Card.Section>
     </Card>
   );
 }

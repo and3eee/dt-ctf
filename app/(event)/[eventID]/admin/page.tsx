@@ -1,9 +1,11 @@
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import EventAdminMenu from "@/components/Event/EventAdminMenu";
+import EventModal from "@/components/Event/EventModal";
 import EventRiddleList from "@/components/Event/EventRiddleList";
+import TeamGeneratorPanel from "@/components/Event/TeamGeneratorPanel";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
-import { Stack } from "@mantine/core";
+import { Group, Stack, Title } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -38,8 +40,12 @@ export default async function EventAdmin({
     if (event) {
       return (
         <Stack justify="center">
-          <p className="text-3xl">{event.name} Admin </p>
+          <Title order={2}>{event.name} Admin View</Title>
+          <Group>
           <EventAdminMenu event={event} />
+          <EventModal event={event}/>
+          </Group>
+          <TeamGeneratorPanel event={event} />
           <EventRiddleList
             user={user}
             event={event}

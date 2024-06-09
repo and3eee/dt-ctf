@@ -16,7 +16,7 @@ export default async function AccountPage() {
 
     return (
       <AuthCheck>
-        <Stack>
+        <Stack align="center">
           <UserInfo user={user!} />
           <UserModal user={user!} />
         </Stack>

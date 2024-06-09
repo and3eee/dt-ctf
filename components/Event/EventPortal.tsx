@@ -2,11 +2,11 @@
 import { EventProps, RiddleProps, TeamProps, UserEntryProps } from "@/types";
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
-import { Grid, Loader, Stack, Switch } from "@mantine/core";
+import { Card, Grid, Loader, Select, Stack, Switch, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
 import { useSession } from "next-auth/react";
-
+import TeamCard from "../Team/TeamCard";
 
 export default function EventPortal(props: {
   event: EventProps;
@@ -18,33 +18,59 @@ export default function EventPortal(props: {
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
 
+  const [teamContext, setTeamContext] = useState(team ?? props.event.teams[0]);
+
   const [adminMode, toggle] = useState(props.admin);
 
-  if (props.riddles && props.user && team) {
+  if (props.riddles && props.user && teamContext) {
     const solvedCheck = (riddleID: number) => {
       if (
-        team.userEntries &&
-        team.userEntries.some(
+        teamContext.userEntries &&
+        teamContext.userEntries.some(
           (entry: UserEntryProps) => entry.riddleId == riddleID
         )
       )
-        return team.userEntries.filter(
+        return teamContext.userEntries.filter(
           (entry: UserEntryProps) => entry.riddleId == riddleID
         )[0];
       return undefined;
     };
+
+
+    const onTeamContextChange  = (value:string | null) => {
+      if(value)
+      setTeamContext(props.event.teams.filter((team:TeamProps) => team.name == value)[0])
+    }
+
+
+
+
+    
     return (
       <Stack>
         {props.admin && (
-          <Switch
-            label="Admin Mode"
-            checked={adminMode}
-            onChange={() => {
-              toggle(!adminMode);
-            }}
-          />
+          <Card title="Admin Context" w={"20rem"}>
+            <Card.Section withBorder inheritPadding>
+              <Title order={4}>Admin Context</Title>
+            </Card.Section>
+            <Stack my={8} gap="md" align="center">
+            <Switch
+              label="Admin Mode"
+              checked={adminMode}
+              onChange={() => {
+                toggle(!adminMode);
+              }}
+            />
+            <Select
+              label="Team Context"
+              placeholder="Select a team"
+              onChange={(value) => onTeamContextChange(value)}
+              data={props.event.teams.map((team: TeamProps) => team.name)}
+            />
+            <TeamCard team={teamContext} event={props.event} user={props.user}/></Stack>
+          </Card>
         )}
-        <EventDrawer event={props.event} team={team} />
+        <EventDrawer event={props.event} team={teamContext} />
 
         <Grid>
           {props.riddles?.map((riddle: RiddleProps) => {
@@ -54,7 +80,7 @@ export default function EventPortal(props: {
                   admin={adminMode}
                   answeredBy={solvedCheck(riddle.id)}
                   riddle={riddle}
-                  teamID="0"
+                  teamID={teamContext.id}
                   user={props.user}
                   number={props.riddles?.indexOf(riddle)}
                 />

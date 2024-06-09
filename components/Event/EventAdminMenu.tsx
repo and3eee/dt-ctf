@@ -21,9 +21,6 @@ export default function EventAdminMenu(props:{event:Event}){
     
           <Menu.Dropdown>
           
-            <Menu.Item leftSection={<RiPencilLine  />} >
-              <EventModal event={props.event}/>
-            </Menu.Item>
             <Menu.Item  leftSection={<RiAdminFill/>}>
             <Link  href={baseLink + "admin"} >Event Admin Page</Link>
             </Menu.Item>
