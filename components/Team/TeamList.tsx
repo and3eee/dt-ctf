@@ -82,7 +82,7 @@ export default function TeamList(props: {
   ));
 
   return (
-    <ScrollArea mih={200} mah={400}>
+    <Table.ScrollContainer minWidth={"30rem"}>
       <Table >
         <Table.Thead>
           <Table.Tr>
@@ -94,6 +94,6 @@ export default function TeamList(props: {
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-    </ScrollArea>
+    </Table.ScrollContainer>
   );
 }
