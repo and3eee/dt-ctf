@@ -1,26 +1,60 @@
-'use client';
+"use client";
 import { EventProps } from "@/types";
 import { Center, RingProgress, Stack, Title } from "@mantine/core";
 import { Event } from "@prisma/client";
-export default function EventCountDown(props: { event: EventProps }) {
+export default function EventCountDown(props: {
+  event: EventProps;
+  useEnd?: boolean;
+}) {
   const now = new Date();
 
   const dateDif = () => {
     return (
       <Stack align="center" gap="0">
-        <Title order={3}>
+        {(props.useEnd
+          ? props.event.end.valueOf() - now.valueOf()
+          : props.event.start.valueOf() - now.valueOf()) /
+          3600000 >
+          24 &&<Title order={3}>
           {Math.round(
-            (props.event.start.valueOf() - now.valueOf()) / (3600000 * 24)
-          )}{" "}
+            (props.useEnd
+              ? props.event.end.valueOf() - now.valueOf()
+              : props.event.start.valueOf() - now.valueOf()) /
+              (3600000 * 24)
+          )}
           days
-        </Title>
-        {(props.event.start.valueOf() - now.valueOf()) / 3600000 > 24 && (
+        </Title>}
+        {(props.useEnd
+          ? props.event.end.valueOf() - now.valueOf()
+          : props.event.start.valueOf() - now.valueOf()) /
+          3600000 <
+          24 && (
           <Title order={3}>
             {Math.round(
-              ((props.event.start.valueOf() - now.valueOf()) % (3600000 * 24)) /
+              ((props.useEnd
+                ? props.event.end.valueOf() - now.valueOf()
+                : props.event.start.valueOf() - now.valueOf()) %
+                (3600000 * 24)) /
                 3600000
-            )}{" "}
-            hrs
+            )}
+            hrs{" "}
+          </Title>
+        )}
+
+        {(props.useEnd
+          ? props.event.end.valueOf() - now.valueOf()
+          : props.event.start.valueOf() - now.valueOf()) /
+          3600000 <
+          24 && (
+          <Title order={3}>
+            {Math.round(
+              ((props.useEnd
+                ? props.event.end.valueOf() - now.valueOf()
+                : props.event.start.valueOf() - now.valueOf()) %
+                (3600000 * 24 * 60)) /
+                3600000
+            )}
+            min
           </Title>
         )}
       </Stack>
@@ -36,11 +70,12 @@ export default function EventCountDown(props: { event: EventProps }) {
       label={dateDif()}
       sections={[
         {
-
           value: Math.round(
             100 -
               100 *
-                ((props.event.start.valueOf() - now.valueOf()) /
+                ((props.useEnd
+                  ? props.event.end.valueOf() - now.valueOf()
+                  : props.event.start.valueOf() - now.valueOf()) /
                   (24 * 10 * 3600000))
           ),
           color: "gray",
@@ -49,12 +84,16 @@ export default function EventCountDown(props: { event: EventProps }) {
           tooltip:
             Math.round(
               100 *
-                ((props.event.start.valueOf() - now.valueOf()) /
+                ((props.useEnd
+                  ? props.event.end.valueOf() - now.valueOf()
+                  : props.event.start.valueOf() - now.valueOf()) /
                   (24 * 10 * 3600000))
             ) + "  hours",
           value: Math.round(
             100 *
-              ((props.event.start.valueOf() - now.valueOf()) /
+              ((props.useEnd
+                ? props.event.end.valueOf() - now.valueOf()
+                : props.event.start.valueOf() - now.valueOf()) /
                 (24 * 10 * 3600000))
           ),
           color: "orange",

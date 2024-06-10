@@ -30,6 +30,7 @@ export default function EventInfo(props: {
   riddles?: Riddle[];
   admin?: boolean;
 user: User;
+panelMode?: boolean;
 }) {
 
 
@@ -111,7 +112,7 @@ user: User;
   };
 
   const signUpButton = () => {
-    if (props.user) {
+    if (props.user && !props.panelMode) {
       
       if (event.useAssignedTeams && !event.generatedTeams)
         return <TeamUserRegisterPage event={event} user={props.user} />;
@@ -119,6 +120,7 @@ user: User;
         return <TeamEventSignUp user={props.user} event={event} />;
     } else return "No Sign Up";
   };
+
 
   const admin = props.user?.role != "USER"
 
@@ -131,15 +133,20 @@ user: User;
           <Group>
             <Divider orientation="vertical" />
             {props.admin && !event.public && <Badge>Private</Badge>}
-            {!event.active && (
+            {!event.active && now < props.event.start && (
               <Tooltip label="Event starts at">
                 <Badge color="green">{start}</Badge>
               </Tooltip>
             )}
 
-            {(event.active || props.admin) && (
+            {(event.active || props.admin)&& now < props.event.end &&  (
               <Tooltip label="Event ends at">
                 <Badge color="indigo">{end}</Badge>
+              </Tooltip>
+            )}
+                        {(event.active || props.admin)&& now < props.event.end &&  (
+              <Tooltip label="Event Closed">
+                <Badge color="violet">Event Complete</Badge>
               </Tooltip>
             )}
             {event.active && (
@@ -167,7 +174,7 @@ user: User;
                 ))}
               </Stack>
             )}
-            <EventCountDown event={event} />
+            <EventCountDown useEnd={props.panelMode} event={event} />
           </Group>
 
           {event.showTeams && event.teams && event.teams.length > 0 && (
@@ -180,14 +187,14 @@ user: User;
 
         <Divider />
 
-        <Group>
+       {!props.panelMode && <Group>
           {((now < event.start && !event.active) || props.admin) &&
             signUpButton()}
 
           {props.admin && (
             <EventModal buttonText={"Edit Event"} event={event} />
           )}
-        </Group>
+        </Group>}
       </Stack>
     );
 }
