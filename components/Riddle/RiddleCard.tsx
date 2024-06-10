@@ -25,6 +25,7 @@ import {
   Switch,
   Spoiler,
   Loader,
+  ThemeIcon,
 } from "@mantine/core";
 import { Riddle, RiddleResource, User } from "@prisma/client";
 import {
@@ -47,7 +48,7 @@ export default function RiddleCard(props: {
   riddle: any;
   preview?: boolean;
   user?: User;
-  event?:EventProps;
+  event?: EventProps;
 }) {
   const router = useRouter();
   const [value, setValue] = useState("");
@@ -59,7 +60,6 @@ export default function RiddleCard(props: {
     if (value == props.riddle.solution && props.teamID && props.user) {
       setIsLoading(true);
 
-
       if (!props.admin) {
         const reply = await AddTeamUserEntry(
           props.riddle.id,
@@ -67,8 +67,7 @@ export default function RiddleCard(props: {
           props.user
         );
         if (reply) setSolvedBy(reply);
-        setIsLoading(false)
-   
+        setIsLoading(false);
       } else {
         setSolvedBy({
           id: "temp",
@@ -80,7 +79,6 @@ export default function RiddleCard(props: {
           updatedAt: new Date(),
           answeredAt: new Date(),
         });
-       
       }
     } else {
       notifications.show({
@@ -89,7 +87,7 @@ export default function RiddleCard(props: {
         title: "Wrong",
         message: "That's not the right flag, try again! ",
       });
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -204,9 +202,15 @@ export default function RiddleCard(props: {
       <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
+            <Group gap={8}> {props.answeredBy && (
+              <ThemeIcon variant="gradient" radius={"xl"} size="xl">
+                <RiCheckFill />
+              </ThemeIcon>
+            )}
             {props.number != undefined && (
               <Title order={3}>Riddle: {props.number + 1}</Title>
-            )}
+            )}</Group>
+           
             <Group p="sm" justify="right">
               {solvedBy && solvedBy && (
                 <Tooltip label={`Solved by ${solvedBy.answeredBy.name}`}>
