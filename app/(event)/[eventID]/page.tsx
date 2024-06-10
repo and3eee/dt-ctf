@@ -47,7 +47,7 @@ export default async function EventPage({
       const now = new Date();
       if (event) {
         if (event?.public) {
-          if (event.active) {
+          if (event.active && event.start <= now) {
             //Show Team list and so
             return (
               <AuthCheck>
