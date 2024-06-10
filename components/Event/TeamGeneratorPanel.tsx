@@ -40,6 +40,7 @@ export default function TeamGeneratorPanel(props: { event: EventProps }) {
       </Text>
     );
   };
+
   const teamSkill = (team: TeamProps) => {
     if (team.members && team.members?.length > 0) {
       var score: number =
@@ -68,9 +69,13 @@ export default function TeamGeneratorPanel(props: { event: EventProps }) {
     );
   };
 
+  const [isLoading, setLoading] = useState(false);
+
   const generate = async () => {
+    setLoading(true);
     const output = await PreGenerateTeams(props.event);
     setGeneratedTeams(output);
+    setLoading(false);
   };
 
   const router = useRouter();
@@ -99,7 +104,6 @@ export default function TeamGeneratorPanel(props: { event: EventProps }) {
         active
         leftSection={
           <Group gap={2}>
-   
             {opened ? <RiArrowDownSFill /> : <RiArrowRightSFill />}{" "}
             <RiTeamLine size="1rem" />
           </Group>
@@ -113,23 +117,26 @@ export default function TeamGeneratorPanel(props: { event: EventProps }) {
             <Button onClick={generate}>Generate Teams</Button>
             <Button onClick={save}>Save Teams</Button>
           </Group>
-          <ScrollArea.Autosize h="30rem" scrollbarSize={2} offsetScrollbars>
-            <Suspense fallback={<Loader />}>
-              <ScrollArea mih={200} mah={400}>
-                <Table title="Preview Generated Teams">
-                  <Table.Thead>
-                    <Table.Tr>
-                      <Table.Th>Team Name</Table.Th>
-                      <Table.Th>Members</Table.Th>
-                      <Table.Th>Capacity</Table.Th>
-                      <Table.Th>Skill Sum</Table.Th>
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>{rows}</Table.Tbody>
-                </Table>
-              </ScrollArea>
-            </Suspense>
-          </ScrollArea.Autosize>
+
+        
+              <Suspense fallback={<Loader />}>
+              
+                  <Table title="Preview Generated Teams">
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Team Name</Table.Th>
+                        <Table.Th>Members</Table.Th>
+                        <Table.Th>Capacity</Table.Th>
+                        <Table.Th>Skill Sum</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>{rows}</Table.Tbody>
+                  </Table>
+           
+              </Suspense>
+       
+          
+          {isLoading && <Loader variant="bars" />}
         </Stack>
       </Collapse>
     </Stack>

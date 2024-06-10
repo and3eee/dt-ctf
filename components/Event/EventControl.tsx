@@ -165,19 +165,24 @@ export async function SaveEventTeams(
 }
 
 export async function PreGenerateTeams(event: EventProps) {
+  console.log("Team Generation request received for event " + event.name);
   var out: TeamProps[] = [];
   //first divide by bucket
   var NASA = event.participants.filter((member: User) => member.geo == "NASA");
   var EMEA = event.participants.filter((member: User) => member.geo == "EMEA");
   var APAC = event.participants.filter((member: User) => member.geo == "APAC");
+  console.log("TG - Region partitioning completed.");
 
-  if (NASA.length > 0)
-    out = out.concat(await GenerateTeamsFromGroup(NASA, "NASA "));
-  if (EMEA.length > 0)
+  if (EMEA.length > 0) {
     out = out.concat(await GenerateTeamsFromGroup(EMEA, "EMEA "));
-  if (APAC.length > 0)
+  }
+  if (APAC.length > 0) {
     out = out.concat(await GenerateTeamsFromGroup(APAC, "APAC "));
-
+  }
+  if (NASA.length > 0) {
+    out = out.concat(await GenerateTeamsFromGroup(NASA, "NASA "));
+  }
+  console.log(out.map((entry) => entry.name));
   return out;
 }
 
@@ -186,6 +191,7 @@ async function GenerateTeamsFromGroup(
   tag?: string,
   teamSize?: number
 ) {
+  console.log(tag + "Teams Initiated");
   var scoreGoal =
     members
       .map((member: User) => member.skillLevel ?? 5)
@@ -193,10 +199,10 @@ async function GenerateTeamsFromGroup(
   var out: TeamProps[] = [];
 
   //Split by bucket
-  var agent = members.filter((member: User) => member.bucket == "Agent");
-  var env = members.filter((member: User) => member.bucket == "Environment");
-  var dem = members.filter((member: User) => member.bucket == "DEM");
-  var platform = members.filter((member: User) => member.bucket == "Platform");
+  let agent = members.filter((member: User) => member.bucket == "Agent");
+  let env = members.filter((member: User) => member.bucket == "Environment");
+  let dem = members.filter((member: User) => member.bucket == "DEM");
+  let platform = members.filter((member: User) => member.bucket == "Platform");
 
   while (
     agent.length > 0 ||
@@ -206,34 +212,68 @@ async function GenerateTeamsFromGroup(
   ) {
     var memberHold: User[] = [];
     var teamScore = 0;
-    if (agent.length > 0) {
-      const temp = agent.pop()!;
-      memberHold.push(temp);
-      teamScore += temp.skillLevel ?? 5;
-    }
-    if (env.length > 0) {
-      const envIndex = await IndexOfClosetScore(env, scoreGoal - teamScore / 2);
-      const temp = env.at(envIndex);
-      teamScore += temp!.skillLevel ?? 5;
-      memberHold.push(temp!);
-      env.slice(envIndex, 1);
-    }
-    if (dem.length > 0) {
-      const demIndex = await IndexOfClosetScore(dem, scoreGoal - teamScore / 2);
-      const temp = dem.at(demIndex);
-      teamScore += temp!.skillLevel ?? 5;
-      memberHold.push(temp!);
-      dem.slice(demIndex, 1);
-    }
-    if (platform.length > 0 && memberHold.length < (teamSize ?? 3)) {
-      const plaftormIndex = await IndexOfClosetScore(
-        platform,
-        scoreGoal - teamScore / 2
-      );
-      const temp = platform.at(plaftormIndex);
-      teamScore += temp!.skillLevel ?? 5;
-      memberHold.push(temp!);
-      platform.slice(plaftormIndex, 1);
+    while (memberHold.length < (teamSize ?? 3)) {
+      if (memberHold.length < (teamSize ?? 3)) {
+        if (agent.length > 0 && memberHold.length < (teamSize ?? 3)) {
+          const temp = agent.pop()!;
+          memberHold.push(temp);
+          teamScore += temp.skillLevel ?? 5;
+        }
+
+        if (env.length > 0 && memberHold.length < (teamSize ?? 3)) {
+          if (memberHold.length == 0) {
+            const temp = env.pop()!;
+            memberHold.push(temp);
+            teamScore += temp.skillLevel ?? 5;
+          } else {
+            const envIndex = await IndexOfClosetScore(
+              env,
+              scoreGoal - teamScore / 2
+            );
+            const temp = env.at(envIndex);
+            teamScore += temp!.skillLevel ?? 5;
+            memberHold.push(temp!);
+            env = env.filter((member: User) => member.id != temp?.id);
+          }
+        }
+
+        if (dem.length > 0 && memberHold.length < (teamSize ?? 3)) {
+          if (memberHold.length == 0) {
+            const temp = dem.pop()!;
+            memberHold.push(temp);
+            teamScore += temp.skillLevel ?? 5;
+          } else {
+            const demIndex = await IndexOfClosetScore(
+              dem,
+              scoreGoal - teamScore / 2
+            );
+            const temp = dem.at(demIndex);
+            teamScore += temp!.skillLevel ?? 5;
+            memberHold.push(temp!);
+
+            dem = dem.filter((member: User) => member.id != temp?.id);
+          }
+        }
+
+        if (platform.length > 0 && memberHold.length < (teamSize ?? 3)) {
+          if (memberHold.length == 0) {
+            const temp = platform.pop()!;
+            memberHold.push(temp);
+            teamScore += temp.skillLevel ?? 5;
+          } else {
+            const plaftormIndex = await IndexOfClosetScore(
+              platform,
+              scoreGoal - teamScore / 2
+            );
+
+            const temp = platform.at(plaftormIndex);
+            teamScore += temp!.skillLevel ?? 5;
+
+            memberHold.push(temp!);
+            platform = platform.filter((member: User) => member.id != temp?.id);
+          }
+        }
+      }
     }
 
     out.push({
@@ -244,15 +284,17 @@ async function GenerateTeamsFromGroup(
       updatedAt: new Date(),
       members: memberHold,
     });
+    console.log("Created team " + (tag ?? "") + "Team " + (out.length + 1));
   }
+  console.log(tag + "Teams Completed");
 
   return out;
 }
 
 async function IndexOfClosetScore(members: User[], target: number) {
   var error = 0;
-  var lastRun: User[] = [];
-  var index;
+  var lastRun = 0;
+  let index = -1;
   do {
     var run = members.filter(
       (member: User) =>
@@ -263,14 +305,14 @@ async function IndexOfClosetScore(members: User[], target: number) {
       error += 1;
     }
     //previous error run was best case, select from there
-    if (lastRun.length > 0 && lastRun.length < run.length) {
-      index = members.indexOf(lastRun[getRandomInt(lastRun.length - 1)]);
+    if (lastRun > 0 && lastRun <= run.length) {
+      return getRandomInt(run.length - 1);
     }
 
-    if (run.length == 1) index = members.indexOf(run[0]);
+    if (run.length == 1) return 0;
 
-    lastRun = run;
-  } while (!index);
+    lastRun = run.length;
+  } while (!(index > -1));
 
   return index;
 }

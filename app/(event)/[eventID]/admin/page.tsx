@@ -8,7 +8,6 @@ import { prisma } from "@/lib/prisma";
 import { Group, Stack, Title } from "@mantine/core";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 60;
 
 export default async function EventAdmin({
   params,
