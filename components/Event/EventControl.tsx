@@ -212,7 +212,7 @@ async function GenerateTeamsFromGroup(
   ) {
     var memberHold: User[] = [];
     var teamScore = 0;
-    while (memberHold.length < (teamSize ?? 3)) {
+    while (memberHold.length < (teamSize ? teamSize - 1 : 2)) {
       if (memberHold.length < (teamSize ?? 3)) {
         if (agent.length > 0 && memberHold.length < (teamSize ?? 3)) {
           const temp = agent.pop()!;
