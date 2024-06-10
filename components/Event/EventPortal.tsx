@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
 import { useSession } from "next-auth/react";
 import TeamCard from "../Team/TeamCard";
-import { socket } from "@/app/socket";
+
 
 
 
@@ -28,45 +28,7 @@ export default function EventPortal(props: {
   admin?: boolean;
   user: User;
 }) {
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
-
-  const [globalTeamEvents, setGlobalTeamEvents] = useState([]);
-
-  useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-
-      socket.io.engine.on("upgrade", (transport) => {
-        setTransport(transport.name);
-      });
-    }
-    function onTeamScoreEvent(value: any) {
-      console.log(value);
-      setGlobalTeamEvents(value);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-      setTransport("N/A");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("score_event", onTeamScoreEvent);
-    socket.on("test", () => {console.log("test")});
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("score_event", onTeamScoreEvent);      socket.off("test", () => {});
-    };
-  }, []);
-
+  
   const team = props.event.teams.filter((team: TeamProps) =>
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
