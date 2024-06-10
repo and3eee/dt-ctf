@@ -2,11 +2,25 @@
 import { EventProps, RiddleProps, TeamProps, UserEntryProps } from "@/types";
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
-import { Card, Grid, Loader, Select, Stack, Switch, Title } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Grid,
+  Group,
+  Loader,
+  Select,
+  Stack,
+  Switch,
+  Title,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
 import { useSession } from "next-auth/react";
 import TeamCard from "../Team/TeamCard";
+import { socket } from "@/app/socket";
+
+
+
 
 export default function EventPortal(props: {
   event: EventProps;
@@ -14,6 +28,45 @@ export default function EventPortal(props: {
   admin?: boolean;
   user: User;
 }) {
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
+
+  const [globalTeamEvents, setGlobalTeamEvents] = useState([]);
+
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
+
+      socket.io.engine.on("upgrade", (transport) => {
+        setTransport(transport.name);
+      });
+    }
+    function onTeamScoreEvent(value: any) {
+      console.log(value);
+      setGlobalTeamEvents(value);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      setTransport("N/A");
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("score_event", onTeamScoreEvent);
+    socket.on("test", () => {console.log("test")});
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("score_event", onTeamScoreEvent);      socket.off("test", () => {});
+    };
+  }, []);
+
   const team = props.event.teams.filter((team: TeamProps) =>
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
@@ -36,42 +89,47 @@ export default function EventPortal(props: {
       return undefined;
     };
 
+    const onTeamContextChange = (value: string | null) => {
+      if (value)
+        setTeamContext(
+          props.event.teams.filter((team: TeamProps) => team.name == value)[0]
+        );
+    };
 
-    const onTeamContextChange  = (value:string | null) => {
-      if(value)
-      setTeamContext(props.event.teams.filter((team:TeamProps) => team.name == value)[0])
-    }
-
-
-
-
-    
     return (
       <Stack>
         {props.admin && (
-          <Card title="Admin Context" w={"20rem"}>
+          <Card title="Admin Context" maw="40rem">
             <Card.Section withBorder inheritPadding>
               <Title order={4}>Admin Context</Title>
             </Card.Section>
-            <Stack my={8} gap="md" align="center">
-            <Switch
-              label="Admin Mode"
-              checked={adminMode}
-              onChange={() => {
-                toggle(!adminMode);
-              }}
-            />
-            <Select
-              label="Team Context"
-              placeholder="Select a team"
-              onChange={(value) => onTeamContextChange(value)}
-              data={props.event.teams.map((team: TeamProps) => team.name)}
-            />
-            <TeamCard team={teamContext} event={props.event} user={props.user}/></Stack>
+            <Group grow>
+              <Stack my={8} gap="md" align="center">
+                <Switch
+                  label="Admin Mode"
+                  checked={adminMode}
+                  onChange={() => {
+                    toggle(!adminMode);
+                  }}
+                />
+                <Select
+                  label="Team Context"
+                  placeholder="Select a team"
+                  defaultValue={team.name}
+                  onChange={(value) => onTeamContextChange(value)}
+                  data={props.event.teams.map((team: TeamProps) => team.name)}
+                />
+              </Stack>
+              <TeamCard
+                admin
+                team={teamContext}
+                event={props.event}
+                user={props.user}
+              />
+            </Group>
           </Card>
         )}
         <EventDrawer event={props.event} team={teamContext} />
-
         <Grid>
           {props.riddles?.map((riddle: RiddleProps) => {
             return (
@@ -83,6 +141,7 @@ export default function EventPortal(props: {
                   teamID={teamContext.id}
                   user={props.user}
                   number={props.riddles?.indexOf(riddle)}
+                  event={props.event}
                 />
               </Grid.Col>
             );

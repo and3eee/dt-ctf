@@ -1,5 +1,5 @@
 "use client";
-import { RiddleProps, UserEntryProps } from "@/types";
+import { EventProps, RiddleProps, UserEntryProps } from "@/types";
 
 import RiddleModal from "./RiddleModal";
 import { useRouter } from "next/navigation";
@@ -24,9 +24,15 @@ import {
   getGradient,
   Switch,
   Spoiler,
+  Loader,
 } from "@mantine/core";
 import { Riddle, RiddleResource, User } from "@prisma/client";
-import { RiCheckFill, RiCloseLargeFill, RiDeleteBack2Fill, RiErrorWarningLine } from "react-icons/ri";
+import {
+  RiCheckFill,
+  RiCloseLargeFill,
+  RiDeleteBack2Fill,
+  RiErrorWarningLine,
+} from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
 import { theme } from "@/theme";
 import { useToggle } from "@mantine/hooks";
@@ -41,14 +47,19 @@ export default function RiddleCard(props: {
   riddle: any;
   preview?: boolean;
   user?: User;
+  event?:EventProps;
 }) {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [solvedBy, setSolvedBy] = useState<UserEntryProps | undefined>(
     props.answeredBy
   );
+  const [solutionIsLoading, setIsLoading] = useState(false);
   const submitEntry = async () => {
     if (value == props.riddle.solution && props.teamID && props.user) {
+      setIsLoading(true);
+
+
       if (!props.admin) {
         const reply = await AddTeamUserEntry(
           props.riddle.id,
@@ -56,6 +67,8 @@ export default function RiddleCard(props: {
           props.user
         );
         if (reply) setSolvedBy(reply);
+        setIsLoading(false)
+   
       } else {
         setSolvedBy({
           id: "temp",
@@ -67,14 +80,16 @@ export default function RiddleCard(props: {
           updatedAt: new Date(),
           answeredAt: new Date(),
         });
+       
       }
     } else {
       notifications.show({
-        icon: <RiCloseLargeFill/>,
+        icon: <RiCloseLargeFill />,
         color: "red",
         title: "Wrong",
         message: "That's not the right flag, try again! ",
       });
+      setIsLoading(false)
     }
   };
 
@@ -82,9 +97,8 @@ export default function RiddleCard(props: {
     if (props.teamID) {
       const res = await RemoveTeamUserEntry(props.riddle.id, props.teamID);
     }
-    setValue("")
-    setSolvedBy(undefined)
-
+    setValue("");
+    setSolvedBy(undefined);
   };
 
   function Difficulty() {
@@ -186,8 +200,8 @@ export default function RiddleCard(props: {
   };
 
   return (
-    <Card w="40rem" padding={"lg"} >
-      <Card.Section  inheritPadding withBorder>
+    <Card w="40rem" padding={"lg"}>
+      <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
             {props.number != undefined && (
@@ -303,7 +317,7 @@ export default function RiddleCard(props: {
           ResourceGrid()}
       </Card.Section>
       <Card.Section withBorder m="lg" inheritPadding>
-        {!solvedBy && (
+        {!solvedBy && !solutionIsLoading && (
           <Group justify="center">
             <TextInput
               c="Answer"
@@ -319,6 +333,7 @@ export default function RiddleCard(props: {
             </Button>
           </Group>
         )}
+        {solutionIsLoading && <Loader variant="bars" />}
         {solvedBy && (
           <Group>
             <Text c="bold">Solution:</Text>
