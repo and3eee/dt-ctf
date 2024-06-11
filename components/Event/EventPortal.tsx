@@ -98,6 +98,7 @@ export default function EventPortal(props: {
         <EventDrawer event={props.event} team={teamContext} />
         <Grid>
           {props.riddles?.map((riddle: RiddleProps) => {
+            if(riddle.author != props.user.name)
             return (
               <Grid.Col key={riddle.id} span="content">
                 <RiddleCard
