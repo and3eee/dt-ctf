@@ -2,6 +2,7 @@ import { auth } from "@/app/api/auth/[...nextauth]/route";
 import EventPortal from "@/components/Event/EventPortal";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
+import { RiddleProps } from "@/types";
 import { Stack } from "@mantine/core";
 import { notFound } from "next/navigation";
 
@@ -25,7 +26,6 @@ export default async function EventDryRunView({
     const event = await prisma.event.findFirst({
       where: { id: { startsWith: params.eventID } },
       include: {
-        riddles: {include:{RiddleResource:true}},
         participants: true,
         teams: {
           include: {
@@ -36,9 +36,14 @@ export default async function EventDryRunView({
       },
     });
 
-    const riddles = await prisma.riddle.findMany();
+
+
+
+
+
 
     if (event && admin && user) {
+      const riddles = await prisma.riddle.findMany({where:{eventId:event.id}, include:{RiddleResource:true}})
       return (
         <Stack>
           <p className="text-3xl">{event.name} Dry Run View </p>
@@ -46,7 +51,19 @@ export default async function EventDryRunView({
             admin
             user={user}
             event={event}
-            riddles={event.riddles}
+            riddles={riddles.map((riddle: RiddleProps) => {
+              return {
+                id: riddle.id,
+                riddle: riddle.riddle,
+                difficulty: riddle.difficulty ?? "easy",
+                bucket: riddle.bucket ?? "none",
+                author: riddle.author ?? "N/A",
+                topic: riddle.topic ?? "",
+                eventId: riddle.eventId!,
+                RiddleResource:riddle.RiddleResource,
+                showRiddleResource:riddle.showRiddleResource
+              };
+            })}
            
           />
     </Stack>

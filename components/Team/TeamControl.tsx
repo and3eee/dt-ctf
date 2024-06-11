@@ -34,18 +34,23 @@ export async function UpdateTeam(team: TeamEntry) {
 export async function AddTeamUserEntry(
   riddleID: number,
   teamID: string,
-  user: User
+  user: User,
+  value: string
 ) {
-  let out = await prisma.userEntry.create({
-    data: {
-      answeredAt: new Date(),
-      riddle: { connect: { id: riddleID } },
-      answeredBy: { connect: { email: user.email! } },
-      teamEntry: { connect: { id: teamID } },
-    },
-    include: { answeredBy: true },
-  });
-  return out;
+  const riddle = await prisma.riddle.findFirst({ where: { id: riddleID } });
+
+  if (riddle && value == riddle?.solution) {
+    let out = await prisma.userEntry.create({
+      data: {
+        answeredAt: new Date(),
+        riddle: { connect: { id: riddleID } },
+        answeredBy: { connect: { email: user.email! } },
+        teamEntry: { connect: { id: teamID } },
+      },
+      include: { answeredBy: true },
+    });
+    return true;
+  }return false;
 }
 
 export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {

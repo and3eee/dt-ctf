@@ -24,7 +24,7 @@ import TeamCard from "../Team/TeamCard";
 
 export default function EventPortal(props: {
   event: EventProps;
-  riddles?: EventRiddleProps[];
+  riddles?: RiddleProps[];
   admin?: boolean;
   user: User;
 }) {
@@ -96,9 +96,9 @@ export default function EventPortal(props: {
             </Group>
           </Card>
         )}
-        <EventDrawer riddles={props.riddles} event={props.event} team={teamContext} />
+        <EventDrawer riddles={props.riddles ?? []} event={props.event} team={teamContext} />
         <Grid>
-          {props.riddles?.map((riddle: EventRiddleProps) => {
+          {props.riddles?.map((riddle: RiddleProps) => {
             if(riddle.author != props.user.name)
             return (
               <Grid.Col key={riddle.id} span="content">

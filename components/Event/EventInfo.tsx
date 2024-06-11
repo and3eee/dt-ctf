@@ -1,6 +1,6 @@
 "use client";
 
-import { EventProps, TeamProps } from "@/types";
+import { EventProps, EventRiddleProps, TeamProps } from "@/types";
 import { useEffect, useState } from "react";
 
 import { Event, Riddle, TeamEntry, User } from "@prisma/client";
@@ -27,7 +27,7 @@ import EventLeaderBoard from "./EventLeaderBoard";
 
 export default function EventInfo(props: {
   event: EventProps;
-  riddles?: Riddle[];
+  riddles?: EventRiddleProps[];
   admin?: boolean;
   user: User;
   panelMode?: boolean;
@@ -185,7 +185,7 @@ export default function EventInfo(props: {
               </Stack>
             )}
             {now < event.end && <EventCountDown useEnd={props.panelMode || now > event.start } event={event} />}
-              {now >event.end && <EventLeaderBoard event={event} teams={event.teams} />}
+              {now >event.end && <EventLeaderBoard riddles={props.riddles??[]} event={event} teams={event.teams} />}
           </Group>
 
           {event.showTeams && event.teams && event.teams.length > 0 && (

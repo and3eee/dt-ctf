@@ -45,7 +45,7 @@ export default function RiddleCard(props: {
   number?: number;
   admin?: boolean;
   teamID?: string;
-  riddle: RiddleProps | EventRiddleProps;
+  riddle: RiddleProps ;
   preview?: boolean;
   user?: User;
   event?: EventProps;
@@ -193,7 +193,7 @@ export default function RiddleCard(props: {
   }
 
   const ResourceGrid = () => {
-    const resources: RiddleResource[] = props.riddle.RiddleResource!;
+    const resources: RiddleResource[] = props.riddle.RiddleResource;
 
     return (
       <Grid>
@@ -247,14 +247,84 @@ export default function RiddleCard(props: {
             </Group>
           </Group>
 
-      
+          {props.admin && (
+            <Group p="sm" justify="right">
+              <Text>Admin Context: </Text>
+              {props.riddle.implemented && (
+                <Tooltip label={`Status`}>
+                  <Badge color="green">Implemented</Badge>
+                </Tooltip>
+              )}
+              {!props.riddle.implemented && (
+                <Tooltip label={`Status`}>
+                  <Badge color="red">Not Implemented</Badge>
+                </Tooltip>
+              )}
+              {!props.riddle.validated && (
+                <Tooltip label={`Status`}>
+                  <Badge color="orange">Not validated</Badge>
+                </Tooltip>
+              )}
+              {props.riddle.validated && (
+                <Tooltip label={`Status`}>
+                  <Badge color="green">Validated</Badge>
+                </Tooltip>
+              )}
+              {props.riddle.author && authInitials && (
+                <Tooltip label={`Author: ${props.riddle.author}`}>
+                  <Avatar color="green">{authInitials} </Avatar>
+                </Tooltip>
+              )}
+
+              {!props.preview && (
+                <RiddleModal buttonText={"Edit"} riddle={props.riddle} />
+              )}
+            </Group>
+          )}
         </Stack>
       </Card.Section>
       <Card.Section withBorder inheritPadding>
         <Stack gap="xl" py={"1rem"} align="center">
           <Text size="md">{props.riddle.riddle}</Text>
 
+          {props.admin && (
+            <Grid p="md">
+              {props.riddle.sourceLocation && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Location:</Title>
+                    <Text>{props.riddle.sourceLocation}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
 
+              {props.admin && props.riddle.sourceDescription && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Description:</Title>
+                    <Text>{props.riddle.sourceDescription}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+
+              {props.admin && props.riddle.sourceURL && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source URL:</Title>
+                    <Text>{props.riddle.sourceURL}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+              {props.admin && props.riddle.sourcePlaceHolder && (
+                <Grid.Col span={6}>
+                  <Stack>
+                    <Title order={5}>Source Placeholder:</Title>
+                    <Text>{props.riddle.sourcePlaceHolder}</Text>
+                  </Stack>
+                </Grid.Col>
+              )}
+            </Grid>
+          )}
         </Stack>
 
         {props.riddle.showRiddleResource &&

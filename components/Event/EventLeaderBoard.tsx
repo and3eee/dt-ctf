@@ -1,6 +1,6 @@
 'use client';
 
-import { EventProps, TeamProps } from "@/types";
+import { EventProps, EventRiddleProps, TeamProps } from "@/types";
 
 import { Event, TeamEntry } from "@prisma/client";
 import router from "next/router";
@@ -15,18 +15,19 @@ import { TableHeader, TableBody } from "react-stately";
 
 export default function EventLeaderBoard(props: {
   event: EventProps;
+  riddles: EventRiddleProps[]
   teams: TeamProps[];
 }) {
   const teams = props.teams.sort(
     (teamA: TeamProps, teamB: TeamProps) =>
-      teamA.userEntries?.length! - teamB.userEntries?.length!
+      teamB.userEntries?.length! - teamA.userEntries?.length!
   );
   const rows = teams.map((team: TeamProps) => (
     <Table.Tr key={team.name}>
       <Table.Td>{teams.indexOf(team) + 1}</Table.Td>
       <Table.Td>{team.name}</Table.Td>
       <Table.Td>
-        {team.userEntries!.length} / {props.event.riddles.length}
+        {team.userEntries!.length} / {props.riddles.length}
       </Table.Td>
     </Table.Tr>
   ));

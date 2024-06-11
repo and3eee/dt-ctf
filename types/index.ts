@@ -8,7 +8,6 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export interface EventProps extends Event {
   teams: TeamProps[];
-  riddles: RiddleProps[]
   participants: User[];
 }
 
@@ -26,3 +25,16 @@ export interface UserEntryProps extends UserEntry {
   answeredBy: User;
 }
 
+
+
+export interface EventRiddleProps{
+  id: number;
+  riddle: string;
+  difficulty: string;
+  bucket: string;
+  author: string;
+  topic: string;
+  eventId: string;
+  RiddleResource?: RiddleResource[];
+  showRiddleResource: boolean;
+}
