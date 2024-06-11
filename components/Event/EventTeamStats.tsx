@@ -1,12 +1,13 @@
 'use client';
 
-import { EventProps, TeamProps } from "@/types";
+import { EventProps, EventRiddleProps, TeamProps } from "@/types";
 import { RingProgress, Center, Text } from "@mantine/core";
 import { User, UserEntry } from "@prisma/client";
 
 export default function EventTeamStats(props: {
   event: EventProps;
   team: TeamProps;
+  riddles: EventRiddleProps[];
   user?: User;
 }) {
   const colors = [
@@ -24,10 +25,10 @@ export default function EventTeamStats(props: {
 
   var scoreFields = [
     {
-      value: props.event.riddles.length - (props.team.userEntries?.length ?? 0),
+      value: props.riddles.length - (props.team.userEntries?.length ?? 0),
       color: "gray",
       tooltip:
-        props.event.riddles.length -
+        props.riddles.length -
         (props.team.userEntries?.length ?? 0) +
         " Unsolved",
     },
@@ -42,7 +43,7 @@ export default function EventTeamStats(props: {
       tooltip: member.name ?? "Mystery Contestant",
     });
   });
-  const ratio = 100 / props.event.riddles.length;
+  const ratio = 100 / props.riddles.length;
   scoreFields = scoreFields.map(
     (entry: { value: number; color: string; tooltip: string }) => {
       return {
@@ -59,7 +60,7 @@ export default function EventTeamStats(props: {
       maw={180}
       thickness={16}
       roundCaps
-      label={<Center><Text c="bold" size="lg">{(props.team.userEntries?.length ?? 0) + "/" +  props.event.riddles.length + " solved"}</Text></Center>}
+      label={<Center><Text c="bold" size="lg">{(props.team.userEntries?.length ?? 0) + "/" +  props.riddles.length + " solved"}</Text></Center>}
       sections={scoreFields}
     />
   );

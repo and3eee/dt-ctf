@@ -25,7 +25,7 @@ export default function EventDrawer(props: {
           <EventInfo event={props.event} panelMode user={props.user!} />
 
           <Stack align="center" justify="space-between">
-            <EventTeamStats team={props.team} event={props.event} />
+            <EventTeamStats riddles={props.riddles} team={props.team} event={props.event} />
             {props.event.coreEventLink && (
               <Button size="xl" radius="xl" component="a" href={props.event.coreEventLink}>
                 Access Event Tenant
