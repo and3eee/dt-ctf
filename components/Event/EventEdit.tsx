@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Event } from "@prisma/client";
 import { CreateEvent, DeleteEvent, EditEvent } from "./EventControl";
 import { useRouter } from "next/navigation";
@@ -28,8 +28,6 @@ export default function EventEdit(props: {
   const form = useForm({ mode: "uncontrolled", initialValues: props.event });
 
   const updateEvent = async (e: Event) => {
-    
-
     if (props.createMode) await CreateEvent(e);
     else await EditEvent(e);
 
@@ -80,6 +78,14 @@ export default function EventEdit(props: {
           {...form.getInputProps("name")}
         />
 
+        <TextInput
+          label="Core Environment"
+          name="coreEventLink"
+          required
+          key={form.key("coreEventLink")}
+          {...form.getInputProps("coreEventLink")}
+        />
+
         <NumberInput
           label="Team Size"
           name="teamSize"
@@ -124,87 +130,91 @@ export default function EventEdit(props: {
           {...form.getInputProps("description")}
         />
 
+        <Group mt="xs">
+          <Checkbox
+            label="Show Teams"
+            name="showTeams"
+            defaultChecked={props.event.showTeams ?? false}
+            key={form.key("showTeams")}
+            {...form.getInputProps("showTeams")}
+          >
+            Show Teams
+          </Checkbox>
 
-          <Group mt="xs">
-            <Checkbox
-              label="Show Teams"
-              name="showTeams"  defaultChecked={props.event.showTeams?? false}
-              key={form.key("showTeams")}
-              {...form.getInputProps("showTeams")}
-            >
-              Show Teams
-            </Checkbox>
+          <Checkbox
+            label="Show Participants"
+            name="showParticipants"
+            defaultChecked={props.event.showParticipants ?? false}
+            key={form.key("showParticipants")}
+            {...form.getInputProps("showParticipants")}
+          >
+            Show Participants
+          </Checkbox>
+          <Checkbox
+            name="useTeams"
+            label="Use Teams"
+            key={form.key("useTeams")}
+            defaultChecked={props.event.useTeams ?? false}
+            {...form.getInputProps("useTeams")}
+          />
+          <Checkbox
+            name="useAssignedTeams"
+            label="Use Assigned Teams"
+            defaultChecked={props.event.useAssignedTeams ?? false}
+            key={form.key("useAssignedTeams")}
+            {...form.getInputProps("useAssignedTeams")}
+          />
+        </Group>
 
-            <Checkbox
-              label="Show Participants"
-              name="showParticipants"
-              defaultChecked={props.event.showParticipants ?? false}
-              key={form.key("showParticipants")}
-              {...form.getInputProps("showParticipants")}
-            >
-              Show Participants
-            </Checkbox>
-            <Checkbox
-              name="useTeams"
-              label="Use Teams"
-              key={form.key("useTeams")}  defaultChecked={props.event.useTeams??false}
-              {...form.getInputProps("useTeams")}
-            />
-            <Checkbox
-              name="useAssignedTeams"
-              label="Use Assigned Teams"  defaultChecked={props.event.useAssignedTeams ?? false}
-              key={form.key("useAssignedTeams")}
-              {...form.getInputProps("useAssignedTeams")}
-            />
-          </Group>
+        <Group mt="xs">
+          <Checkbox
+            label="Require URLs"
+            name="urls"
+            defaultChecked={props.event.requireURL ?? false}
+            key={form.key("requireURL")}
+            {...form.getInputProps("requireURL")}
+          >
+            Require URLs
+          </Checkbox>
+          <Checkbox
+            label="Require Screenshot"
+            name="screenshot"
+            defaultChecked={props.event.requireScreenshot ?? false}
+            key={form.key("requireScreenshot")}
+            {...form.getInputProps("requireScreenshot")}
+          >
+            Require Screenshot
+          </Checkbox>
 
-          <Group mt="xs">
-            <Checkbox
-              label="Require URLs"
-              name="urls"  defaultChecked={props.event.requireURL ?? false}
-              key={form.key("requireURL")}
-              {...form.getInputProps("requireURL")}
-            >
-              Require URLs
-            </Checkbox>
-            <Checkbox
-              label="Require Screenshot"
-              name="screenshot"  defaultChecked={props.event.requireScreenshot ?? false}
-              key={form.key("requireScreenshot")}
-              {...form.getInputProps("requireScreenshot")}
-            >
-              Require Screenshot
-            </Checkbox>
+          <Checkbox
+            name="public"
+            label="Public"
+            defaultChecked={props.event.public ?? false}
+            key={form.key("public")}
+            {...form.getInputProps("public")}
+          >
+            Public
+          </Checkbox>
 
-            <Checkbox
-              name="public"
-              label="Public"  defaultChecked={props.event.public ?? false}
-              key={form.key("public")}
-              {...form.getInputProps("public")}
-            >
-              Public
-            </Checkbox>
-
-            <Checkbox
-              name="active"
-              label="Active"
-              defaultChecked={props.event.active ?? false}
-              key={form.key("active")}
-              {...form.getInputProps("active")}
-            >
-              Active
-            </Checkbox>
-            <Checkbox
-              name="generatedTeams"
-              label="Teams Generated"
-              defaultChecked={props.event.generatedTeams}
-              key={form.key("generatedTeams")}
-              {...form.getInputProps("generatedTeams")}
-            >
-              Teams Generated
-            </Checkbox>
-          </Group>
-  
+          <Checkbox
+            name="active"
+            label="Active"
+            defaultChecked={props.event.active ?? false}
+            key={form.key("active")}
+            {...form.getInputProps("active")}
+          >
+            Active
+          </Checkbox>
+          <Checkbox
+            name="generatedTeams"
+            label="Teams Generated"
+            defaultChecked={props.event.generatedTeams}
+            key={form.key("generatedTeams")}
+            {...form.getInputProps("generatedTeams")}
+          >
+            Teams Generated
+          </Checkbox>
+        </Group>
 
         <Divider />
 

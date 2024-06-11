@@ -46,6 +46,7 @@ export default async function EventAdmin({
           </Group>
           <TeamGeneratorPanel event={event} />
           <EventRiddleList
+         
             user={user}
             event={event}
             riddles={riddles}

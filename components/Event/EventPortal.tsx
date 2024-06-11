@@ -29,6 +29,10 @@ export default function EventPortal(props: {
   user: User;
 }) {
   
+
+
+  
+
   const team = props.event.teams.filter((team: TeamProps) =>
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
@@ -77,7 +81,7 @@ export default function EventPortal(props: {
                 <Select
                   label="Team Context"
                   placeholder="Select a team"
-                  defaultValue={team.name}
+                  defaultValue={teamContext.name ?? ""}
                   onChange={(value) => onTeamContextChange(value)}
                   data={props.event.teams.map((team: TeamProps) => team.name)}
                 />

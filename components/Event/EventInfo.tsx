@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { EventProps, TeamProps } from "@/types";
 import { useEffect, useState } from "react";
@@ -24,22 +24,27 @@ import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
 import { useSession } from "next-auth/react";
 
-
 export default function EventInfo(props: {
   event: EventProps;
   riddles?: Riddle[];
   admin?: boolean;
-user: User;
-panelMode?: boolean;
+  user: User;
+  panelMode?: boolean;
 }) {
-
-
   const event = props.event;
   const teams = props.event.teams;
 
   const now = new Date();
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
+
+
+
+
+  const baseDif = props.event.end.getTime() - props.event.start.getTime();
+  const endDif = props.event.end.getTime() - now.getTime();
+  const phase1 = endDif > baseDif/3;
+  const phase2 = endDif > baseDif *2 /3;
 
 
   const TeamsGroup = () => {
@@ -113,16 +118,14 @@ panelMode?: boolean;
 
   const signUpButton = () => {
     if (props.user && !props.panelMode) {
-      
       if (event.useAssignedTeams && !event.generatedTeams)
-        return <TeamUserRegisterPage event={event} user={props.user} />;
+        return <TeamUserRegisterPage  event={event} user={props.user} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
-        return <TeamEventSignUp user={props.user} event={event} />;
+        return <TeamEventSignUp admin={props.admin ?? false} user={props.user} event={event} />;
     } else return "No Sign Up";
   };
 
-
-  const admin = props.user?.role != "USER"
+  const admin = props.user?.role != "USER";
 
   if (event.public || props.admin)
     return (
@@ -133,25 +136,31 @@ panelMode?: boolean;
           <Group>
             <Divider orientation="vertical" />
             {props.admin && !event.public && <Badge>Private</Badge>}
-            {!event.active && now < props.event.start && (
+
+            {(event.active || props.admin)&& now < props.event.start && (
               <Tooltip label="Event starts at">
                 <Badge color="green">{start}</Badge>
               </Tooltip>
             )}
 
-            {(event.active || props.admin)&& now < props.event.end &&  (
+            {(event.active || props.admin) && now < props.event.end && (
               <Tooltip label="Event ends at">
                 <Badge color="indigo">{end}</Badge>
               </Tooltip>
             )}
-                        {(event.active || props.admin)&& now < props.event.end &&  (
+            {(event.active || props.admin) && now > props.event.end && (
               <Tooltip label="Event Closed">
                 <Badge color="violet">Event Complete</Badge>
               </Tooltip>
             )}
-            {event.active && (
+            {event.active && now > props.event.start && now < props.event.end  && (
               <Tooltip label="Registration Closed">
                 <Badge variant="gradient">Event is Live!</Badge>
+              </Tooltip>
+            )}
+                   {event.active && now > props.event.end  && (
+              <Tooltip label="Event Closed">
+                <Badge >Event has ended.</Badge>
               </Tooltip>
             )}
           </Group>
@@ -187,14 +196,16 @@ panelMode?: boolean;
 
         <Divider />
 
-       {!props.panelMode && <Group>
-          {((now < event.start && !event.active) || props.admin) &&
-            signUpButton()}
+        {!props.panelMode && (
+          <Group>
+            {((now < event.start && !event.active) || props.admin || phase1 || phase2) &&
+              signUpButton()}
 
-          {props.admin && (
-            <EventModal buttonText={"Edit Event"} event={event} />
-          )}
-        </Group>}
+            {props.admin && (
+              <EventModal buttonText={"Edit Event"} event={event} />
+            )}
+          </Group>
+        )}
       </Stack>
     );
 }

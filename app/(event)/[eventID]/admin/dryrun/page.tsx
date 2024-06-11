@@ -47,16 +47,7 @@ export default async function EventDryRunView({
             user={user}
             event={event}
             riddles={event.riddles}
-            team={{
-              id: "Test",
-              name: "Placeholder",
-              event: event,
-              eventId: event.id,
-              userEntries: [],
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              members: [],
-            }}
+           
           />
     </Stack>
       );

@@ -38,6 +38,7 @@ export async function CreateEvent(formData: Event) {
       public: formData.public, //
       showTeams: formData.showTeams, //
       showParticipants: formData.showParticipants, //
+      coreEventLink: formData.coreEventLink
     },
   });
 
@@ -66,6 +67,7 @@ export async function EditEvent(formData: Event) {
         generatedTeams: formData.generatedTeams,
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
+        coreEventLink: formData.coreEventLink
       },
     });
 

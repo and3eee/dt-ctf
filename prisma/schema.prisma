@@ -58,7 +58,7 @@ model User {
 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  geo         String? @default("Unassigned")
+  geo         String?     @default("Unassigned")
   role        Role        @default(USER)
   TeamEntry   TeamEntry?  @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
@@ -134,6 +134,7 @@ model Event {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   generatedTeams    Boolean     @default(false)
+  coreEventLink     String?
 }
 
 model TeamEntry {

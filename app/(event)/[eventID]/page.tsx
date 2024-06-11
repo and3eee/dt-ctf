@@ -66,7 +66,7 @@ export default async function EventPage({
             return (
               <AuthCheck>
                 <Container maw="60%">
-                  <EventInfo admin={admin} event={event} user={user} />
+                  <EventInfo admin={admin} event={event} riddles={event.riddles} user={user} />
                 </Container>
               </AuthCheck>
             );

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { EventProps, TeamProps } from "@/types";
 
@@ -16,6 +16,13 @@ export default function TeamList(props: {
 
   user: User;
 }) {
+  //Additional phases to allow for post start signups
+  const now = new Date();
+  const baseDif = props.event.end.getTime() - props.event.start.getTime();
+  const endDif = props.event.end.getTime() - now.getTime();
+  const phase1 = endDif > baseDif / 5;
+  const phase2 = endDif > (baseDif *2) / 5;
+
   const [teams, setTeams] = useState<TeamProps[]>(props.event.teams ?? []);
 
   if (!props.event.teams) return <Text> No teams made yet</Text>;
@@ -58,8 +65,13 @@ export default function TeamList(props: {
         {(isMember || props.admin) && (
           <TeamModal team={team} user={props.user} />
         )}
+
         {team.members &&
           team.members.length < props.event.teamSize &&
+          ((phase1) ||
+            (team.createdAt.getTime() > props.event.start.getTime() &&
+              team.members!.length == 1 &&
+              phase2)) &&
           !isMember && (
             <JoinTeamButton
               onClick={refreshTeams}
@@ -83,7 +95,7 @@ export default function TeamList(props: {
 
   return (
     <Table.ScrollContainer minWidth={"30rem"}>
-      <Table >
+      <Table>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Team Name</Table.Th>
