@@ -23,6 +23,7 @@ import EventCountDown from "./EventCountDown";
 import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
 import { useSession } from "next-auth/react";
+import EventLeaderBoard from "./EventLeaderBoard";
 
 export default function EventInfo(props: {
   event: EventProps;
@@ -183,7 +184,8 @@ export default function EventInfo(props: {
                 ))}
               </Stack>
             )}
-            <EventCountDown useEnd={props.panelMode} event={event} />
+            {now < event.end && <EventCountDown useEnd={props.panelMode || now > event.start } event={event} />}
+              {now >event.end && <EventLeaderBoard event={event} teams={event.teams} />}
           </Group>
 
           {event.showTeams && event.teams && event.teams.length > 0 && (
