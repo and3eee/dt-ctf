@@ -37,7 +37,7 @@ export default function EventPortal(props: {
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
 
-  const [teamContext, setTeamContext] = useState(team ?? props.event.teams[0]);
+  const [teamContext, setTeamContext] = useState(team ??(props.admin? props.event.teams[0] : undefined));
 
   const [adminMode, toggle] = useState(props.admin);
 
@@ -62,6 +62,7 @@ export default function EventPortal(props: {
         );
     };
 
+    if(teamContext)
     return (
       <Stack>
         {props.admin && (

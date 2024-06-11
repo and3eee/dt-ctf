@@ -47,7 +47,7 @@ export default async function EventPage({
       const now = new Date();
       if (event) {
         if (event?.public || admin) {
-          if (event.active && event.start <= now && now <=event.end) {
+          if (event.active && event.start <= now && now <=event.end && event.teams.some((team:TeamProps) => team.members?.includes(user)) ){
             //Show Team list and so
             return (
               <AuthCheck>
@@ -61,7 +61,7 @@ export default async function EventPage({
             );
           }
 
-          if (event.start > now || now >=event.end ) {
+  
             //Count down and event Car
             return (
               <AuthCheck>
@@ -70,7 +70,7 @@ export default async function EventPage({
                 </Container>
               </AuthCheck>
             );
-          }
+          
         }
 
         return <div></div>;
