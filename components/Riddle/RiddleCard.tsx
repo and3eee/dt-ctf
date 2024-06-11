@@ -1,5 +1,10 @@
 "use client";
-import { EventProps, EventRiddleProps, RiddleProps, UserEntryProps } from "@/types";
+import {
+  EventProps,
+  EventRiddleProps,
+  RiddleProps,
+  UserEntryProps,
+} from "@/types";
 
 import RiddleModal from "./RiddleModal";
 import { useRouter } from "next/navigation";
@@ -57,9 +62,7 @@ export default function RiddleCard(props: {
   );
   const [solutionIsLoading, setIsLoading] = useState(false);
   const submitEntry = async () => {
-    if ( props.teamID && props.user) {
- 
-
+    if (props.teamID && props.user) {
       if (!props.admin) {
         const reply = await AddTeamUserEntry(
           props.riddle.id,
@@ -67,19 +70,24 @@ export default function RiddleCard(props: {
           props.user,
           value
         );
-        if (reply) setSolvedBy({
-          id: "temp",
-          riddleId: props.riddle.id,
-          answeredBy: props.user,
-          userId: props.user.id,
-          teamEntryId: props.teamID,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          answeredAt: new Date(),
-        });
-     
-
-
+        if (reply)
+          setSolvedBy({
+            id: "temp",
+            riddleId: props.riddle.id,
+            answeredBy: props.user,
+            userId: props.user.id,
+            teamEntryId: props.teamID,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            answeredAt: new Date(),
+          });
+        else
+          notifications.show({
+            icon: <RiCloseLargeFill />,
+            color: "red",
+            title: "Wrong",
+            message: "That's not the right flag, try again! ",
+          });
       } else {
         setSolvedBy({
           id: "temp",
@@ -99,7 +107,6 @@ export default function RiddleCard(props: {
         title: "Wrong",
         message: "That's not the right flag, try again! ",
       });
-   
     }
   };
 
@@ -214,15 +221,18 @@ export default function RiddleCard(props: {
       <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
-            <Group gap={8}> {props.answeredBy && (
-              <ThemeIcon variant="gradient" radius={"xl"} size="xl">
-                <RiCheckFill />
-              </ThemeIcon>
-            )}
-            {props.number != undefined && (
-              <Title order={3}>Riddle: {props.number + 1}</Title>
-            )}</Group>
-           
+            <Group gap={8}>
+              {" "}
+              {props.answeredBy && (
+                <ThemeIcon variant="gradient" radius={"xl"} size="xl">
+                  <RiCheckFill />
+                </ThemeIcon>
+              )}
+              {props.number != undefined && (
+                <Title order={3}>Riddle: {props.number + 1}</Title>
+              )}
+            </Group>
+
             <Group p="sm" justify="right">
               {solvedBy && solvedBy && (
                 <Tooltip label={`Solved by ${solvedBy.answeredBy.name}`}>
@@ -246,15 +256,11 @@ export default function RiddleCard(props: {
               )}
             </Group>
           </Group>
-
-      
         </Stack>
       </Card.Section>
       <Card.Section withBorder inheritPadding>
         <Stack gap="xl" py={"1rem"} align="center">
           <Text size="md">{props.riddle.riddle}</Text>
-
-
         </Stack>
 
         {props.riddle.showRiddleResource &&
@@ -269,9 +275,7 @@ export default function RiddleCard(props: {
               c="Answer"
               value={value}
               onChange={(event) => setValue(event.currentTarget.value)}
-              placeholder={
-               "Riddle Answer Here...."
-              }
+              placeholder={"Riddle Answer Here...."}
             ></TextInput>
 
             <Button color="green" onClick={submitEntry}>
@@ -280,7 +284,6 @@ export default function RiddleCard(props: {
           </Group>
         )}
         {solutionIsLoading && <Loader variant="bars" />}
-      
       </Card.Section>
     </Card>
   );
