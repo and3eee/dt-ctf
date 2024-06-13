@@ -17,12 +17,15 @@ export default function EventLeaderBoard(props: {
   event: EventProps;
   riddles: EventRiddleProps[]
   teams: TeamProps[];
+  truncate?:boolean
 }) {
-  const teams = props.teams.sort(
+  var teams = props.teams.sort(
     (teamA: TeamProps, teamB: TeamProps) =>
       teamB.userEntries?.length! - teamA.userEntries?.length!
   );
 
+
+  if(props.truncate)teams = teams.slice(0,5)
 
 
   const teamMembers = (team: TeamProps) => {
@@ -47,7 +50,7 @@ export default function EventLeaderBoard(props: {
       <Table.Td>{team.name}</Table.Td>
       <Table.Td>{teamMembers(team)}</Table.Td>
       <Table.Td>
-        {team.userEntries!.length} / {props.riddles.length}
+        {team.userEntries!.length} {props.riddles.length > 0 ? "/ " +  props.riddles.length : ""}
       </Table.Td>
     </Table.Tr>
   ));

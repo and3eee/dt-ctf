@@ -24,6 +24,7 @@ import TeamUserRegisterPage from "./TeamUserRegisterPage";
 import TeamEventSignUp from "./TeamEventSignUp";
 import { useSession } from "next-auth/react";
 import EventLeaderBoard from "./EventLeaderBoard";
+import EventSummary from "./EventSummary";
 
 export default function EventInfo(props: {
   event: EventProps;
@@ -159,11 +160,7 @@ export default function EventInfo(props: {
                 <Badge variant="gradient">Event is Live!</Badge>
               </Tooltip>
             )}
-                   {event.active && now > props.event.end  && (
-              <Tooltip label="Event Closed">
-                <Badge >Event has ended.</Badge>
-              </Tooltip>
-            )}
+
           </Group>
         </Group>
 
@@ -185,8 +182,10 @@ export default function EventInfo(props: {
               </Stack>
             )}
             {now < event.end && <EventCountDown useEnd={props.panelMode || now > event.start } event={event} />}
-              {now >event.end && <EventLeaderBoard riddles={props.riddles??[]} event={event} teams={event.teams} />}
+            
           </Group>
+          {now >event.end && <EventLeaderBoard truncate riddles={props.riddles??[]} event={event} teams={event.teams} />}
+          {now >event.end && <EventSummary  event={event} />}
 
           {event.showTeams && event.teams && event.teams.length > 0 && (
             <TeamsGroup />

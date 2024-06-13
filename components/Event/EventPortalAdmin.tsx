@@ -3,6 +3,7 @@ import { EventProps, EventRiddleProps, RiddleProps, TeamProps, UserEntryProps } 
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
 import {
+  Avatar,
   Button,
   Card,
   Grid,
@@ -12,6 +13,7 @@ import {
   Stack,
   Switch,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
@@ -30,7 +32,21 @@ export default function EventPortal(props: {
 }) {
   
 
-
+  const teamMembers = (team: TeamProps) => {
+    return (
+      <Tooltip.Group openDelay={300} closeDelay={100}>
+        <Avatar.Group>
+          {team.members?.map((user: User) => (
+            <Tooltip key={user.name} label={user.name!} withArrow>
+              <Avatar src={user.image}>
+                {user.name!.split(" ").map((word: string) => word.charAt(0))}
+              </Avatar>
+            </Tooltip>
+          ))}
+        </Avatar.Group>{" "}
+      </Tooltip.Group>
+    );
+  };
   
 
   const team = props.event.teams.filter((team: TeamProps) =>
