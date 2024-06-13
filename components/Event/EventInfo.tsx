@@ -199,7 +199,7 @@ export default function EventInfo(props: {
 
         {!props.panelMode && (
           <Group>
-            {((now < event.start && !event.active) || props.admin || phase1 || phase2) &&
+            {((now < event.start && !event.active) || props.admin || phase1 || phase2) && now < event.end &&
               signUpButton()}
 
             {props.admin && (
