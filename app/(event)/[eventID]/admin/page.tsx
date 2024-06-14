@@ -6,6 +6,7 @@ import TeamGeneratorPanel from "@/components/Event/TeamGeneratorPanel";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
 import { Group, Stack, Title } from "@mantine/core";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,9 @@ export default async function EventAdmin({
     const user = await prisma.user.findFirstOrThrow({
       where: { id: session?.user.id },
     });
-    
+    const admin = user.role != "USER" &&user.role != "FLAGMASTER"  ;
+
+    if (!admin) return <>Why are you here? {notFound()}</>;
     const event = await prisma.event.findFirst({
       where: { id: { startsWith: params.eventID } },
       include: {
