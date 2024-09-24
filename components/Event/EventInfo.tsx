@@ -17,6 +17,7 @@ import {
   Stack,
   Text,
   Loader,
+  Center,
 } from "@mantine/core";
 import { notFound, useRouter } from "next/navigation";
 import EventCountDown from "./EventCountDown";
@@ -25,6 +26,7 @@ import TeamEventSignUp from "./TeamEventSignUp";
 import { useSession } from "next-auth/react";
 import EventLeaderBoard from "./EventLeaderBoard";
 import EventSummary from "./EventSummary";
+import SingleEventSignUp from "./SingleEventSignUp";
 
 export default function EventInfo(props: {
   event: EventProps;
@@ -40,14 +42,10 @@ export default function EventInfo(props: {
   const start = event.start.toLocaleString();
   const end = event.end.toLocaleString();
 
-
-
-
   const baseDif = props.event.end.getTime() - props.event.start.getTime();
   const endDif = props.event.end.getTime() - now.getTime();
-  const phase1 = endDif > baseDif/3;
-  const phase2 = endDif > baseDif *2 /3;
-
+  const phase1 = endDif > baseDif / 3;
+  const phase2 = endDif > (baseDif * 2) / 3;
 
   const TeamsGroup = () => {
     if (teams) {
@@ -120,10 +118,18 @@ export default function EventInfo(props: {
 
   const signUpButton = () => {
     if (props.user && !props.panelMode) {
+      if (!props.event.useTeams)
+        return <SingleEventSignUp user={props.user} event={event} />;
       if (event.useAssignedTeams && !event.generatedTeams)
-        return <TeamUserRegisterPage  event={event} user={props.user} />;
+        return <TeamUserRegisterPage event={event} user={props.user} />;
       if (event.useTeams || (event.useAssignedTeams && event.generatedTeams))
-        return <TeamEventSignUp admin={props.admin ?? false} user={props.user} event={event} />;
+        return (
+          <TeamEventSignUp
+            admin={props.admin ?? false}
+            user={props.user}
+            event={event}
+          />
+        );
     } else return "No Sign Up";
   };
 
@@ -139,7 +145,7 @@ export default function EventInfo(props: {
             <Divider orientation="vertical" />
             {props.admin && !event.public && <Badge>Private</Badge>}
 
-            {(event.active || props.admin)&& now < props.event.start && (
+            {(event.active || props.admin) && now < props.event.start && (
               <Tooltip label="Event starts at">
                 <Badge color="green">{start}</Badge>
               </Tooltip>
@@ -155,12 +161,13 @@ export default function EventInfo(props: {
                 <Badge color="violet">Event Complete</Badge>
               </Tooltip>
             )}
-            {event.active && now > props.event.start && now < props.event.end  && (
-              <Tooltip label="Registration Closed">
-                <Badge variant="gradient">Event is Live!</Badge>
-              </Tooltip>
-            )}
-
+            {event.active &&
+              now > props.event.start &&
+              now < props.event.end && (
+                <Tooltip label="Registration Closed">
+                  <Badge variant="gradient">Event is Live!</Badge>
+                </Tooltip>
+              )}
           </Group>
         </Group>
 
@@ -181,11 +188,25 @@ export default function EventInfo(props: {
                 ))}
               </Stack>
             )}
-            {now < event.end && <EventCountDown useEnd={props.panelMode || now > event.start } event={event} />}
-            
+
+            {now < event.end && (
+              <Center>
+                <EventCountDown
+                  useEnd={props.panelMode || now > event.start}
+                  event={event}
+                />
+              </Center>
+            )}
           </Group>
-          {now >event.end && <EventLeaderBoard truncate riddles={props.riddles??[]} event={event} teams={event.teams} />}
-          {now >event.end && <EventSummary  event={event} />}
+          {now > event.end && (
+            <EventLeaderBoard
+              truncate
+              riddles={props.riddles ?? []}
+              event={event}
+              teams={event.teams}
+            />
+          )}
+          {now > event.end && <EventSummary event={event} />}
 
           {event.showTeams && event.teams && event.teams.length > 0 && (
             <TeamsGroup />
@@ -199,7 +220,11 @@ export default function EventInfo(props: {
 
         {!props.panelMode && (
           <Group>
-            {((now < event.start && !event.active) || props.admin || phase1 || phase2) && now < event.end &&
+            {((now < event.start && !event.active) ||
+              props.admin ||
+              phase1 ||
+              phase2) &&
+              now < event.end &&
               signUpButton()}
 
             {props.admin && (

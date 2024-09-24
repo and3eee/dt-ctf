@@ -1,10 +1,12 @@
 import { auth } from "@/app/api/auth/[...nextauth]/route";
+import AdminDryRunAffix from "@/components/Event/AdminDryRunAffix";
 import EventPortal from "@/components/Event/EventPortal";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
 import { RiddleProps } from "@/types";
-import { Stack } from "@mantine/core";
+import { Affix, Button, rem, Stack, Title, Transition } from "@mantine/core";
 import { notFound } from "next/navigation";
+import { RiArrowUpCircleFill } from "react-icons/ri";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
@@ -36,17 +38,14 @@ export default async function EventDryRunView({
       },
     });
 
-
-
-
-
-
-
     if (event && admin && user) {
-      const riddles = await prisma.riddle.findMany({where:{eventId:event.id}, include:{RiddleResource:true}})
+      const riddles = await prisma.riddle.findMany({
+        where: { eventId: event.id },
+        include: { RiddleResource: true },
+      });
       return (
         <Stack>
-          <p className="text-3xl">{event.name} Dry Run View </p>
+   <Title>Admin Mode</Title>
           <EventPortal
             admin
             user={user}
@@ -60,13 +59,12 @@ export default async function EventDryRunView({
                 author: riddle.author ?? "N/A",
                 topic: riddle.topic ?? "",
                 eventId: riddle.eventId!,
-                RiddleResource:riddle.RiddleResource,
-                showRiddleResource:riddle.showRiddleResource
+                RiddleResource: riddle.RiddleResource,
+                showRiddleResource: riddle.showRiddleResource,
               };
             })}
-           
           />
-    </Stack>
+        </Stack>
       );
     }
   }

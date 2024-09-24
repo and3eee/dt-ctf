@@ -25,6 +25,7 @@ interface EventCardProps {
   teams?: TeamEntry[];
   riddles?: Riddle[];
   admin?: boolean;
+  slim?:boolean
 }
 
 export default function EventCard(props: EventCardProps) {

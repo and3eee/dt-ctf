@@ -22,7 +22,7 @@ defaultGradient: {
   deg: 110,
 },
 primaryColor: "violet", primaryShade: 8,
-  defaultRadius:"md"
+  defaultRadius:"lg"
 });
 
 export const supersecrettheme = createTheme({

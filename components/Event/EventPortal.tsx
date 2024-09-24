@@ -1,5 +1,11 @@
 "use client";
-import { EventProps, EventRiddleProps, RiddleProps, TeamProps, UserEntryProps } from "@/types";
+import {
+  EventProps,
+  EventRiddleProps,
+  RiddleProps,
+  TeamProps,
+  UserEntryProps,
+} from "@/types";
 import { Riddle, User, UserEntry } from "@prisma/client";
 import RiddleCard from "../Riddle/RiddleCard";
 import {
@@ -17,10 +23,7 @@ import { useEffect, useState } from "react";
 import EventDrawer from "./EventDrawer";
 import { useSession } from "next-auth/react";
 import TeamCard from "../Team/TeamCard";
-
-
-
-
+import AdminDryRunAffix from "./AdminDryRunAffix";
 
 export default function EventPortal(props: {
   event: EventProps;
@@ -28,57 +31,75 @@ export default function EventPortal(props: {
   admin?: boolean;
   user: User;
 }) {
-  
-
-
-  
-
   const team = props.event.teams.filter((team: TeamProps) =>
     team.members!.some((member: User) => member.id == props.user!.id)
   )[0];
+  const user = props.event.participants[0];
 
-  const [teamContext, setTeamContext] = useState(team ??(props.admin? props.event.teams[0] : undefined));
+  const [teamContext, setTeamContext] = useState(
+    team ?? (props.admin ? props.event.teams[0] : undefined)
+  );
+
+  var teams = props.event.teams.map((team: TeamProps) => team.id);
+  teams.push("Empty Team");
+
+  const [userContext, setUserContext] = useState(
+    user ?? (props.admin ? props.event.participants[0] : undefined)
+  );
+
+  var users = props.event.participants.map((team: User) => team.name);
+  users.push("Empty User");
 
   const [adminMode, toggle] = useState(props.admin);
 
-  if (props.riddles && props.user && teamContext) {
-    const solvedCheck = (riddleID: number) => {
-      if (
-        teamContext.userEntries &&
-        teamContext.userEntries.some(
-          (entry: UserEntryProps) => entry.riddleId == riddleID
-        )
+  // if (props.riddles && props.user && teamContext) {
+  const solvedCheck = (riddleID: number) => {
+    if (
+      teamContext &&
+      teamContext.userEntries &&
+      teamContext.userEntries.some(
+        (entry: UserEntryProps) => entry.riddleId == riddleID
       )
-        return teamContext.userEntries.filter(
-          (entry: UserEntryProps) => entry.riddleId == riddleID
-        )[0];
-      return undefined;
-    };
+    )
+      return teamContext.userEntries.filter(
+        (entry: UserEntryProps) => entry.riddleId == riddleID
+      )[0];
+    return undefined;
+  };
 
-    const onTeamContextChange = (value: string | null) => {
-      if (value)
-        setTeamContext(
-          props.event.teams.filter((team: TeamProps) => team.id == value)[0]
-        );
-    };
+  const onTeamContextChange = (value: string | null) => {
+    if (value)
+      setTeamContext(
+        props.event.teams.filter((team: TeamProps) => team.id == value)[0]
+      );
+  };
 
-    if(teamContext)
-    return (
-      <Stack>
-        {props.admin && (
-          <Card title="Admin Context" maw="40rem">
-            <Card.Section withBorder inheritPadding>
-              <Title order={4}>Admin Context</Title>
-            </Card.Section>
-            <Group grow>
-              <Stack my={8} gap="md" align="center">
-                <Switch
-                  label="Admin Mode"
-                  checked={adminMode}
-                  onChange={() => {
-                    toggle(!adminMode);
-                  }}
-                />
+  const onUserContextChange = (value: string | null) => {
+    if (value)
+      setUserContext(
+        props.event.participants.filter((team: User) => team.id == value)[0]
+      );
+  };
+
+  // if (teamContext)
+  return (
+    <Stack>
+      {props.admin && ( <AdminDryRunAffix/>)}
+      {props.admin && (
+        <Card title="Admin Context" maw="40rem">
+          <Card.Section withBorder inheritPadding>
+            <Title order={4}>Admin Context</Title>
+          </Card.Section>
+          <Group grow>
+            <Stack my={8} gap="md" align="center">
+              <Switch
+                label="Admin Mode"
+                checked={adminMode}
+                onChange={() => {
+                  toggle(!adminMode);
+                }}
+              />
+              {props.event.useTeams && teamContext && (
                 <Select
                   label="Team Context"
                   placeholder="Select a team"
@@ -86,36 +107,52 @@ export default function EventPortal(props: {
                   onChange={(value) => onTeamContextChange(value)}
                   data={props.event.teams.map((team: TeamProps) => team.id)}
                 />
-              </Stack>
+              )}
+              {!props.event.useTeams && (
+                <Select
+                  label="User Context"
+                  placeholder="Select a user"
+                  defaultValue={user?.name ?? ""}
+                  onChange={(value) => onUserContextChange(value)}
+                  data={props.event.participants.map((team: User) => team.email)}
+                />
+              )}
+            </Stack>
+            {props.event.useTeams && (
               <TeamCard
                 admin
                 team={teamContext}
                 event={props.event}
                 user={props.user}
               />
-            </Group>
-          </Card>
-        )}
-        <EventDrawer riddles={props.riddles} event={props.event} team={teamContext} />
-        <Grid>
-          {props.riddles?.map((riddle: EventRiddleProps) => {
-            if((riddle.author != props.user.name) || props.admin)
+            )}
+          </Group>
+        </Card>
+      )}
+      <EventDrawer
+        riddles={props.riddles}
+        event={props.event}
+        team={teamContext}
+      />
+      <Grid>
+        {props.riddles?.map((riddle: EventRiddleProps) => {
+          if (riddle.author != props.user.name || props.admin)
             return (
               <Grid.Col key={riddle.id} span="content">
                 <RiddleCard
                   admin={adminMode}
                   answeredBy={solvedCheck(riddle.id)}
                   riddle={riddle}
-                  teamID={teamContext.id}
+                  teamID={props.event.useTeams ? teamContext.id : undefined}
                   user={props.user}
                   number={props.riddles?.indexOf(riddle)}
                   event={props.event}
                 />
               </Grid.Col>
             );
-          })}
-        </Grid>
-      </Stack>
-    );
-  }
+        })}
+      </Grid>
+    </Stack>
+  );
+  //  }
 }

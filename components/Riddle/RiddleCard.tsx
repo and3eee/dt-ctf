@@ -34,16 +34,15 @@ import {
 } from "@mantine/core";
 import { Riddle, RiddleResource, User } from "@prisma/client";
 import {
+  RiChatCheckFill,
   RiCheckFill,
+  RiCheckLine,
   RiCloseLargeFill,
   RiDeleteBack2Fill,
-  RiErrorWarningLine,
+  RiFlag2Fill,
 } from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
-import { theme } from "@/theme";
-import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import SpoilerText from "../SpoilerText";
 
 export default function RiddleCard(props: {
   answeredBy?: UserEntryProps;
@@ -217,7 +216,7 @@ export default function RiddleCard(props: {
   };
 
   return (
-    <Card w="40rem" padding={"lg"}>
+    <Card miw="20rem" maw="40rem" padding={"md"}>
       <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
@@ -228,8 +227,12 @@ export default function RiddleCard(props: {
                   <RiCheckFill />
                 </ThemeIcon>
               )}
-              {props.number != undefined && (
-                <Title order={3}>Riddle: {props.number + 1}</Title>
+              {props.answeredBy ? (
+                          <ActionIcon size="lg" radius="xl" color="green"> <RiCheckLine /></ActionIcon>
+              ) : (
+                <ActionIcon  size="lg" radius="xl" color="red">
+                  <RiFlag2Fill />
+                </ActionIcon>
               )}
             </Group>
 
@@ -268,7 +271,7 @@ export default function RiddleCard(props: {
           props.riddle.RiddleResource.length > 0 &&
           ResourceGrid()}
       </Card.Section>
-      <Card.Section withBorder m="lg" inheritPadding>
+      <Card.Section withBorder m="xs" inheritPadding>
         {!solvedBy && !solutionIsLoading && (
           <Group justify="center">
             <TextInput

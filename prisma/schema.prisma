@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -83,15 +83,15 @@ model Riddle {
   difficulty         String?
   bucket             String?
   topic              String?
+  tags               String[]
   author             String?
   implemented        Boolean          @default(false)
   validated          Boolean          @default(false)
   solution           String
-  sourceLocation     String?
+  sourceJson         Json?
   showRiddleResource Boolean          @default(false)
   sourceDescription  String?
   sourceURL          String?
-  sourcePlaceHolder  String?
   UserEntry          UserEntry[]
   Event              Event?           @relation(fields: [eventId], references: [id])
   eventId            String?
@@ -118,6 +118,7 @@ model Event {
   description       String
   start             DateTime
   end               DateTime
+  maxAttempts       Int         @default(3)
   prize             String?
   requireURL        Boolean?    @default(false)
   requireScreenshot Boolean?    @default(false)
@@ -128,6 +129,7 @@ model Event {
   showTeams         Boolean?    @default(false)
   useTeams          Boolean?    @default(false)
   teams             TeamEntry[]
+  entries           UserEntry[]
   riddles           Riddle[]
   teamSize          Int         @default(3)
   public            Boolean     @default(true)
@@ -144,6 +146,7 @@ model TeamEntry {
   event       Event       @relation(fields: [eventId], references: [id])
   eventId     String
   userEntries UserEntry[]
+  attempts    Int         @default(0)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -155,10 +158,13 @@ model UserEntry {
   answeredAt  DateTime
   userId      String
   riddleId    Int
+  attempts    Int        @default(0)
   teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])
   teamEntryId String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  Event       Event?     @relation(fields: [eventId], references: [id])
+  eventId     String?
 }
 
 enum Role {
