@@ -43,6 +43,7 @@ import {
 } from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
 import { notifications } from "@mantine/notifications";
+import { UserSubmit } from "../Event/EventControl";
 
 export default function RiddleCard(props: {
   answeredBy?: UserEntryProps;
@@ -60,18 +61,47 @@ export default function RiddleCard(props: {
     props.answeredBy
   );
   const [solutionIsLoading, setIsLoading] = useState(false);
+  const [attempts, setAttempts] = useState(props.answeredBy?.attempts ?? 0);
+
   const submitEntry = async () => {
-    if (props.teamID && props.user) {
-      if (!props.admin) {
-        const reply = await AddTeamUserEntry(
-          props.riddle.id,
-          props.teamID,
-          props.user,
-          value
-        );
-        if (reply)
+    setIsLoading(true);
+    //Check if using teams
+
+    if (props.event?.useTeams)
+      if (props.teamID && props.user) {
+        if (!props.admin) {
+          const reply = await AddTeamUserEntry(
+            props.riddle.id,
+            props.teamID,
+            props.user,
+            value,
+            attempts + 1
+          );
+          if (reply)
+            setSolvedBy({
+              id: "temp",
+              eventId: props.event!.id,
+              attempts: attempts + 1,
+              riddleId: props.riddle.id,
+              answeredBy: props.user,
+              userId: props.user.id,
+              teamEntryId: props.teamID,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              answeredAt: new Date(),
+            });
+          else
+            notifications.show({
+              icon: <RiCloseLargeFill />,
+              color: "red",
+              title: "Wrong",
+              message: "That's not the right flag, try again! ",
+            });
+        } else {
           setSolvedBy({
             id: "temp",
+            eventId: props.event!.id,
+            attempts: attempts + 1,
             riddleId: props.riddle.id,
             answeredBy: props.user,
             userId: props.user.id,
@@ -80,33 +110,40 @@ export default function RiddleCard(props: {
             updatedAt: new Date(),
             answeredAt: new Date(),
           });
-        else
-          notifications.show({
-            icon: <RiCloseLargeFill />,
-            color: "red",
-            title: "Wrong",
-            message: "That's not the right flag, try again! ",
-          });
+        }
       } else {
-        setSolvedBy({
-          id: "temp",
-          riddleId: props.riddle.id,
-          answeredBy: props.user,
-          userId: props.user.id,
-          teamEntryId: props.teamID,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          answeredAt: new Date(),
-        });
+        if (props.user) {
+          const reply = await UserSubmit(
+            props.event.id,
+            value,
+            props.riddle.id,
+            props.user,
+            attempts
+          );
+          setIsLoading(false);
+          if (reply) {
+            setSolvedBy({
+              id: "temp",
+              eventId: props.event!.id,
+              attempts: attempts + 1,
+              riddleId: props.riddle.id,
+              answeredBy: props.user,
+              userId: props.user.id,
+              teamEntryId: "",
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              answeredAt: new Date(),
+            });
+          } else {
+            notifications.show({
+              icon: <RiCloseLargeFill />,
+              color: "red",
+              title: "Wrong",
+              message: "That's not the right flag, try again! ",
+            });
+          }
+        }
       }
-    } else {
-      notifications.show({
-        icon: <RiCloseLargeFill />,
-        color: "red",
-        title: "Wrong",
-        message: "That's not the right flag, try again! ",
-      });
-    }
   };
 
   const onDelete = async () => {
@@ -228,9 +265,12 @@ export default function RiddleCard(props: {
                 </ThemeIcon>
               )}
               {props.answeredBy ? (
-                          <ActionIcon size="lg" radius="xl" color="green"> <RiCheckLine /></ActionIcon>
+                <ActionIcon size="lg" radius="xl" color="green">
+                  {" "}
+                  <RiCheckLine />
+                </ActionIcon>
               ) : (
-                <ActionIcon  size="lg" radius="xl" color="red">
+                <ActionIcon size="lg" radius="xl" color="red">
                   <RiFlag2Fill />
                 </ActionIcon>
               )}

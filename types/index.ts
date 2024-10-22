@@ -12,7 +12,7 @@ export interface EventProps extends Event {
 }
 
 export interface RiddleProps extends Riddle{
-  RiddleResource:RiddleResource[];
+  RiddleResource?:RiddleResource[];
 }
 
 export interface TeamProps extends TeamEntry {

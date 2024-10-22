@@ -153,10 +153,10 @@ model TeamEntry {
 
 model UserEntry {
   id          String     @id @unique @default(cuid())
-  answeredBy  User       @relation(fields: [userId], references: [id])
+  answeredBy  User?       @relation(fields: [userId], references: [id])
   riddle      Riddle     @relation(fields: [riddleId], references: [id])
-  answeredAt  DateTime
-  userId      String
+  answeredAt  DateTime?
+  userId      String?
   riddleId    Int
   attempts    Int        @default(0)
   teamEntry   TeamEntry? @relation(fields: [teamEntryId], references: [id])

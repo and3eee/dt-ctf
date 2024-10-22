@@ -38,7 +38,7 @@ export async function CreateEvent(formData: Event) {
       public: formData.public, //
       showTeams: formData.showTeams, //
       showParticipants: formData.showParticipants, //
-      coreEventLink: formData.coreEventLink
+      coreEventLink: formData.coreEventLink,
     },
   });
 
@@ -67,7 +67,7 @@ export async function EditEvent(formData: Event) {
         generatedTeams: formData.generatedTeams,
         showTeams: formData.showTeams, //
         showParticipants: formData.showParticipants, //
-        coreEventLink: formData.coreEventLink
+        coreEventLink: formData.coreEventLink,
       },
     });
 
@@ -214,71 +214,72 @@ async function GenerateTeamsFromGroup(
   ) {
     var memberHold: User[] = [];
     var teamScore = 0;
-    while (memberHold.length < (teamSize ? teamSize - 1: 2) &&  ( agent.length > 0 ||
-      dem.length > 0 ||
-      env.length > 0 ||
-      platform.length > 0)) {
-    
-        if (agent.length > 0 && memberHold.length < (teamSize ?? 3)) {
-          const temp = agent.pop()!;
+    while (
+      memberHold.length < (teamSize ? teamSize - 1 : 2) &&
+      (agent.length > 0 ||
+        dem.length > 0 ||
+        env.length > 0 ||
+        platform.length > 0)
+    ) {
+      if (agent.length > 0 && memberHold.length < (teamSize ?? 3)) {
+        const temp = agent.pop()!;
+        memberHold.push(temp);
+        teamScore += temp.skillLevel ?? 5;
+      }
+
+      if (env.length > 0 && memberHold.length < (teamSize ?? 3)) {
+        if (memberHold.length == 0) {
+          const temp = env.pop()!;
           memberHold.push(temp);
           teamScore += temp.skillLevel ?? 5;
+        } else {
+          const envIndex = await IndexOfClosetScore(
+            env,
+            scoreGoal - teamScore / 2
+          );
+          const temp = env.at(envIndex);
+          teamScore += temp!.skillLevel ?? 5;
+          memberHold.push(temp!);
+          env = env.filter((member: User) => member.id != temp?.id);
         }
+      }
 
-        if (env.length > 0 && memberHold.length < (teamSize ?? 3)) {
-          if (memberHold.length == 0) {
-            const temp = env.pop()!;
-            memberHold.push(temp);
-            teamScore += temp.skillLevel ?? 5;
-          } else {
-            const envIndex = await IndexOfClosetScore(
-              env,
-              scoreGoal - teamScore / 2
-            );
-            const temp = env.at(envIndex);
-            teamScore += temp!.skillLevel ?? 5;
-            memberHold.push(temp!);
-            env = env.filter((member: User) => member.id != temp?.id);
-          }
+      if (dem.length > 0 && memberHold.length < (teamSize ?? 3)) {
+        if (memberHold.length == 0) {
+          const temp = dem.pop()!;
+          memberHold.push(temp);
+          teamScore += temp.skillLevel ?? 5;
+        } else {
+          const demIndex = await IndexOfClosetScore(
+            dem,
+            scoreGoal - teamScore / 2
+          );
+          const temp = dem.at(demIndex);
+          teamScore += temp!.skillLevel ?? 5;
+          memberHold.push(temp!);
+
+          dem = dem.filter((member: User) => member.id != temp?.id);
         }
+      }
 
-        if (dem.length > 0 && memberHold.length < (teamSize ?? 3)) {
-          if (memberHold.length == 0) {
-            const temp = dem.pop()!;
-            memberHold.push(temp);
-            teamScore += temp.skillLevel ?? 5;
-          } else {
-            const demIndex = await IndexOfClosetScore(
-              dem,
-              scoreGoal - teamScore / 2
-            );
-            const temp = dem.at(demIndex);
-            teamScore += temp!.skillLevel ?? 5;
-            memberHold.push(temp!);
+      if (platform.length > 0 && memberHold.length < (teamSize ?? 3)) {
+        if (memberHold.length == 0) {
+          const temp = platform.pop()!;
+          memberHold.push(temp);
+          teamScore += temp.skillLevel ?? 5;
+        } else {
+          const plaftormIndex = await IndexOfClosetScore(
+            platform,
+            scoreGoal - teamScore / 2
+          );
 
-            dem = dem.filter((member: User) => member.id != temp?.id);
-          }
+          const temp = platform.at(plaftormIndex);
+          teamScore += temp!.skillLevel ?? 5;
+
+          memberHold.push(temp!);
+          platform = platform.filter((member: User) => member.id != temp?.id);
         }
-
-        if (platform.length > 0 && memberHold.length < (teamSize ?? 3)) {
-          if (memberHold.length == 0) {
-            const temp = platform.pop()!;
-            memberHold.push(temp);
-            teamScore += temp.skillLevel ?? 5;
-          } else {
-            const plaftormIndex = await IndexOfClosetScore(
-              platform,
-              scoreGoal - teamScore / 2
-            );
-
-            const temp = platform.at(plaftormIndex);
-            teamScore += temp!.skillLevel ?? 5;
-
-            memberHold.push(temp!);
-            platform = platform.filter((member: User) => member.id != temp?.id);
-          }
-        }
-      
+      }
     }
 
     out.push({
@@ -324,4 +325,36 @@ async function IndexOfClosetScore(members: User[], target: number) {
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
+}
+
+export async function UserSubmit(
+  eventId: string,
+  entry: String,
+  riddleId: number,
+  user: User,
+  attempts: number
+) {
+  const riddle = await prisma.riddle.findFirst({ where: { id: riddleId } });
+  const event = await prisma.event.findFirst({ where: { id: eventId } });
+
+  if (!event || !riddle) return false;
+  //dont trust the attempts so check for an existing entry
+  const entryDB = await prisma.userEntry.findFirst({
+    where: { eventId: eventId, userId: user.id, riddleId: riddleId },
+  });
+
+  if (entryDB && entryDB.attempts <= attempts) return false;
+  if (riddle && entry == riddle.solution && attempts < event.maxAttempts) {
+    const result = await prisma.userEntry.create({
+      data: {
+        riddleId: riddleId,
+        eventId: eventId,
+        userId: user.id,
+        attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
+        answeredAt: new Date(),
+      },
+    });
+
+    return true;
+  }
 }
