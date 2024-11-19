@@ -17,11 +17,12 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventPage({
-  params,
-}: {
-  params: { eventID: string };
-}) {
+export default async function EventPage(
+  props: {
+    params: Promise<{ eventID: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await auth();
 
   const event = await prisma.event.findFirst({

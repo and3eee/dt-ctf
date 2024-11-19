@@ -10,11 +10,12 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventAdmin({
-  params,
-}: {
-  params: { eventID: string };
-}) {
+export default async function EventAdmin(
+  props: {
+    params: Promise<{ eventID: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await auth();
   if (session?.user) {
     const user = await prisma.user.findFirstOrThrow({

@@ -6,11 +6,12 @@ import { RiddleProps } from "@/types";
 import { Center } from "@mantine/core";
 import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
-export default async function EventPage({
-  params,
-}: {
-  params: { eventID: string };
-}) {
+export default async function EventPage(
+  props: {
+    params: Promise<{ eventID: string }>;
+  }
+) {
+  const params = await props.params;
   const event = await prisma.event.findFirst({
     where: { id: { startsWith: params.eventID } },
     include: {

@@ -11,11 +11,12 @@ import { RiArrowUpCircleFill } from "react-icons/ri";
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-export default async function EventDryRunView({
-  params,
-}: {
-  params: { eventID: string };
-}) {
+export default async function EventDryRunView(
+  props: {
+    params: Promise<{ eventID: string }>;
+  }
+) {
+  const params = await props.params;
   const session = await auth();
   const user = await prisma.user.findFirst({
     where: { id: session?.user?.id },
