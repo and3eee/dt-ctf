@@ -13,10 +13,8 @@ export async function CreateRiddle(formData: any, resources?: string[]) {
     data: {
       riddle: formData.riddle?.toString() ?? "ERROR WHILE CREATING", //
       solution: formData.solution?.toString() ?? "ERROR WHILE CREATING", //
-      sourceLocation: formData.sourceLocation?.toString() ?? undefined, //
       sourceDescription: formData.sourceDescription?.toString() ?? undefined, //
       sourceURL: formData.sourceURL?.toString() ?? undefined,
-      sourcePlaceHolder: formData.sourcePlaceHolder?.toString() ?? undefined,
       difficulty:
         formData.difficulty !== "none"
           ? formData.difficulty?.toString()
@@ -86,10 +84,8 @@ export async function EditRiddle(formData: any) {
       data: {
         riddle: formData.riddle?.toString() ?? "ERROR WHILE CREATING", //
         solution: formData.solution?.toString() ?? "ERROR WHILE CREATING", //
-        sourceLocation: formData.sourceLocation?.toString() ?? undefined, //
         sourceDescription: formData.sourceDescription?.toString() ?? undefined, //
         sourceURL: formData.sourceURL?.toString() ?? undefined,
-        sourcePlaceHolder: formData.sourcePlaceHolder?.toString() ?? undefined,
         difficulty:
           formData.difficulty !== "none"
             ? formData.difficulty?.toString()

@@ -35,7 +35,8 @@ export async function AddTeamUserEntry(
   riddleID: number,
   teamID: string,
   user: User,
-  value: string
+  value: string,
+  attempts: number
 ) {
   const riddle = await prisma.riddle.findFirst({ where: { id: riddleID } });
 
@@ -50,7 +51,10 @@ export async function AddTeamUserEntry(
       include: { answeredBy: true },
     });
     return true;
-  }return false;
+  }else{
+    //incremement attempts
+
+    return false;}
 }
 
 export async function RemoveTeamUserEntry(riddleID: number, teamID: string) {

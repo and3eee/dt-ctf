@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 6;
@@ -88,7 +88,8 @@ export default function RiddleEdit(props: {
       title: "Please confirm your action",
       children: (
         <Text size="sm">
-          This action is permanent and cannot be reversed. Please ensure that you want to proceed before continuing.
+          This action is permanent and cannot be reversed. Please ensure that
+          you want to proceed before continuing.
         </Text>
       ),
       labels: { confirm: "Confirm", cancel: "Cancel" },
@@ -102,10 +103,14 @@ export default function RiddleEdit(props: {
   const previewModal = () =>
     modals.open({
       title: "Riddle Preview",
-      size:"auto",
+      size: "auto",
       children: (
         <Stack>
-          <RiddleCard answeredBy={undefined} number={props.riddle.id} riddle={props.riddle} />
+          <RiddleCard
+            answeredBy={undefined}
+            number={props.riddle.id}
+            riddle={props.riddle}
+          />
           <Button fullWidth onClick={() => modals.closeAll()} mt="md">
             Close Preview
           </Button>
@@ -154,7 +159,7 @@ export default function RiddleEdit(props: {
   const submissionHandler = async (values: typeof form.values) => {
     if (!form.isValid()) return;
     const riddle = values;
-    
+
     if (riddle.id < 0) {
       const reply = await CreateRiddle(riddle, riddle.RiddleResource);
       if (props.onClick) props.onClick();
@@ -166,8 +171,6 @@ export default function RiddleEdit(props: {
       if (props.onClick) props.onClick();
     }
   };
-
-  
 
   return (
     <Container>
@@ -217,25 +220,12 @@ export default function RiddleEdit(props: {
                   autosize
                   maxRows={8}
                 />
-                <Textarea
-                  label="Source Location"
-                  name="sourceLocation"
-                  {...form.getInputProps("sourceLocation")}
-                  autosize
-                  maxRows={8}
-                />
-              </Group>
-              <Group grow>
+
                 <TextInput
                   label="Source URL"
                   className="m-1"
                   name="sourceURL"
                   {...form.getInputProps("sourceURL")}
-                />
-                <TextInput
-                  label="Source Placeholder"
-                  {...form.getInputProps("sourcePlaceholder")}
-                  name="sourcePlaceHolder"
                 />
               </Group>
             </Grid.Col>

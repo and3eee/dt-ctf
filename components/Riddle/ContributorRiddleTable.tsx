@@ -228,11 +228,6 @@ export function ContributorRiddleTable(props: {
           <SpoilerText>{row.solution}</SpoilerText>
         </Table.Td>
       )}
-      {(admin || contributor) && (
-        <Table.Td>
-          <Text lineClamp={3}>{row.sourceLocation}</Text>
-        </Table.Td>
-      )}
             {(admin || contributor) && (
         <Table.Td>
           <Text lineClamp={3}>{row.sourceDescription}</Text>
@@ -354,8 +349,6 @@ export function ContributorRiddleTable(props: {
               </Th>
 
               {admin && <Table.Th>Solution</Table.Th>}
-
-              {(admin || contributor) && <Table.Th>Source Location</Table.Th>}
               {(admin || contributor) && <Table.Th>Source Description</Table.Th>}
               {admin && <Table.Th>Source URL</Table.Th>}
               {(admin || contributor) && <Table.Th>Actions</Table.Th>}
