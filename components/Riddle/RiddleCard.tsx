@@ -31,6 +31,7 @@ import {
   Spoiler,
   Loader,
   ThemeIcon,
+  Box,
 } from "@mantine/core";
 import { Riddle, RiddleResource, User } from "@prisma/client";
 import {
@@ -46,7 +47,7 @@ import { notifications } from "@mantine/notifications";
 import { UserSubmit } from "../Event/EventControl";
 
 export default function RiddleCard(props: {
-  answeredBy?: UserEntryProps;
+  userEntry?: UserEntryProps;
   number?: number;
   admin?: boolean;
   teamID?: string;
@@ -58,10 +59,10 @@ export default function RiddleCard(props: {
   const router = useRouter();
   const [value, setValue] = useState("");
   const [solvedBy, setSolvedBy] = useState<UserEntryProps | undefined>(
-    props.answeredBy
+    props.userEntry
   );
   const [solutionIsLoading, setIsLoading] = useState(false);
-  const [attempts, setAttempts] = useState(props.answeredBy?.attempts ?? 0);
+  const [attempts, setAttempts] = useState(props.userEntry?.attempts ?? 0);
 
   const submitEntry = async () => {
     setIsLoading(true);
@@ -252,21 +253,55 @@ export default function RiddleCard(props: {
     );
   };
 
+  const AttemptsAvailable = () => {
+    if(!props.event) return true;
+    if(!solvedBy) return true;
+    return(props.event.maxAttempts > solvedBy?.attempts)
+  }
+
+  const AttemptMarkers = () => {
+    let markers = [];
+    if (!props.event) return <></>;
+    for (let i = 0; i < props.event?.maxAttempts; i++) {
+      if (solvedBy && solvedBy.attempts > i) {
+        if (solvedBy?.answeredBy && solvedBy.attempts - 1 == i) markers[i] = 2;
+        else markers[i] = 1;
+      } else {
+        markers[i] = 0;
+      }
+    }
+
+    return (
+      <Tooltip
+        label={
+          solvedBy?.answeredBy
+            ? "Attempts"
+            : "Attempts remaining " +
+              (props.event.maxAttempts - (solvedBy?.attempts ?? 0))
+        }
+      >
+        <Group gap={6}>
+          {markers.map((stat: number) => (
+            <Box
+              bg={stat == 0 ? "gray" : stat == 1 ? "red" : "green"}
+              h="8"
+              w="8"
+              style={{ "--radius": "0.5rem", borderRadius: "var(--radius)" }}
+            />
+          ))}
+        </Group>
+      </Tooltip>
+    );
+  };
+
   return (
     <Card miw="20rem" maw="40rem" padding={"md"}>
       <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
             <Group gap={8}>
-              {" "}
-              {props.answeredBy && (
-                <ThemeIcon variant="gradient" radius={"xl"} size="xl">
-                  <RiCheckFill />
-                </ThemeIcon>
-              )}
-              {props.answeredBy ? (
+              {solvedBy?.answeredBy ? (
                 <ActionIcon size="lg" radius="xl" color="green">
-                  {" "}
                   <RiCheckLine />
                 </ActionIcon>
               ) : (
@@ -275,9 +310,10 @@ export default function RiddleCard(props: {
                 </ActionIcon>
               )}
             </Group>
+            {AttemptMarkers()}
 
             <Group p="sm" justify="right">
-              {solvedBy && solvedBy && (
+              {solvedBy && solvedBy.answeredBy && (
                 <Tooltip label={`Solved by ${solvedBy.answeredBy.name}`}>
                   <Avatar color="green">{ansInitials} </Avatar>
                 </Tooltip>
@@ -290,7 +326,7 @@ export default function RiddleCard(props: {
                 </Tooltip>
               )}
               {props.riddle.bucket && Bucket()}
-              {(props.admin || solvedBy) && (
+              {(props.admin || solvedBy?.answeredBy) && (
                 <Tooltip color="red" label={"Clear Answer"}>
                   <ActionIcon color="red" onClick={onDelete}>
                     <RiDeleteBack2Fill />
@@ -312,13 +348,13 @@ export default function RiddleCard(props: {
           ResourceGrid()}
       </Card.Section>
       <Card.Section withBorder m="xs" inheritPadding>
-        {!solvedBy && !solutionIsLoading && (
+        {!solvedBy?.answeredBy && !solutionIsLoading && AttemptsAvailable() && (
           <Group justify="center">
             <TextInput
               c="Answer"
               value={value}
               onChange={(event) => setValue(event.currentTarget.value)}
-              placeholder={"Riddle Answer Here...."}
+              placeholder={"Insert Flag Here...."}
             ></TextInput>
 
             <Button color="green" onClick={submitEntry}>

@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import EventAdminMenu from "@/components/Event/EventAdminMenu";
 import EventModal from "@/components/Event/EventModal";
 import EventRiddleList from "@/components/Event/EventRiddleList";

@@ -22,7 +22,7 @@ export interface TeamProps extends TeamEntry {
 }
 
 export interface UserEntryProps extends UserEntry {
-  answeredBy: User;
+  answeredBy?: User;
 }
 
 

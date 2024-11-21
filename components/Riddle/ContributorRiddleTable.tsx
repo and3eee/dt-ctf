@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import {
@@ -38,6 +38,7 @@ import ValidateButton from "./ValidateButton";
 import { modals } from "@mantine/modals";
 import RiddleCard from "./RiddleCard";
 import { RiddleProps } from "@/types";
+import RiddleCardPreview from "./RiddleCardPreview";
 
 interface ThProps {
   children: React.ReactNode;
@@ -133,14 +134,7 @@ const previewModal = (riddle: RiddleProps | Riddle) =>
   modals.open({
     title: "Riddle Preview",
     size: "auto",
-    children: (
-      <Stack>
-        <RiddleCard answeredBy={undefined} number={riddle.id} riddle={riddle} />
-        <Button fullWidth onClick={() => modals.closeAll()} mt="md">
-          Close Preview
-        </Button>
-      </Stack>
-    ),
+    children: <RiddleCardPreview riddle={riddle} />,
   });
 
 export function ContributorRiddleTable(props: {
@@ -202,7 +196,7 @@ export function ContributorRiddleTable(props: {
       if (riddle.id == riddleIn.id) {
         riddle.validated = true;
         return riddle;
-      }else return riddle;
+      } else return riddle;
     });
 
     handlers.setState(mutated);
@@ -228,7 +222,7 @@ export function ContributorRiddleTable(props: {
           <SpoilerText>{row.solution}</SpoilerText>
         </Table.Td>
       )}
-            {(admin || contributor) && (
+      {(admin || contributor) && (
         <Table.Td>
           <Text lineClamp={3}>{row.sourceDescription}</Text>
         </Table.Td>
@@ -349,7 +343,9 @@ export function ContributorRiddleTable(props: {
               </Th>
 
               {admin && <Table.Th>Solution</Table.Th>}
-              {(admin || contributor) && <Table.Th>Source Description</Table.Th>}
+              {(admin || contributor) && (
+                <Table.Th>Source Description</Table.Th>
+              )}
               {admin && <Table.Th>Source URL</Table.Th>}
               {(admin || contributor) && <Table.Th>Actions</Table.Th>}
             </Table.Tr>

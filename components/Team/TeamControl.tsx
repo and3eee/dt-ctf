@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { TeamProps, EventProps } from "@/types";
 import { TeamEntry, User, UserEntry } from "@prisma/client";

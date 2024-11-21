@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import AdminDryRunAffix from "@/components/Event/AdminDryRunAffix";
 import EventPortal from "@/components/Event/EventPortal";
 import TeamList from "@/components/Team/TeamList";

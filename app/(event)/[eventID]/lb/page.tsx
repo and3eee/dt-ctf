@@ -1,4 +1,4 @@
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 import AuthCheck from "@/components/Auth/AuthCheck";
 import EventLeaderBoard from "@/components/Event/EventLeaderBoard";
 import { prisma } from "@/lib/prisma";
