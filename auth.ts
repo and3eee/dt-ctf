@@ -23,4 +23,21 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       issuer: `https://login.microsoftonline.com/${microsoftTenantId}/v2.0`,
     }),
   ],
+  session: { strategy: "jwt" },
+  callbacks: {
+    jwt: async ({ token, user, account, profile, isNewUser }) => {
+      if (user) {
+        token.user = user;
+      }
+
+      return token;
+    },
+    session: async ({ session, user, token }: any) => {
+      if (token) {
+        user = token.user;
+        session.user = token.user;
+      }
+      return session;
+    },
+  },
 });
