@@ -10,7 +10,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { RiddleResource } from "@prisma/client";
-import { RiInformation2Fill, RiPencilLine } from "react-icons/ri";
+import { RiInformation2Fill, RiLink, RiPencilLine } from "react-icons/ri";
 import RiddleResourceModal from "./RiddleResourceModal";
 import { modals } from "@mantine/modals";
 
@@ -18,7 +18,7 @@ export default function RiddleResourcePreview(props: {
   resource: RiddleResource;
 }) {
   return (
-    <Card shadow="lg" withBorder padding={8}>
+    <Card shadow="md" withBorder padding={8}>
       <Stack>
         <Group grow>
           <Title order={4} miw="12rem" maw="20rem">
@@ -45,8 +45,9 @@ export default function RiddleResourcePreview(props: {
 
         {props.resource.link && (
           <Stack>
-            <Button component="a" href={props.resource.link!}>
-              Link
+            <Button maw={"8rem"} component="a" leftSection={<RiLink/>} href={props.resource.link!}>
+              Link 
+            
             </Button>
           </Stack>
         )}

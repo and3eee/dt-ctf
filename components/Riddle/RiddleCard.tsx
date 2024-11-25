@@ -41,6 +41,7 @@ import {
   RiCloseLargeFill,
   RiDeleteBack2Fill,
   RiFlag2Fill,
+  RiLock2Fill,
 } from "react-icons/ri";
 import RiddleResourcePreview from "../RiddleResources/RiddleResourcePreview";
 import { notifications } from "@mantine/notifications";
@@ -66,6 +67,32 @@ export default function RiddleCard(props: {
 
   const submitEntry = async () => {
     setIsLoading(true);
+
+
+
+    //Check if conditions are met for example flag
+    if (props.event?.id === "example" && props.riddle.id == -1) {
+      setSolvedBy({
+        id: "temp",
+        eventId: props.event!.id,
+        attempts: attempts + 1,
+        riddleId: props.riddle.id,
+        answeredBy: props.user,
+        userId: "0",
+        teamEntryId: "0",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        answeredAt: new Date(),
+      });
+      setIsLoading(false);
+      notifications.show({
+        icon: <RiCheckFill />,
+        color: "green",
+        title: "Correct!",
+        message: "Example flag solved! Good job!",
+      });
+    }
+
     //Check if using teams
 
     if (props.event?.useTeams)
@@ -242,10 +269,12 @@ export default function RiddleCard(props: {
     return (
       <Grid>
         <Grid.Col span={12}>
-          <Title order={4}>Related Resource(s)</Title>
+          <Text c="dimmed" size={"md"}>
+            Related Resource(s)
+          </Text>
         </Grid.Col>
         {resources.map((resource: RiddleResource) => (
-          <Grid.Col key={resource.id} span={12}>
+          <Grid.Col key={resource.id} span={12} my={8}>
             <RiddleResourcePreview resource={resource} />
           </Grid.Col>
         ))}
@@ -254,10 +283,10 @@ export default function RiddleCard(props: {
   };
 
   const AttemptsAvailable = () => {
-    if(!props.event) return true;
-    if(!solvedBy) return true;
-    return(props.event.maxAttempts > solvedBy?.attempts)
-  }
+    if (!props.event) return true;
+    if (!solvedBy) return true;
+    return props.event.maxAttempts > solvedBy?.attempts;
+  };
 
   const AttemptMarkers = () => {
     let markers = [];
@@ -294,22 +323,41 @@ export default function RiddleCard(props: {
     );
   };
 
+  const status = () => {
+    
+    if (props.event && props.userEntry) {
+      if(props.userEntry.answeredBy) return (
+        <ActionIcon size="lg" radius="xl" color="green">
+          <RiCheckFill />
+        </ActionIcon>
+      );
+      if (!(props.event.maxAttempts > props.userEntry.attempts)) {
+        return (
+          <ActionIcon size="lg" radius="xl" color="gray">
+            <RiLock2Fill />
+          </ActionIcon>
+        );
+      } else
+        return (
+          <ActionIcon size="lg" radius="xl" color="red">
+            <RiFlag2Fill />
+          </ActionIcon>
+        );
+    }else{
+        return(
+          <ActionIcon size="lg" radius="xl" color="red">
+            <RiFlag2Fill />
+          </ActionIcon>
+        );
+    }
+  };
+
   return (
     <Card miw="20rem" maw="40rem" padding={"md"}>
       <Card.Section inheritPadding withBorder>
         <Stack gap="0">
           <Group justify="space-between">
-            <Group gap={8}>
-              {solvedBy?.answeredBy ? (
-                <ActionIcon size="lg" radius="xl" color="green">
-                  <RiCheckLine />
-                </ActionIcon>
-              ) : (
-                <ActionIcon size="lg" radius="xl" color="red">
-                  <RiFlag2Fill />
-                </ActionIcon>
-              )}
-            </Group>
+            <Group gap={8}>{status()}</Group>
             {AttemptMarkers()}
 
             <Group p="sm" justify="right">
@@ -326,7 +374,7 @@ export default function RiddleCard(props: {
                 </Tooltip>
               )}
               {props.riddle.bucket && Bucket()}
-              {(props.admin || solvedBy?.answeredBy) && (
+              {props.admin && solvedBy?.answeredBy && (
                 <Tooltip color="red" label={"Clear Answer"}>
                   <ActionIcon color="red" onClick={onDelete}>
                     <RiDeleteBack2Fill />

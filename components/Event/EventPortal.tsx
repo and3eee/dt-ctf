@@ -130,7 +130,7 @@ export default function EventPortal(props: {
         </Card>
       )}
       <EventDrawer
-        riddles={props.riddles}
+        riddles={props.riddles ?? []}
         event={props.event}
         team={teamContext}
       />
@@ -141,7 +141,7 @@ export default function EventPortal(props: {
               <Grid.Col key={riddle.id} span="content">
                 <RiddleCard
                   admin={adminMode}
-                  answeredBy={solvedCheck(riddle.id)}
+                  userEntry={solvedCheck(riddle.id)}
                   riddle={riddle}
                   teamID={props.event.useTeams ? teamContext.id : undefined}
                   user={props.user}
