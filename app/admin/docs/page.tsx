@@ -10,6 +10,7 @@ import RiddleEdit from "@/components/Riddle/RiddleEdit";
 import { Riddle } from "@prisma/client";
 import ContributorCheck from "@/components/Auth/ContributorCheck";
 import { Title } from "@mantine/core";
+import ExampleRiddleCard from "@/components/Riddle/ExampleRiddleCard";
 
 export default async function RiddlePage() {
 
@@ -17,8 +18,12 @@ export default async function RiddlePage() {
       <ContributorCheck>
         <Title>CTF Docs</Title>
 
-        <Title>Flag Contribution</Title>
+        <Title order={2}>Flag Contribution</Title>
         
+        <ExampleRiddleCard/>
+
+
+
       </ContributorCheck>
     );
 }

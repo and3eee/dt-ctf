@@ -12,7 +12,7 @@ import EventInfo from "./EventInfo";
 
 export default function EventDrawer(props: {
   event: EventProps;
-  team: TeamProps;
+  team?: TeamProps;
   riddles: EventRiddleProps[];
   user?: User;
 }) {
@@ -25,7 +25,7 @@ export default function EventDrawer(props: {
           <EventInfo event={props.event} panelMode user={props.user!} />
 
           <Stack align="center" justify="space-between">
-            <EventTeamStats riddles={props.riddles} team={props.team} event={props.event} />
+           {props.team &&  <EventTeamStats riddles={props.riddles} team={props.team} event={props.event} />}
             {props.event.coreEventLink && (
               <Button size="xl" radius="xl" component="a" href={props.event.coreEventLink}>
                 Access Event Tenant

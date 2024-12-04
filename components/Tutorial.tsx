@@ -1,12 +1,13 @@
 "use client";
 
 import { EventProps, RiddleProps, UserEntryProps } from "@/types";
-import { Button, Center, Group, Stack, Stepper, Text } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Stack, Stepper, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { RiddleResource, User } from "@prisma/client";
 import { useState } from "react";
 import RiddleCard from "./Riddle/RiddleCard";
 import EventDrawer from "./Event/EventDrawer";
+import { RiQuestionLine } from "react-icons/ri";
 
 const exampleResource: RiddleResource = {
   id: 0,
@@ -134,7 +135,7 @@ export function TutorialModal(props: { useTeams?: boolean }) {
       size: "lg",
     });
 
-  return <Button onClick={openModal}>Open confirm modal</Button>;
+  return <ActionIcon onClick={openModal}><RiQuestionLine/></ActionIcon>;
 }
 
 export function Tutorial(props: { useTeams?: boolean }) {
