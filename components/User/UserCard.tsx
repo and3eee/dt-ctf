@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   Menu,
   Card,
@@ -17,6 +17,7 @@ import {
 } from "react-icons/ri";
 import AdminCheck from "../Auth/AdminCheck";
 import { SignOutButton } from "../Auth/buttons";
+import { TutorialModal } from "../Tutorial";
 
 export default function UserCard(props: { user: User }) {
   const user: User = props.user;
@@ -31,7 +32,10 @@ export default function UserCard(props: { user: User }) {
               <Text size="xs">{user.email}</Text>
             </Stack>
             <Avatar maw={"2rem"} src={props.user.image}>
-              {props.user.name?.split(" ").map((input:string) => input[0]).join(".")}
+              {props.user.name
+                ?.split(" ")
+                .map((input: string) => input[0])
+                .join(".")}
             </Avatar>
           </Group>
         </Card>
@@ -45,10 +49,10 @@ export default function UserCard(props: { user: User }) {
         >
           Account Settings
         </Menu.Item>
-
+        <Menu.Item ><TutorialModal/></Menu.Item>
         <Menu.Divider />
         <AdminCheck>
-          <Menu.Label color="red">Admin Option</Menu.Label>
+          <Menu.Label color="red">Admin Options</Menu.Label>
           <Menu.Item color="red" leftSection={<RiCalendarFill />}>
             Events
           </Menu.Item>

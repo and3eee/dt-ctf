@@ -135,7 +135,7 @@ export function TutorialModal(props: { useTeams?: boolean }) {
       size: "lg",
     });
 
-  return <ActionIcon onClick={openModal}><RiQuestionLine/></ActionIcon>;
+  return<Button onClick={openModal} leftSection={<RiQuestionLine/>}>Tutorial</Button>;
 }
 
 export function Tutorial(props: { useTeams?: boolean }) {

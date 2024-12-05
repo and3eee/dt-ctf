@@ -82,7 +82,6 @@ export const Navbar = () => {
             />
             
 
-            <RiddleSolutionGenerator />
           </ContributorCheck>
      
           <Divider py={8}/>
