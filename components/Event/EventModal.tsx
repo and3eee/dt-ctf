@@ -31,6 +31,8 @@ export default function EventModal(
     public: false,
     createdAt: new Date(),
     updatedAt: new Date(),
+    maxAttempts: 0,
+    coreEventLink: null
   };
 
 

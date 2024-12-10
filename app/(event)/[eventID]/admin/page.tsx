@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import EventAdminMenu from "@/components/Event/EventAdminMenu";
 import EventModal from "@/components/Event/EventModal";
 import EventRiddleList from "@/components/Event/EventRiddleList";
+import { PostEditModal } from "@/components/Event/Posts/PostEdit";
 import TeamGeneratorPanel from "@/components/Event/TeamGeneratorPanel";
 import TeamList from "@/components/Team/TeamList";
 import { prisma } from "@/lib/prisma";
@@ -37,7 +38,7 @@ export default async function EventAdmin(
         },
       },
     });
-
+    const contributors = await prisma.user.findMany({where:{role:{not:"USER"}}})
     const riddles = await prisma.riddle.findMany();
 
     if (event) {
@@ -47,6 +48,7 @@ export default async function EventAdmin(
           <Group>
           <EventAdminMenu event={event} />
           <EventModal event={event}/>
+          <PostEditModal  createMode eventID={event.id} userList={contributors} />
           </Group>
           <TeamGeneratorPanel event={event} />
           <EventRiddleList

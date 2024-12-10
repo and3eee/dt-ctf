@@ -137,9 +137,7 @@ export default function EventEdit(props: {
             defaultChecked={props.event.showTeams ?? false}
             key={form.key("showTeams")}
             {...form.getInputProps("showTeams")}
-          >
-            Show Teams
-          </Checkbox>
+            />
 
           <Checkbox
             label="Show Participants"
@@ -147,9 +145,7 @@ export default function EventEdit(props: {
             defaultChecked={props.event.showParticipants ?? false}
             key={form.key("showParticipants")}
             {...form.getInputProps("showParticipants")}
-          >
-            Show Participants
-          </Checkbox>
+            />
           <Checkbox
             name="useTeams"
             label="Use Teams"
@@ -173,28 +169,21 @@ export default function EventEdit(props: {
             defaultChecked={props.event.requireURL ?? false}
             key={form.key("requireURL")}
             {...form.getInputProps("requireURL")}
-          >
-            Require URLs
-          </Checkbox>
+            />
           <Checkbox
             label="Require Screenshot"
             name="screenshot"
             defaultChecked={props.event.requireScreenshot ?? false}
             key={form.key("requireScreenshot")}
             {...form.getInputProps("requireScreenshot")}
-          >
-            Require Screenshot
-          </Checkbox>
-
+            />
           <Checkbox
             name="public"
             label="Public"
             defaultChecked={props.event.public ?? false}
             key={form.key("public")}
             {...form.getInputProps("public")}
-          >
-            Public
-          </Checkbox>
+          />
 
           <Checkbox
             name="active"
@@ -202,18 +191,14 @@ export default function EventEdit(props: {
             defaultChecked={props.event.active ?? false}
             key={form.key("active")}
             {...form.getInputProps("active")}
-          >
-            Active
-          </Checkbox>
+            />
           <Checkbox
             name="generatedTeams"
             label="Teams Generated"
             defaultChecked={props.event.generatedTeams}
             key={form.key("generatedTeams")}
             {...form.getInputProps("generatedTeams")}
-          >
-            Teams Generated
-          </Checkbox>
+            />
         </Group>
 
         <Divider />

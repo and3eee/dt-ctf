@@ -27,6 +27,7 @@ import { useSession } from "next-auth/react";
 import EventLeaderBoard from "./EventLeaderBoard";
 import EventSummary from "./EventSummary";
 import SingleEventSignUp from "./SingleEventSignUp";
+import { PostEditModal } from "./Posts/PostEdit";
 
 export default function EventInfo(props: {
   event: EventProps;
@@ -164,9 +165,9 @@ export default function EventInfo(props: {
             {event.active &&
               now > props.event.start &&
               now < props.event.end && (
-                <Tooltip label="Registration Closed">
+
                   <Badge variant="gradient">Event is Live!</Badge>
-                </Tooltip>
+  
               )}
           </Group>
         </Group>
@@ -230,6 +231,7 @@ export default function EventInfo(props: {
             {props.admin && (
               <EventModal buttonText={"Edit Event"} event={event} />
             )}
+            
           </Group>
         )}
       </Stack>
