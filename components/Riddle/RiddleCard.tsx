@@ -296,7 +296,7 @@ export default function RiddleCard(props: {
   const AttemptsAvailable = () => {
     if (!props.event) return true;
     if (!solvedBy) return true;
-    return props.event.maxAttempts > solvedBy?.attempts;
+    return props.event.maxAttempts > (solvedBy?.attempts ?? 0);
   };
 
   const AttemptMarkers = () => {
@@ -304,7 +304,7 @@ export default function RiddleCard(props: {
     if (!props.event) return <></>;
     for (let i = 0; i < props.event?.maxAttempts; i++) {
       if (solvedBy && solvedBy.attempts > i) {
-        if (solvedBy?.answeredBy && solvedBy.attempts - 1 == i) markers[i] = 2;
+        if (solvedBy?.answeredAt && solvedBy.attempts - 1 == i) markers[i] = 2;
         else markers[i] = 1;
       } else {
         markers[i] = 0;
@@ -314,7 +314,7 @@ export default function RiddleCard(props: {
     return (
       <Tooltip
         label={
-          solvedBy?.answeredBy
+          solvedBy?.answeredAt
             ? "Attempts"
             : "Attempts remaining " +
               (props.event.maxAttempts - (solvedBy?.attempts ?? 0))
@@ -336,13 +336,13 @@ export default function RiddleCard(props: {
 
   const status = () => {
     if (props.event && props.userEntry) {
-      if (props.userEntry.answeredBy)
+      if (props.userEntry.answeredAt)
         return (
           <ActionIcon size="lg" radius="xl" color="green">
             <RiCheckFill />
           </ActionIcon>
         );
-      if (!(props.event.maxAttempts > props.userEntry.attempts)) {
+      if ((props.event.maxAttempts < props.userEntry.attempts)) {
         return (
           <ActionIcon size="lg" radius="xl" color="gray">
             <RiLock2Fill />
