@@ -98,7 +98,7 @@ export default async function EventPage(props: {
           }
 
           //Individual event page
-          if (event.active && !event.useTeams && registered) {
+          if (event.active && !event.useTeams && (registered || admin) ) {
             const entries = await prisma.userEntry.findMany({
               where: { eventId: event.id, userId: user.id },
               include: { answeredBy: true },

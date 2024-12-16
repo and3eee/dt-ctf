@@ -11,11 +11,9 @@ import { RiArrowUpCircleFill } from "react-icons/ri";
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
-export default async function EventDryRunView(
-  props: {
-    params: Promise<{ eventID: string }>;
-  }
-) {
+export default async function EventDryRunView(props: {
+  params: Promise<{ eventID: string }>;
+}) {
   const params = await props.params;
   const session = await auth();
   const user = await prisma.user.findFirst({
@@ -30,6 +28,7 @@ export default async function EventDryRunView(
       where: { id: { startsWith: params.eventID } },
       include: {
         participants: true,
+        entries: { include: { answeredBy: true } },
         teams: {
           include: {
             members: true,
@@ -46,7 +45,7 @@ export default async function EventDryRunView(
       });
       return (
         <Stack>
-   <Title>Admin Mode</Title>
+          <Title>Admin Mode</Title>
           <EventPortal
             admin
             user={user}
