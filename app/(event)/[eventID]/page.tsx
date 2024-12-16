@@ -52,6 +52,7 @@ export default async function EventPage(props: {
       if (event) {
         const registered =
           event.participants.filter((run) => run.id == user.id).length > 0;
+          
         const riddles = await prisma.riddle.findMany({
           where: { eventId: event.id },
           include: { RiddleResource: true },

@@ -88,7 +88,6 @@ export default function EventPortal(props: {
       );
   };
 
-  // if (teamContext)
   return (
     <Stack>
       {props.admin && <AdminDryRunAffix />}
@@ -145,7 +144,7 @@ export default function EventPortal(props: {
       />
       <Grid>
         {props.riddles?.map((riddle: EventRiddleProps) => {
-          if (riddle.author != props.user.name || props.admin)
+
             return (
               <Grid.Col key={riddle.id} span="content">
                 <RiddleCard
