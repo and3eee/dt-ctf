@@ -68,8 +68,6 @@ export default function RiddleCard(props: {
   const submitEntry = async () => {
     setIsLoading(true);
 
-
-
     //Check if conditions are met for example flag
     if (props.event?.id === "example" && props.riddle.id == -1) {
       setSolvedBy({
@@ -95,7 +93,7 @@ export default function RiddleCard(props: {
 
     //Check if using teams
 
-    if (props.event?.useTeams)
+    if (props.event?.useTeams) {
       if (props.teamID && props.user) {
         if (!props.admin) {
           const reply = await AddTeamUserEntry(
@@ -139,39 +137,52 @@ export default function RiddleCard(props: {
             answeredAt: new Date(),
           });
         }
-      } else {
-        if (props.user) {
-          const reply = await UserSubmit(
-            props.event.id,
-            value,
-            props.riddle.id,
-            props.user,
-            attempts
-          );
-          setIsLoading(false);
-          if (reply) {
-            setSolvedBy({
-              id: "temp",
-              eventId: props.event!.id,
-              attempts: attempts + 1,
-              riddleId: props.riddle.id,
-              answeredBy: props.user,
-              userId: props.user.id,
-              teamEntryId: "",
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              answeredAt: new Date(),
-            });
-          } else {
-            notifications.show({
-              icon: <RiCloseLargeFill />,
-              color: "red",
-              title: "Wrong",
-              message: "That's not the right flag, try again! ",
-            });
-          }
+      }
+    } else {
+      if (props.user && props.event) {
+        const reply = await UserSubmit(
+          props.event.id,
+          value,
+          props.riddle.id,
+          props.user,
+          attempts
+        );
+        setIsLoading(false);
+        if (reply) {
+          setSolvedBy({
+            id: "temp",
+            eventId: props.event!.id,
+            attempts: attempts + 1,
+            riddleId: props.riddle.id,
+            answeredBy: props.user,
+            userId: props.user.id,
+            teamEntryId: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            answeredAt: new Date(),
+          });
+        } else {
+          setSolvedBy({
+            id: "temp",
+            eventId: props.event!.id,
+            attempts: attempts + 1,
+            riddleId: props.riddle.id,
+            answeredBy: props.user,
+            userId: props.user.id,
+            teamEntryId: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            answeredAt: null,
+          });
+          notifications.show({
+            icon: <RiCloseLargeFill />,
+            color: "red",
+            title: "Wrong",
+            message: "That's not the right flag, try again! ",
+          });
         }
       }
+    }
   };
 
   const onDelete = async () => {
@@ -324,13 +335,13 @@ export default function RiddleCard(props: {
   };
 
   const status = () => {
-    
     if (props.event && props.userEntry) {
-      if(props.userEntry.answeredBy) return (
-        <ActionIcon size="lg" radius="xl" color="green">
-          <RiCheckFill />
-        </ActionIcon>
-      );
+      if (props.userEntry.answeredBy)
+        return (
+          <ActionIcon size="lg" radius="xl" color="green">
+            <RiCheckFill />
+          </ActionIcon>
+        );
       if (!(props.event.maxAttempts > props.userEntry.attempts)) {
         return (
           <ActionIcon size="lg" radius="xl" color="gray">
@@ -343,12 +354,12 @@ export default function RiddleCard(props: {
             <RiFlag2Fill />
           </ActionIcon>
         );
-    }else{
-        return(
-          <ActionIcon size="lg" radius="xl" color="red">
-            <RiFlag2Fill />
-          </ActionIcon>
-        );
+    } else {
+      return (
+        <ActionIcon size="lg" radius="xl" color="red">
+          <RiFlag2Fill />
+        </ActionIcon>
+      );
     }
   };
 
@@ -396,7 +407,7 @@ export default function RiddleCard(props: {
           ResourceGrid()}
       </Card.Section>
       <Card.Section withBorder m="xs" inheritPadding>
-        {!solvedBy?.answeredBy && !solutionIsLoading && AttemptsAvailable() && (
+        {!solvedBy?.answeredAt && !solutionIsLoading && AttemptsAvailable() && (
           <Group justify="center">
             <TextInput
               c="Answer"

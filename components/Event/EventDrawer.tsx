@@ -37,7 +37,7 @@ export default function EventDrawer(props: {
       </Drawer>
 
       <NavLink
-        description="Leaderboard, event tenant, teams stats and more"
+        description="Leaderboard, event tenant, stats and more"
         leftSection={<RiBook2Line />}
         variant="subtle"
         active

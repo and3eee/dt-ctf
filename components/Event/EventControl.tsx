@@ -356,5 +356,16 @@ export async function UserSubmit(
     });
 
     return true;
+  }else{
+    const result = await prisma.userEntry.create({
+      data: {
+        riddleId: riddleId,
+        eventId: eventId,
+        userId: user.id,
+        attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
+        answeredAt: null,
+      },
+    });
+    return false;
   }
 }

@@ -8,6 +8,7 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 
 export interface EventProps extends Event {
   teams: TeamProps[];
+  entries: UserEntryProps[];
   participants: User[];
 }
 

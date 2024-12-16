@@ -30,6 +30,7 @@ export default function EventPortal(props: {
   riddles?: EventRiddleProps[];
   admin?: boolean;
   user: User;
+  userEntries?: UserEntryProps[]
 }) {
   const team = props.event.teams.filter((team: TeamProps) =>
     team.members!.some((member: User) => member.id == props.user!.id)
@@ -46,25 +47,31 @@ export default function EventPortal(props: {
   const [userContext, setUserContext] = useState(
     user ?? (props.admin ? props.event.participants[0] : undefined)
   );
+  
 
   var users = props.event.participants.map((team: User) => team.name);
   users.push("Empty User");
 
   const [adminMode, toggle] = useState(props.admin);
 
-  // if (props.riddles && props.user && teamContext) {
+  
   const solvedCheck = (riddleID: number) => {
-    if (
-      teamContext &&
-      teamContext.userEntries &&
-      teamContext.userEntries.some(
-        (entry: UserEntryProps) => entry.riddleId == riddleID
+    if (props.event.useTeams) {
+      if (
+        teamContext &&
+        teamContext.userEntries &&
+        teamContext.userEntries.some(
+          (entry: UserEntryProps) => entry.riddleId == riddleID
+        )
       )
-    )
-      return teamContext.userEntries.filter(
-        (entry: UserEntryProps) => entry.riddleId == riddleID
-      )[0];
-    return undefined;
+        return teamContext.userEntries.filter(
+          (entry: UserEntryProps) => entry.riddleId == riddleID
+        )[0];
+      return undefined;
+    }else{
+      return props.userEntries?.filter((entry) => entry.riddleId == riddleID)
+      
+    }
   };
 
   const onTeamContextChange = (value: string | null) => {
@@ -84,7 +91,7 @@ export default function EventPortal(props: {
   // if (teamContext)
   return (
     <Stack>
-      {props.admin && ( <AdminDryRunAffix/>)}
+      {props.admin && <AdminDryRunAffix />}
       {props.admin && (
         <Card title="Admin Context" maw="40rem">
           <Card.Section withBorder inheritPadding>
@@ -114,7 +121,9 @@ export default function EventPortal(props: {
                   placeholder="Select a user"
                   defaultValue={user?.name ?? ""}
                   onChange={(value) => onUserContextChange(value)}
-                  data={props.event.participants.map((team: User) => team.email)}
+                  data={props.event.participants.map(
+                    (team: User) => team.email
+                  )}
                 />
               )}
             </Stack>

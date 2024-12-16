@@ -29,6 +29,7 @@ export default async function EventPage(props: {
     where: { id: { startsWith: params.eventID } },
     include: {
       participants: true,
+      entries:{include:{answeredBy: true }},
       teams: {
         include: {
           members: true,
@@ -49,6 +50,8 @@ export default async function EventPage(props: {
       const now = new Date();
 
       if (event) {
+        const registered =
+          event.participants.filter((run) => run.id == user.id).length > 0;
         const riddles = await prisma.riddle.findMany({
           where: { eventId: event.id },
           include: { RiddleResource: true },
@@ -95,12 +98,17 @@ export default async function EventPage(props: {
           }
 
           //Individual event page
-          if (event.active && !event.useTeams) {
+          if (event.active && !event.useTeams && registered) {
+            const entries = await prisma.userEntry.findMany({
+              where: { eventId: event.id, userId: user.id },
+              include: { answeredBy: true },
+            });
             return (
               <AuthCheck>
                 <EventPortal
                   admin={admin}
                   event={event}
+                  userEntries={entries}
                   riddles={riddles.map((riddle: RiddleProps) => {
                     return {
                       id: riddle.id,
