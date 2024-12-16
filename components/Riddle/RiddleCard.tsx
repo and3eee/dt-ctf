@@ -398,7 +398,7 @@ export default function RiddleCard(props: {
       </Card.Section>
       <Card.Section withBorder inheritPadding>
         <Stack gap="xl" py={"1rem"} align="center">
-          <Text size="md">{props.riddle.riddle}</Text>
+          <Text size="md" maw="38rem" styles={{root:{wordWrap:"break-word"}}}>{props.riddle.riddle}</Text>
         </Stack>
 
         {props.riddle.showRiddleResource &&
