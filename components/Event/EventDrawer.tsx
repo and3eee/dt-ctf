@@ -1,7 +1,7 @@
 "use client";
 
 import { EventProps, EventRiddleProps, TeamProps } from "@/types";
-import { Button, Drawer, Group, NavLink, Stack } from "@mantine/core";
+import { Button, Drawer, Group, NavLink, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { User } from "@prisma/client";
 import EventLeaderBoard from "./EventLeaderBoard";
@@ -31,6 +31,7 @@ export default function EventDrawer(props: {
                 Access Event Tenant
               </Button>
             )}
+            <Text>{props.riddles.length} Riddles Active</Text>
           </Stack>
           <EventLeaderBoard riddles={props.riddles} teams={props.event.teams} event={props.event} />
         </Group>
