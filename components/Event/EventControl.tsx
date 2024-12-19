@@ -340,9 +340,13 @@ export async function UserSubmit(
 
   if (!event || !riddle) return false;
   //dont trust the attempts so check for an existing entry
-  let entryDB = await prisma.userEntry.findFirst({
+  const entryDBList = await prisma.userEntry.findMany({
     where: { eventId: eventId, userId: user.id, riddleId: riddleId },
   });
+
+  let entryDB = entryDBList[0];
+
+  if(entryDBList.length > 1)entryDB =  await foldUserEntries(entryDBList);
 
 
   if (entryDB && entryDB.attempts > attempts) attempts = entryDB.attempts;
