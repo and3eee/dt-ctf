@@ -69,7 +69,7 @@ export default function EventPortal(props: {
         )[0];
       return undefined;
     }else{
-      return props.userEntries?.filter((entry) => entry.riddleId == riddleID)
+      return props.userEntries?.filter((entry) => entry.riddleId == riddleID)[0]
       
     }
   };

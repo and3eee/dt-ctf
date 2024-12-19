@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventProps, TeamProps } from "@/types";
-import { Event, Riddle, TeamEntry, User } from "@prisma/client";
+import { Event, Riddle, TeamEntry, User, UserEntry } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { Noto_Sans_Gunjala_Gondi } from "next/font/google";
 import { NextRequest, NextResponse } from "next/server";
@@ -332,40 +332,86 @@ export async function UserSubmit(
   entry: String,
   riddleId: number,
   user: User,
-  attempts: number
+  attemptsIn: number
 ) {
+  let attempts = attemptsIn;
   const riddle = await prisma.riddle.findFirst({ where: { id: riddleId } });
   const event = await prisma.event.findFirst({ where: { id: eventId } });
 
   if (!event || !riddle) return false;
   //dont trust the attempts so check for an existing entry
-  const entryDB = await prisma.userEntry.findFirst({
+  let entryDB = await prisma.userEntry.findFirst({
     where: { eventId: eventId, userId: user.id, riddleId: riddleId },
   });
 
-  if (entryDB && entryDB.attempts <= attempts) return false;
+
+  if (entryDB && entryDB.attempts > attempts) attempts = entryDB.attempts;
+
   if (riddle && entry == riddle.solution && attempts < event.maxAttempts) {
-    const result = await prisma.userEntry.create({
-      data: {
-        riddleId: riddleId,
-        eventId: eventId,
-        userId: user.id,
-        attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
-        answeredAt: new Date(),
-      },
-    });
+    if (entryDB)
+      await prisma.userEntry.update({
+        where: { id: entryDB.id },
+        data: {
+          riddleId: riddleId,
+          eventId: eventId,
+          userId: user.id,
+          attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
+          answeredAt: new Date(),
+        },
+      });
+    else
+      await prisma.userEntry.create({
+        data: {
+          riddleId: riddleId,
+          eventId: eventId,
+          userId: user.id,
+          attempts: attempts + 1,
+          answeredAt: new Date(),
+        },
+      });
 
     return true;
-  }else{
-    const result = await prisma.userEntry.create({
-      data: {
-        riddleId: riddleId,
-        eventId: eventId,
-        userId: user.id,
-        attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
-        answeredAt: null,
-      },
-    });
+  } else {
+    if (entryDB)
+      await prisma.userEntry.update({
+        where: { id: entryDB.id },
+        data: {
+          riddleId: riddleId,
+          eventId: eventId,
+          userId: user.id,
+          attempts: entryDB ? entryDB.attempts + 1 : attempts + 1,
+          answeredAt: null,
+        },
+      });
+    else
+      await prisma.userEntry.create({
+        data: {
+          riddleId: riddleId,
+          eventId: eventId,
+          userId: user.id,
+          attempts: attempts + 1,
+          answeredAt: null,
+        },
+      });
     return false;
   }
+}
+export async function foldUserEntries(entryDB: UserEntry[]) {
+  let maxAttempts = 0;
+  entryDB.forEach((entry) => {
+    if (entry.attempts > maxAttempts) maxAttempts = entry.attempts;
+  });
+
+  let saved = false;
+  let out: UserEntry | undefined = undefined;
+  entryDB.forEach(async (entry) => {
+    if (entry.attempts < maxAttempts || saved)
+      await prisma.userEntry.delete({ where: { id: entry.id } });
+    else {
+      saved = true;
+      out = entry;
+    }
+  });
+
+  if (out) return out;
 }

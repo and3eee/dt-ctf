@@ -152,7 +152,7 @@ export default function RiddleCard(props: {
           setSolvedBy({
             id: "temp",
             eventId: props.event!.id,
-            attempts: attempts + 1,
+            attempts: solvedBy ? solvedBy.attempts + 1 : 1,
             riddleId: props.riddle.id,
             answeredBy: props.user,
             userId: props.user.id,
@@ -165,7 +165,7 @@ export default function RiddleCard(props: {
           setSolvedBy({
             id: "temp",
             eventId: props.event!.id,
-            attempts: attempts + 1,
+            attempts:  solvedBy ? solvedBy.attempts + 1 : 1,
             riddleId: props.riddle.id,
             answeredBy: props.user,
             userId: props.user.id,
