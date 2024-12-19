@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import EventAdminMenu from "@/components/Event/EventAdminMenu";
+import EventEmailList from "@/components/Event/EventEmailList";
 import EventModal from "@/components/Event/EventModal";
 import EventRiddleList from "@/components/Event/EventRiddleList";
 import { PostEditModal } from "@/components/Event/Posts/PostEdit";
@@ -48,6 +49,8 @@ export default async function EventAdmin(
           <Group>
           <EventAdminMenu event={event} />
           <EventModal event={event}/>
+          <EventEmailList event={event}/>
+
           <PostEditModal  createMode eventID={event.id} userList={contributors} />
           </Group>
           <TeamGeneratorPanel event={event} />
